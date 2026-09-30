@@ -25,3 +25,7 @@ Teksty i kolory edytujesz w `promo.html` (paleta w `CFG.C`). Ponowny render:
 python3 soundtrack.py
 FFMPEG=$(python3 -c "import imageio_ffmpeg as i;print(i.get_ffmpeg_exe())") node render.mjs --audio soundtrack.wav
 ```
+
+## Projekt After Effects
+
+W folderze `after-effects/` jest skrypt, który buduje z tego filmu natywny projekt `.aep` (instrukcja w `after-effects/README.md`).
