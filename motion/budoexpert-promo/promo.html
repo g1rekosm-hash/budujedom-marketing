@@ -167,7 +167,7 @@ function icon(ctx, name, x, y, s, p, o = {}) {
 }
 
 /* ---------- camera shake ---------- */
-const IMPACTS = INTRO ? [[0.95, 16]] : [[0.95, 16], [6.25, 7], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
+const IMPACTS = INTRO ? [[0.95, 16]] : [[0.95, 16], [300.3, 5], [300.4, 5], [304.6, 16], [6.25, 7], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
 function shake(t) {
   let a = 0; for (const [ti, A] of IMPACTS) if (t >= ti) a += A * Math.exp(-(t - ti) * 9);
   return { x: a * Math.sin(t * 93.1) * Math.cos(t * 41.7), y: a * Math.cos(t * 77.3) * Math.sin(t * 29.9 + 1), r: a * 0.0006 * Math.sin(t * 61.3) };
@@ -889,105 +889,112 @@ function scene5(ctx, t) {
 }
 
 /* =====================================================================
-   SCENE CARDS · 5.4 s · a deck of feature cards deals out into a 3D carousel,
-   spins through the features one by one, then gathers back into the deck
+   SCENE BOARD · 5.4 s · a construction-site information board (tablica informacyjna):
+   the features are filled in row by row like an official form, then stamped
    ===================================================================== */
-const CAR = { DUR: 5.4, R: 900, D: 2500, F: 1650, CW: 380, CH: 500, STEP: .55, T0: .9 };
-const FEATS = [
-  { t: ['Cały proces', 'budowy'], s: 'Prowadzimy Cię od działki do kluczy', ic: 'route' },
-  { t: ['Finansowanie'], s: 'Kredyt i ubezpieczenie w jednym miejscu', ic: 'invest' },
-  { t: ['Baza projektów'], s: 'Gotowe projekty domów pod ręką', ic: 'house' },
-  { t: ['Wsparcie', 'ekspertów'], s: 'Doradcy na każdym etapie budowy', ic: 'bubble' },
-  { t: ['Sprawdzeni', 'wykonawcy'], s: 'Zweryfikowane ekipy z opiniami', ic: 'helmet' },
-  { t: ['Architekci'], s: 'Projekt i adaptacja bez szukania', ic: 'architect' },
-  { t: ['Niższe ceny'], s: 'Lepsze stawki na materiały i usługi', ic: 'tag' },
+const CAR = { DUR: 5.4 };
+const BOARD = { x: 330, y: 130, w: 1260, h: 830, ground: 1040 };
+const ROWS = [
+  ['ZAKRES', 'Cały proces budowy — od działki do kluczy'],
+  ['FINANSOWANIE', 'Kredyt i ubezpieczenie w jednym miejscu'],
+  ['PROJEKTY', 'Baza gotowych projektów domów'],
+  ['EKSPERCI', 'Wsparcie na każdym etapie budowy'],
+  ['WYKONAWCY', 'Sprawdzeni i zweryfikowani'],
+  ['ARCHITEKCI', 'Projekt i adaptacja bez szukania'],
+  ['CENY', 'Niższe ceny materiałów i usług'],
 ];
-function carPos(u) { // which feature is in front: snaps from card 0 to card 6
-  let p = 0; for (let k = 0; k < FEATS.length - 1; k++) p += E.outBack(P(u, CAR.T0 + k * CAR.STEP, CAR.T0 + k * CAR.STEP + .45), 1.4);
-  return p;
-}
-function drawFeatureCard(ctx, f, i, u, front, glow) {
-  const w = CAR.CW, h = CAR.CH;
-  if (!front) { // card back: brand purple with the triangle
-    ctx.fillStyle = C.purple2; roundRect(ctx, -w / 2, -h / 2, w, h, 26); ctx.fill();
-    ctx.strokeStyle = hexA(C.teal, .5); ctx.lineWidth = 3; roundRect(ctx, -w / 2 + 14, -h / 2 + 14, w - 28, h - 28, 18); ctx.stroke();
-    ctx.fillStyle = C.teal; poly(ctx, brandTri(0, 0, 60)); ctx.fill();
-    return;
-  }
-  ctx.save(); ctx.shadowColor = 'rgba(20,0,30,.35)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18;
-  ctx.fillStyle = C.white; roundRect(ctx, -w / 2, -h / 2, w, h, 26); ctx.fill(); ctx.restore();
-  if (glow > 0) { ctx.strokeStyle = hexA(C.teal, glow); ctx.lineWidth = 6; roundRect(ctx, -w / 2 - 3, -h / 2 - 3, w + 6, h + 6, 28); ctx.stroke(); }
-  // icon tile
-  ctx.fillStyle = hexA(C.purple, .07); roundRect(ctx, -w / 2 + 34, -h / 2 + 40, 120, 120, 24); ctx.fill();
-  icon(ctx, f.ic, -w / 2 + 94, -h / 2 + 100, .82, 1, { col: C.purple, w: 3, seed: 400 + i, passes: 1 });
-  font(ctx, 16, 700, 3); ctx.fillStyle = C.teal2; ctx.fillText(String(i + 1).padStart(2, '0'), w / 2 - 66, -h / 2 + 64);
-  font(ctx, 40, 700); ctx.fillStyle = C.ink;
-  f.t.forEach((l, k) => ctx.fillText(l, -w / 2 + 34, -h / 2 + 232 + k * 48));
-  font(ctx, 20, 400); ctx.fillStyle = '#7E7287';
-  wrapLines(ctx, f.s, w - 68).forEach((l, k) => ctx.fillText(l, -w / 2 + 34, -h / 2 + 232 + f.t.length * 48 + 16 + k * 30));
-  // footer
-  ctx.fillStyle = hexA(C.purple, .1); ctx.fillRect(-w / 2 + 34, h / 2 - 78, w - 68, 1.5);
-  ctx.fillStyle = C.teal; poly(ctx, brandTri(-w / 2 + 46, h / 2 - 44, 11)); ctx.fill();
-  font(ctx, 18, 600); ctx.fillStyle = C.purple; ctx.fillText('budoexpert', -w / 2 + 66, h / 2 - 37);
-}
-function wrapLines(ctx, str, maxW) {
-  const words = str.split(' '), out = []; let cur = '';
-  words.forEach(w => { const tryS = cur ? cur + ' ' + w : w; if (ctx.measureText(tryS).width > maxW && cur) { out.push(cur); cur = w; } else cur = tryS; });
-  if (cur) out.push(cur); return out;
-}
-function sceneCards(ctx, u) {
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  const sh = shake(u + 300); ctx.translate(sh.x, sh.y);
-  // stage: purple gradient, faint grid, a teal glow on the "floor"
-  const bg = ctx.createRadialGradient(W / 2, 520, 100, W / 2, 520, 1200); bg.addColorStop(0, '#7E1A8C'); bg.addColorStop(1, C.purple2);
-  ctx.fillStyle = bg; ctx.fillRect(-50, -50, W + 100, H + 100);
-  ctx.strokeStyle = hexA(C.white, .045); ctx.lineWidth = 1; ctx.beginPath();
-  for (let x = 0; x <= W; x += 60) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
-  for (let y = 0; y <= H; y += 60) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
-  ctx.stroke();
-  const fg = ctx.createRadialGradient(W / 2, 900, 20, W / 2, 900, 700); fg.addColorStop(0, hexA(C.teal, .28)); fg.addColorStop(1, hexA(C.teal, 0));
-  ctx.save(); ctx.translate(W / 2, 900); ctx.scale(1, .22); ctx.translate(-W / 2, -900); ctx.fillStyle = fg; ctx.fillRect(0, 600, W, 600); ctx.restore();
-  // heading
-  const ha = E.outExpo(P(u, .15, .6)), ho = E.inExpo(P(u, 4.45, 4.75));
-  font(ctx, 18, 600, 6); ctx.fillStyle = C.teal; riseText(ctx, 'CO ZYSKUJESZ Z BUDOEXPERT', W / 2, 104, 18, ha, ho, 'center');
-  font(ctx, 58, 700); ctx.fillStyle = C.white; riseText(ctx, 'Wszystko do budowy domu', W / 2, 178, 58, E.outExpo(P(u, .25, .7)), ho, 'center');
-
-  // cards: deal from the deck → ring → back to the deck
-  const n = FEATS.length, pos = carPos(u), focus = Math.round(pos);
-  const gather = E.inOutCubic(P(u, 4.45, 4.85)), flyOff = E.inExpo(P(u, 5.0, CAR.DUR));
-  const list = FEATS.map((f, i) => {
-    const deal = E.outBack(P(u, .1 + i * .07, .65 + i * .07), 1.2) * (1 - gather);
-    const th = (i - pos) * TAU / n, c = Math.cos(th);
-    const rx = Math.sin(th) * CAR.R, rz = c * CAR.R, s = CAR.F / (CAR.D - rz);
-    const ring = { x: W / 2 + rx * s, y: 610 - (CAR.R - rz) * .2 * s, s, sq: Math.max(.06, Math.abs(c)), z: rz, front: c > 0, sk: -Math.sin(th) * .16 };
-    const r0 = rng(50 + i), deck = { x: W / 2 + (r0() - .5) * 26, y: 610 - i * 5, s: .78, sq: 1, z: -2000 + i, front: false, rot: (r0() - .5) * .14 };
-    return { f, i, deal, x: lerp(deck.x, ring.x, deal), y: lerp(deck.y, ring.y, deal), s: lerp(deck.s, ring.s, deal), sq: lerp(1, ring.sq, deal),
-      z: deal > .5 ? ring.z : deck.z, front: deal > .5 ? ring.front : false, rot: deck.rot * (1 - deal), c, sk: ring.sk * deal };
-  }).sort((a, b) => a.z - b.z);
-  list.forEach(o => {
-    ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot); ctx.transform(1, o.sk, 0, 1, 0, 0); ctx.scale(o.s * o.sq, o.s);   // skew fakes the perspective of a turned card
-    const isF = o.i === focus && o.deal > .9;
-    if (isF) { const lift = E.outBack(clamp((u - CAR.T0 - (focus - 1) * CAR.STEP - .25) / .3), 2); ctx.translate(0, -18 * (u > CAR.T0 ? 1 : 0)); }
-    drawFeatureCard(ctx, o.f, o.i, u, o.front, isF ? .9 : 0);
-    // side cards sink into the purple
-    const dim = o.front ? clamp((1 - o.c) * .55) : 0;
-    if (dim > 0) { ctx.fillStyle = hexA(C.purple2, dim); roundRect(ctx, -CAR.CW / 2, -CAR.CH / 2, CAR.CW, CAR.CH, 26); ctx.fill(); }
-    ctx.restore();
+const ROW0 = 1.0, ROWSTEP = .46, STAMP = 4.55;
+function sceneBoard(ctx, u) {
+  const B = BOARD;
+  camera(ctx, u + 300, lerp(1.0, 1.05, E.inOutCubic(P(u, 0, CAR.DUR))));
+  paper(ctx);
+  // ground + a sketched fence behind the board
+  sLine(ctx, 0, B.ground, W, B.ground, E.outCubic(P(u, 0, .4)), { col: C.sketch, w: 2, seed: 501 });
+  ctx.save(); ctx.globalAlpha = E.outCubic(P(u, .05, .45));
+  ctx.strokeStyle = C.grid2; ctx.lineWidth = 2; ctx.beginPath();
+  for (let x = 40; x < W; x += 46) { ctx.moveTo(x, B.ground); ctx.lineTo(x, B.ground - 150 - (x % 92 ? 0 : 12)); }
+  ctx.moveTo(0, B.ground - 120); ctx.lineTo(W, B.ground - 120); ctx.moveTo(0, B.ground - 40); ctx.lineTo(W, B.ground - 40); ctx.stroke();
+  font(ctx, 14, 600, 4); ctx.fillStyle = C.sketch; ctx.fillText('TEREN BUDOWY', 60, B.ground + 34);
+  ctx.restore();
+  // posts hammered into the ground
+  [B.x + 170, B.x + B.w - 210].forEach((px, i) => {
+    const d = E.outBack(P(u, .25 + i * .1, .5 + i * .1), 2.2);
+    if (d <= 0) return;
+    const top = lerp(B.ground - 40, B.y + 60, d);
+    ctx.fillStyle = '#9C8FA6'; ctx.fillRect(px, top, 40, B.ground - top); ctx.fillStyle = hexA(C.ink, .15); ctx.fillRect(px + 28, top, 12, B.ground - top);
   });
-  // "+ i wiele więcej" lands on top of the gathered deck
-  const more = E.outBack(P(u, 4.7, 4.95), 2.2);
-  if (more > 0) {
-    ctx.save(); ctx.translate(W / 2, 600 - FEATS.length * 5); ctx.scale(.78 * more, .78 * more); ctx.rotate(-.04);
-    ctx.save(); ctx.shadowColor = 'rgba(20,0,30,.35)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18; ctx.fillStyle = C.teal; roundRect(ctx, -CAR.CW / 2, -CAR.CH / 2, CAR.CW, CAR.CH, 26); ctx.fill(); ctx.restore();
-    font(ctx, 150, 300); ctx.fillStyle = C.white; ctx.textAlign = 'center'; ctx.fillText('+', 0, -20);
-    font(ctx, 40, 700); ctx.fillText('i wiele', 0, 80); ctx.fillText('więcej', 0, 128); ctx.textAlign = 'left';
+  // the board: pencil outline first, then it fills in
+  const ol = E.inOutCubic(P(u, 0, .55));
+  sPoly(ctx, [[B.x, B.y], [B.x + B.w, B.y], [B.x + B.w, B.y + B.h], [B.x, B.y + B.h]], ol, { col: C.sketch, w: 2, seed: 502 }, true);
+  const fill = E.outCubic(P(u, .45, .75));
+  if (fill > 0) {
+    ctx.save(); ctx.globalAlpha = fill;
+    ctx.shadowColor = 'rgba(40,10,50,.18)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
+    ctx.fillStyle = C.white; ctx.fillRect(B.x, B.y, B.w, B.h); ctx.restore();
+    ctx.save(); ctx.globalAlpha = fill; ctx.strokeStyle = C.purple; ctx.lineWidth = 6; ctx.strokeRect(B.x, B.y, B.w, B.h); ctx.restore();
+  }
+  // header band slides down
+  const hb = E.outExpo(P(u, .6, 1.0));
+  if (hb > 0) {
+    ctx.save(); ctx.beginPath(); ctx.rect(B.x, B.y, B.w, 120); ctx.clip();
+    ctx.fillStyle = C.purple; ctx.fillRect(B.x, B.y - 120 * (1 - hb), B.w, 120);
+    font(ctx, 46, 700, 6); ctx.fillStyle = C.white; ctx.fillText('TABLICA INFORMACYJNA', B.x + 44, B.y + 76 - 120 * (1 - hb));
+    logo(ctx, B.x + B.w - 170, B.y + 58 - 120 * (1 - hb), .2, C.teal, C.white);
+    ctx.restore();
+    font(ctx, 17, 600, 3); ctx.fillStyle = hexA(C.sketch, hb); ctx.fillText('BUDOWA DOMU Z BUDOEXPERT  ·  CO ZAPEWNIAMY', B.x + 44, B.y + 160);
+  }
+  // hazard stripe along the bottom (brand purple instead of yellow)
+  const hz = E.outCubic(P(u, .7, 1.0));
+  if (hz > 0) {
+    ctx.save(); ctx.beginPath(); ctx.rect(B.x + 3, B.y + B.h - 34, (B.w - 6) * hz, 31); ctx.clip();
+    ctx.fillStyle = C.white; ctx.fillRect(B.x, B.y + B.h - 34, B.w, 31); ctx.fillStyle = C.purple;
+    for (let x = B.x - 40; x < B.x + B.w + 40; x += 44) { ctx.beginPath(); ctx.moveTo(x, B.y + B.h - 3); ctx.lineTo(x + 22, B.y + B.h - 3); ctx.lineTo(x + 52, B.y + B.h - 34); ctx.lineTo(x + 30, B.y + B.h - 34); ctx.closePath(); ctx.fill(); }
     ctx.restore();
   }
-  // progress: which feature is in front
-  const pa = ha * (1 - ho);
-  for (let i = 0; i < n; i++) { ctx.fillStyle = hexA(i === focus ? C.teal : C.white, (i === focus ? 1 : .3) * pa); roundRect(ctx, W / 2 - n * 22 + i * 44, 1000, i === focus ? 32 : 12, 8, 4); ctx.fill(); }
-  // fly the deck into the camera → REWOLUCJA (same purple)
-  if (flyOff > 0) { ctx.fillStyle = hexA(C.purple, flyOff); ctx.fillRect(-50, -50, W + 100, H + 100); }
+  // the form: each row is filled in and ticked off
+  ROWS.forEach(([lab, val], i) => {
+    const t0 = ROW0 + i * ROWSTEP, y = B.y + 236 + i * 66;
+    const la = E.outCubic(P(u, t0 - .1, t0 + .15));
+    if (la <= 0) return;
+    ctx.save(); ctx.globalAlpha = la; ctx.setLineDash([3, 6]); ctx.strokeStyle = C.grid2; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(B.x + 44, y + 18); ctx.lineTo(B.x + B.w - 44, y + 18); ctx.stroke(); ctx.setLineDash([]);
+    font(ctx, 16, 700, 3); ctx.fillStyle = C.teal2; ctx.fillText(String(i + 1).padStart(2, '0'), B.x + 44, y);
+    font(ctx, 18, 600, 3); ctx.fillStyle = C.sketch; ctx.fillText(lab, B.x + 92, y);
+    ctx.restore();
+    // value written in, letter by letter
+    font(ctx, 32, 600); const n = Math.floor(val.length * P(u, t0, t0 + .32));
+    ctx.fillStyle = C.ink; ctx.fillText(val.slice(0, n), B.x + 360, y + 2);
+    // checkbox + tick
+    const bx = B.x + B.w - 100, by = y - 28;
+    ctx.strokeStyle = hexA(C.purple, la); ctx.lineWidth = 2.5; roundRect(ctx, bx, by, 38, 38, 6); ctx.stroke();
+    const tk = E.outBack(P(u, t0 + .28, t0 + .45), 3);
+    if (tk > 0) {
+      ctx.save(); ctx.translate(bx + 19, by + 19); ctx.scale(tk, tk);
+      ctx.fillStyle = C.teal; roundRect(ctx, -19, -19, 38, 38, 6); ctx.fill();
+      ctx.strokeStyle = C.white; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); ctx.moveTo(-9, 1); ctx.lineTo(-2, 8); ctx.lineTo(10, -7); ctx.stroke(); ctx.restore();
+    }
+  });
+  // the stamp slams onto the board
+  const sp = P(u, STAMP, STAMP + .2);
+  if (sp > 0) {
+    const sc = lerp(2.4, .82, E.outExpo(sp)), cx = B.x + B.w - 300, cy = B.y + B.h - 92;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-.21); ctx.scale(sc, sc); ctx.globalAlpha = Math.min(1, sp * 3) * .92;
+    ctx.strokeStyle = C.teal2; ctx.lineWidth = 7; roundRect(ctx, -230, -62, 460, 124, 16); ctx.stroke();
+    ctx.lineWidth = 2.5; roundRect(ctx, -216, -48, 432, 96, 10); ctx.stroke();
+    font(ctx, 58, 800, 6); ctx.fillStyle = C.teal2; ctx.textAlign = 'center'; ctx.fillText('ZATWIERDZONO', 0, 18);
+    font(ctx, 14, 700, 4); ctx.fillText('BUDOEXPERT · 2026', 0, 44); ctx.textAlign = 'left';
+    ctx.restore();
+    const ink = P(u, STAMP + .05, STAMP + .5);
+    if (ink > 0 && ink < 1) { const r = rng(91); for (let k = 0; k < 14; k++) { const a = r() * TAU, d = 250 + 120 * r() * E.outCubic(ink); dot(ctx, cx + Math.cos(a) * d, cy + Math.sin(a) * d * .5, (3 + 5 * r()) * (1 - ink), hexA(C.teal2, .8)); } }
+  }
+  // iris into REWOLUCJA, opening from the stamp
+  const ir = P(u, 5.0, CAR.DUR);
+  if (ir > 0) {
+    const r = 1500 * E.inOutCubic(ir), cx = BOARD.x + BOARD.w - 300, cy = BOARD.y + BOARD.h - 92;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ring(ctx, cx, cy, r + 30, 18, C.teal);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fillStyle = C.purple; ctx.fill(); ctx.restore();
+  }
 }
 
 /* =====================================================================
@@ -1124,13 +1131,13 @@ const mapT = t => t + SEGS[Math.max(0, segOf(t))][2];
 function renderScene(ctx, t) {   // t is timeline time (see mapT)
   T = t;
   if (INTRO) { introMorph(ctx, t); ctx.setTransform(1, 0, 0, 1, 0, 0); return; }
-  if (t >= 100) { sceneCards(ctx, t - 100); ctx.setTransform(1, 0, 0, 1, 0, 0); return; }
-  if (t >= 90) { // after the last question the card scene opens inside a growing brand triangle
+  if (t >= 100) { sceneBoard(ctx, t - 100); ctx.setTransform(1, 0, 0, 1, 0, 0); return; }
+  if (t >= 90) { // after the last question the board scene opens inside a growing brand triangle
     const e = E.inExpo(P(t, 90, 90.45));
     scene3(ctx, 12.0 + (t - 90));
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); poly(ctx, brandTri(540, 560, lerp(8, 2600, e))); ctx.clip();
     ctx.translate(W / 2, H / 2); ctx.scale(lerp(.82, 1, e), lerp(.82, 1, e)); ctx.translate(-W / 2, -H / 2);
-    sceneCards(ctx, 0); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0); return;
+    sceneBoard(ctx, 0); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0); return;
   }
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   if (t < 4.5) introMorph(ctx, t, true);

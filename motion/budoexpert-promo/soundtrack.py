@@ -196,22 +196,26 @@ for i, tt in enumerate((20.05, 20.25, 20.55)):
     add(kick(0.3, 180, 70), tt, 0.25)
 add(whoosh(0.5), 21.5, 0.55)                       # platform -> CTA
 
-# --- feature cards (real seconds 10.55-15.95), right after the questions
+# --- construction-site board (real seconds 10.55-15.95), right after the questions
 A0 = 10.55
-add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → cards
-add(pad([note(57), note(62), note(66), note(69)], 5.4), A0, 0.18, raw=True)
-b2 = A0; k2 = 0
-while b2 < A0 + 4.4:                               # light pulse under the carousel
-    add(kick(0.3, 120, 50), b2, 0.35, raw=True); add(hat(), b2 + 0.25, 0.1, raw=True)
-    b2 += 0.55; k2 += 1
-for i in range(7):                                 # cards dealt from the deck
-    add(whoosh(0.12) * 0.6, A0 + 0.1 + i * 0.07, 0.25, pan=-0.6 + i * 0.2, raw=True); add(tick(1300 + i * 90, 0.02), A0 + 0.5 + i * 0.07, 0.12, raw=True)
-for k in range(6):                                 # each snap of the carousel
-    tt = A0 + 0.9 + k * 0.55
-    add(whoosh(0.25), tt, 0.22, pan=0.4, raw=True); add(pluck(note([69, 72, 74, 76, 79, 81][k]), 0.4), tt + 0.3, 0.2, raw=True)
-add(whoosh(0.4, up=False), A0 + 4.45, 0.4, raw=True)   # cards gather
-add(pop(560, 0.25), A0 + 4.72, 0.35, raw=True); add(pluck(note(86), 0.6), A0 + 4.75, 0.25, raw=True)   # + i wiele więcej
-add(whoosh(0.4), A0 + 5.0, 0.5, raw=True)          # into REWOLUCJA
+add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → board
+add(pad([note(57), note(62), note(66), note(69)], 5.4), A0, 0.16, raw=True)
+for i in range(5):                                 # pencil outline
+    add(whoosh(0.12) * 0.4, A0 + i * 0.1, 0.12, pan=-0.3 + i * 0.15, raw=True)
+add(kick(0.4, 90, 40), A0 + 0.42, 0.6, raw=True); add(kick(0.4, 90, 40), A0 + 0.52, 0.55, raw=True)   # posts hammered in
+add(whoosh(0.3), A0 + 0.6, 0.3, raw=True)          # header band
+b2 = A0 + 1.0
+while b2 < A0 + 4.4:                               # light pulse under the checklist
+    add(hat(), b2, 0.1, raw=True); add(kick(0.25, 110, 50), b2, 0.25, raw=True)
+    b2 += 0.46
+for i in range(7):                                 # each row: writing + tick
+    tt = A0 + 1.0 + i * 0.46
+    for j in range(6):
+        add(tick(2400 + (j * 173) % 500, 0.012), tt + j * 0.05, 0.05, raw=True)
+    add(pop(620 + i * 30, 0.12), tt + 0.3, 0.3, raw=True); add(pluck(note([69, 71, 74, 76, 78, 81, 83][i]), 0.4), tt + 0.3, 0.16, raw=True)
+add(whoosh(0.15), A0 + 4.45, 0.3, raw=True)
+add(kick(0.6, 150, 40), A0 + 4.6, 1.0, raw=True); add(clap(), A0 + 4.6, 0.6, raw=True)   # ZATWIERDZONO stamp
+add(whoosh(0.4), A0 + 5.0, 0.5, raw=True)          # iris into REWOLUCJA
 
 # --- CTA (+1.5 s)
 add(kick(0.6, 150, 40), 22.0, 0.9); add(clap(), 22.0, 0.45)

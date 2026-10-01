@@ -8,7 +8,7 @@ Styl: szkic architektoniczny na papierze milimetrowym.
 | 0.0–2.6 | Kula wtacza się i w trakcie toczenia zamienia w trójkąt, uderza w napis, logo jedzie do góry |
 | 2.6–6.1 | „Platforma, która zmienia rynek budowlany.” — „zmienia” murowane z cegiełek |
 | 6.1–10.1 | Pytania w stylu technicznym (linijki, wymiary, lżejszy Poppins) |
-| 10.1–15.95 | Talia kart z cechami rozkłada się w karuzelę 3D: Cały proces budowy, Finansowanie, Baza projektów, Wsparcie ekspertów, Sprawdzeni wykonawcy, Architekci, Niższe ceny; na koniec karty wracają do talii z „+ i wiele więcej” |
+| 10.1–15.95 | Tablica informacyjna budowy: pola wypełniają się po kolei i są odhaczane (zakres, finansowanie, projekty, eksperci, wykonawcy, architekci, ceny), na koniec pieczątka „ZATWIERDZONO” |
 | 15.95–18.6 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
 | 18.6–23.0 | Hub: koło z logo w rdzeniu, 10 ról w kółkach, połączenia jako skręcone podwójne helisy z pakietami danych |
 | 23.0–25.5 | Platforma 3D z walcem i logo; „Wszyscy. W jednym miejscu. Jedna platforma.” |
