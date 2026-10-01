@@ -6,7 +6,7 @@ import numpy as np
 
 import sys
 INTRO_ONLY = len(sys.argv) > 1 and sys.argv[1] == 'intro'   # python3 soundtrack.py intro → intro-test.wav
-SR, DUR = 48000, (3.2 if INTRO_ONLY else 25.6)
+SR, DUR = 48000, (3.2 if INTRO_ONLY else 30.9)
 N = int(SR * DUR)
 rng = np.random.default_rng(3)
 L = np.zeros(N); R = np.zeros(N)
@@ -16,17 +16,20 @@ def t_(d):
     return np.arange(int(SR * d)) / SR
 
 
-SHIFT_FROM, SHIFT = 4.5, 1.9   # intro got 1.9 s shorter: everything from 4.5 s on plays 1.9 s earlier
-
-
+# Events are written in the scenes' own timeline seconds and mapped to the final cut:
+# scenes 2-5 (4.5-22.0) play 1.9 s earlier, the CTA (22.0+) plays 3.9 s later (the app scene sits in between).
+# App-scene events are written in real seconds with raw=True.
 INTRO_PHASE = False
 
 
-def add(sig, at, gain=1.0, pan=0.0):
+def add(sig, at, gain=1.0, pan=0.0, raw=False):
     if INTRO_ONLY and not INTRO_PHASE:
         return
-    if at >= SHIFT_FROM:
-        at -= SHIFT
+    if not raw:
+        if at >= 22.0:
+            at += 3.9
+        elif at >= 4.5:
+            at -= 1.9
     i = int(at * SR)
     if i >= N:
         return
@@ -119,7 +122,7 @@ def hydraulic(dur, f0=180, f1=420):
 
 
 # --- test intro: the ball tumbles into a triangle and slams the wordmark
-if INTRO_ONLY:
+if True:   # the tumbling-ball intro is the film's intro too
     INTRO_PHASE = True
     add(whoosh(0.6), 0.0, 0.5, pan=-0.6)
     add(roll(0.95), 0.0, 0.45, pan=-0.3)
@@ -136,20 +139,7 @@ if INTRO_ONLY:
     add(pad([note(50), note(57), note(62), note(69)], 2.2), 0.95, 0.2)
     INTRO_PHASE = False
 
-# --- 1. the ball fires in, snaps into the triangle, punches the wordmark (real time, < 2.6 s)
-add(whoosh(0.5), 0.0, 0.6, pan=-0.6)
-add(roll(0.55), 0.0, 0.5, pan=-0.3)
-add(kick(0.3, 200, 80), 0.55, 0.4); add(pop(380, 0.3), 0.58, 0.45)   # brake + snap to triangle
-add(whoosh(0.15), 0.9, 0.3)
-add(kick(0.6, 160, 40), 1.05, 1.0); add(clap(), 1.05, 0.6)
-for i in range(10):
-    add(pluck(note([62, 65, 69, 72, 74, 77, 74, 72, 69, 74][i]), 0.35), 1.05 + i * 0.03, 0.08, pan=-0.5 + i * 0.1)
-for i in range(8):                                 # sparks
-    add(tick(2600 + i * 180, 0.03), 1.06 + i * 0.012, 0.08, pan=np.sin(i * 2.3) * 0.7)
-add(tick(3200, 0.04), 1.35, 0.2)                   # (R)
-rt = t_(0.5); add(np.sin(2 * np.pi * np.cumsum(1800 + 2400 * rt / .5) / SR) * np.sin(np.pi * rt / .5) * 0.15, 1.45, 0.4)  # shine
-add(pad([note(50), note(57), note(62), note(69)], 1.6), 1.05, 0.18)
-add(whoosh(0.5), 2.1, 0.35)                        # logo moves up
+add(whoosh(0.5), 2.1, 0.35)                        # logo flies up
 
 # --- groove 4.5 -> 21.5 (drops out under the REWOLUCJA build-up)
 bass_line = [38, 38, 45, 43, 41, 41, 43, 45]
@@ -202,6 +192,32 @@ for i, tt in enumerate((20.05, 20.25, 20.55)):
     add(pluck(note([74, 78, 81][i]), 0.6), tt, 0.22)
     add(kick(0.3, 180, 70), tt, 0.25)
 add(whoosh(0.5), 21.5, 0.55)                       # platform -> CTA
+
+# --- app scene (real seconds 20.1-25.9)
+A0 = 20.1
+add(pad([note(57), note(62), note(66), note(69)], 5.8), A0, 0.16, raw=True)
+for i in range(23):                                # soft hats under the demo
+    add(hat(), A0 + 0.1 + i * 0.25, 0.07, pan=0.3 if i % 2 else -0.3, raw=True)
+for i in range(46):                                # typing
+    add(tick(1800 + (i * 211) % 900, 0.02), A0 + 0.6 + i * 1.4 / 46 + (0.01 if i % 3 else 0), 0.09, pan=0.15, raw=True)
+add(tick(1200, 0.03), A0 + 2.15, 0.5, raw=True); add(pop(700, 0.12), A0 + 2.17, 0.25, raw=True)   # send
+add(whoosh(0.35), A0 + 2.25, 0.25, raw=True)
+add(pop(520, 0.18), A0 + 2.5, 0.3, raw=True)       # user bubble
+for i in range(3):
+    add(tick(900, 0.03), A0 + 2.82 + i * 0.09, 0.06, raw=True)
+for i in range(18):                                # reply streaming
+    add(tick(2600 + (i * 97) % 400, 0.012), A0 + 3.1 + i * 0.036, 0.05, raw=True)
+add(pop(640, 0.15), A0 + 3.88, 0.25, raw=True)     # file chip
+add(tick(1200, 0.03), A0 + 3.98, 0.5, raw=True)    # send
+add(pop(560, 0.18), A0 + 4.1, 0.3, raw=True)
+rt = t_(0.5); add(np.sin(2 * np.pi * np.cumsum(500 + 900 * rt / .5) / SR) * 0.12, A0 + 4.2, 0.5, raw=True)  # upload sweep
+add(pluck(note(81), 0.6) + pluck(note(86), 0.6) * .6, A0 + 4.7, 0.25, raw=True)   # loaded
+add(pop(480, 0.2), A0 + 4.8, 0.3, raw=True)        # model card
+for i in range(10):                                # model builds
+    add(tick(1400 + i * 120, 0.03), A0 + 4.9 + i * 0.06, 0.08, pan=-0.4 + i * 0.08, raw=True)
+for i in range(3):
+    add(pop(600 + i * 90, 0.15), A0 + 5.1 + i * 0.1, 0.22, raw=True)
+add(whoosh(0.4), A0 + 5.4, 0.5, raw=True)          # into the CTA
 
 # --- CTA (+1.5 s)
 add(kick(0.6, 150, 40), 22.0, 0.9); add(clap(), 22.0, 0.45)

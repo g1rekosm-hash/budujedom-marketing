@@ -1,19 +1,20 @@
-# budoexpert — promo (25,6 s)
+# budoexpert — promo (30,9 s)
 
 1920×1080 · 60 fps · stereo · kolory z logo (fiolet `#6C0C79`, turkus `#20CFA3`) · font Poppins.
 Styl: szkic architektoniczny na papierze milimetrowym.
 
 | Czas | Scena |
 |---|---|
-| 0.0–2.6 | Turkusowa kula wystrzeliwuje z lewej, wpada w naszkicowany trójkąt, zgniata się i zmienia w trójkąt, który uderza w napis; iskry przy uderzeniu (ClickSpark) i błysk po logo (ShinyText), logo jedzie do góry |
-| 2.6–6.1 | „Platforma, która zmienia rynek budowlany.” — słowo „zmienia” jest murowane z cegiełek w pustym miejscu w zdaniu, litera po literze, po czym zastyga w pełny napis |
-| 6.1–10.1 | Planujesz budowę domu? / Jesteś w trakcie budowy? / Jesteś wykonawcą? / …albo sprzedawcą? |
+| 0.0–2.6 | Kula wtacza się i w trakcie toczenia zamienia w trójkąt (przetacza się po rosnących rogach), uderza w napis, logo jedzie do góry |
+| 2.6–6.1 | „Platforma, która zmienia rynek budowlany.” — „zmienia” murowane z cegiełek |
+| 6.1–10.1 | Pytania w stylu technicznym (linijki, wymiary, lżejszy Poppins) |
 | 10.1–13.6 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
-| 13.6–17.4 | Hub: budoexpert w kole + 6 odnóg, impulsy energii |
-| 17.4–20.1 | Kartka przechyla się w 3D w platformę z cokołem; na środku „Wszyscy. W jednym miejscu. Jedna platforma.” |
-| 20.1–25.6 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo; trójkąty w tle i konfetti z zaokrąglonymi narożnikami jak w logo |
+| 13.6–17.4 | Hub: trójkąt z napisem budoexpert w rdzeniu, 10 ról w trójkątach, wygięte kable z pakietami danych |
+| 17.4–19.6 | Kartka przechyla się w platformę 3D z graniastosłupem; „Wszyscy. W jednym miejscu. Jedna platforma.” |
+| 19.6–25.9 | Kamera wpada w rdzeń → aplikacja budoexpert (czat): wpisanie wiadomości, odpowiedź, wgranie projektu PDF, model 3D domu ze statystykami |
+| 25.9–30.9 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo |
 
-W kodzie (`promo.html`) sceny 2–6 zachowują swoje dawne czasy; `mapT()` przesuwa je o 1,9 s po skróconym intro.
+W kodzie (`promo.html`) sceny zachowują swoje dawne czasy, a tabela `SEGS` układa je w finalny montaż (scena z aplikacją ma czasy od 100 s w osi roboczej).
 
 Efekty iskier i błysku są inspirowane komponentami [React Bits](https://github.com/DavidHDev/react-bits) (ClickSpark, ShinyText), napisane od nowa na canvasie, żeby renderowały się deterministycznie klatka po klatce.
 
