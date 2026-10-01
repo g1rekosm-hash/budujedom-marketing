@@ -6,7 +6,7 @@ import numpy as np
 
 import sys
 INTRO_ONLY = len(sys.argv) > 1 and sys.argv[1] == 'intro'   # python3 soundtrack.py intro → intro-test.wav
-SR, DUR = 48000, (3.2 if INTRO_ONLY else 31.95)
+SR, DUR = 48000, (3.2 if INTRO_ONLY else 30.55)
 N = int(SR * DUR)
 rng = np.random.default_rng(3)
 L = np.zeros(N); R = np.zeros(N)
@@ -17,8 +17,8 @@ def t_(d):
 
 
 # Events are written in the scenes' own timeline seconds and mapped to the final cut:
-# scenes 2-3 (4.5-12.0) play 1.9 s earlier; from REWOLUCJA on (12.4+) everything plays 4.95 s later,
-# because the app scene now sits right after the questions. The old iris (12.0-12.4) is gone.
+# scenes 2-3 (4.5-12.0) play 1.9 s earlier; from REWOLUCJA on (12.4+) everything plays 3.55 s later,
+# because the feature-card scene now sits right after the questions. The old iris (12.0-12.4) is gone.
 # App-scene events are written in real seconds with raw=True.
 INTRO_PHASE = False
 
@@ -28,7 +28,7 @@ def add(sig, at, gain=1.0, pan=0.0, raw=False):
         return
     if not raw:
         if at >= 12.4:
-            at += 4.95
+            at += 3.55
         elif at >= 12.0:
             return
         elif at >= 4.5:
@@ -196,36 +196,22 @@ for i, tt in enumerate((20.05, 20.25, 20.55)):
     add(kick(0.3, 180, 70), tt, 0.25)
 add(whoosh(0.5), 21.5, 0.55)                       # platform -> CTA
 
-# --- app scene (real seconds 10.55-17.35), right after the questions
+# --- feature cards (real seconds 10.55-15.95), right after the questions
 A0 = 10.55
-add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → app
-add(pad([note(57), note(62), note(66), note(69)], 6.8), A0, 0.16, raw=True)
-for i in range(27):                                # soft hats under the demo
-    add(hat(), A0 + 0.1 + i * 0.25, 0.07, pan=0.3 if i % 2 else -0.3, raw=True)
-for i in range(46):                                # typing
-    add(tick(1800 + (i * 211) % 900, 0.02), A0 + 0.6 + i * 1.4 / 46 + (0.01 if i % 3 else 0), 0.09, pan=0.15, raw=True)
-add(tick(1200, 0.03), A0 + 2.15, 0.5, raw=True); add(pop(700, 0.12), A0 + 2.17, 0.25, raw=True)   # send
-add(whoosh(0.35), A0 + 2.25, 0.25, raw=True)
-add(pop(520, 0.18), A0 + 2.5, 0.3, raw=True)       # user bubble
-for i in range(3):
-    add(tick(900, 0.03), A0 + 2.82 + i * 0.09, 0.06, raw=True)
-for i in range(18):                                # reply streaming
-    add(tick(2600 + (i * 97) % 400, 0.012), A0 + 3.1 + i * 0.036, 0.05, raw=True)
-add(pop(640, 0.15), A0 + 3.88, 0.25, raw=True)     # file chip
-add(tick(1200, 0.03), A0 + 3.98, 0.5, raw=True)    # send
-add(pop(560, 0.18), A0 + 4.1, 0.3, raw=True)
-rt = t_(0.5); add(np.sin(2 * np.pi * np.cumsum(500 + 900 * rt / .5) / SR) * 0.12, A0 + 4.2, 0.5, raw=True)  # upload sweep
-add(pluck(note(81), 0.6) + pluck(note(86), 0.6) * .6, A0 + 4.7, 0.25, raw=True)   # loaded
-add(pop(480, 0.2), A0 + 4.8, 0.3, raw=True)        # model card
-for i in range(10):                                # model builds
-    add(tick(1400 + i * 120, 0.03), A0 + 4.9 + i * 0.06, 0.08, pan=-0.4 + i * 0.08, raw=True)
-for i in range(3):
-    add(pop(600 + i * 90, 0.15), A0 + 5.1 + i * 0.1, 0.22, raw=True)
-add(whoosh(0.35), A0 + 5.45, 0.25, raw=True)       # conversation scrolls
-for i in range(24):                                # cost counting up
-    add(tick(2000 + i * 40, 0.015), A0 + 5.65 + 0.7 * (i / 24) ** 1.6, 0.07, raw=True)
-add(pluck(note(86), 0.8) + pluck(note(90), 0.8) * .7 + pluck(note(93), 0.8) * .5, A0 + 6.35, 0.3, raw=True)   # total = 300 000 zł
-add(whoosh(0.4), A0 + 6.4, 0.5, raw=True)          # into REWOLUCJA
+add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → cards
+add(pad([note(57), note(62), note(66), note(69)], 5.4), A0, 0.18, raw=True)
+b2 = A0; k2 = 0
+while b2 < A0 + 4.4:                               # light pulse under the carousel
+    add(kick(0.3, 120, 50), b2, 0.35, raw=True); add(hat(), b2 + 0.25, 0.1, raw=True)
+    b2 += 0.55; k2 += 1
+for i in range(7):                                 # cards dealt from the deck
+    add(whoosh(0.12) * 0.6, A0 + 0.1 + i * 0.07, 0.25, pan=-0.6 + i * 0.2, raw=True); add(tick(1300 + i * 90, 0.02), A0 + 0.5 + i * 0.07, 0.12, raw=True)
+for k in range(6):                                 # each snap of the carousel
+    tt = A0 + 0.9 + k * 0.55
+    add(whoosh(0.25), tt, 0.22, pan=0.4, raw=True); add(pluck(note([69, 72, 74, 76, 79, 81][k]), 0.4), tt + 0.3, 0.2, raw=True)
+add(whoosh(0.4, up=False), A0 + 4.45, 0.4, raw=True)   # cards gather
+add(pop(560, 0.25), A0 + 4.72, 0.35, raw=True); add(pluck(note(86), 0.6), A0 + 4.75, 0.25, raw=True)   # + i wiele więcej
+add(whoosh(0.4), A0 + 5.0, 0.5, raw=True)          # into REWOLUCJA
 
 # --- CTA (+1.5 s)
 add(kick(0.6, 150, 40), 22.0, 0.9); add(clap(), 22.0, 0.45)

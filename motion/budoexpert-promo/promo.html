@@ -22,7 +22,7 @@
    Kolory wzięte z logo, font: Poppins.
    ===================================================================== */
 const CFG = {
-  W: 1920, H: 1080, FPS: 60, DUR: 31.95,
+  W: 1920, H: 1080, FPS: 60, DUR: 30.55,
   C: {
     paper:  '#FFFFFF',
     grid:   '#EFE7F2',
@@ -146,6 +146,9 @@ const ICONS = {
   hammer: [['p', [[-30, -44], [24, -44], [34, -34], [24, -24], [-30, -24], [-36, -34]], 1], ['l', -36, -34, -46, -34], ['r', -4, -24, 12, 70], ['l', -4, 34, 8, 34]],
   wrench: [['a', -22, -22, 22, Math.PI * 1.25 + .5, Math.PI * 3.25 - .5], ['p', [[-14, -2], [-2, -14], [40, 28], [28, 40]], 1], ['a', 34, 34, 4, 0, TAU]],
   shield: [['p', [[0, -44], [36, -30], [34, 6], [0, 44], [-34, 6], [-36, -30]], 1], ['p', [[-14, 0], [-3, 12], [18, -12]]], ['l', -22, -22, 22, -22]],
+  tag: [['p', [[-42, 0], [0, -42], [40, -42], [40, 0], [0, 42]], 1], ['a', 22, -24, 6, 0, TAU], ['a', -8, -2, 6, 0, TAU], ['a', 10, 16, 6, 0, TAU], ['l', -12, 20, 14, -6]],
+  bubble: [['p', [[-42, -32], [42, -32], [42, 20], [2, 20], [-18, 40], [-14, 20], [-42, 20]], 1], ['a', -18, -6, 4, 0, TAU], ['a', 0, -6, 4, 0, TAU], ['a', 18, -6, 4, 0, TAU]],
+  route: [['p', [[-38, 36], [-12, 12], [8, 24], [32, -16]]], ['a', -38, 36, 6, 0, TAU], ['l', 32, -16, 32, -46], ['p', [[32, -46], [50, -39], [32, -32]], 1]],
   pm: [['r', -32, -36, 64, 82], ['r', -12, -44, 24, 12], ['p', [[-22, -14], [-15, -7], [-4, -20]]], ['l', 4, -13, 22, -13], ['p', [[-22, 10], [-15, 17], [-4, 4]]], ['l', 4, 11, 22, 11], ['r', -22, 28, 12, 10], ['l', 4, 33, 22, 33]],
 };
 function icon(ctx, name, x, y, s, p, o = {}) {
@@ -886,193 +889,105 @@ function scene5(ctx, t) {
 }
 
 /* =====================================================================
-   SCENE APP · 5.8 s · the camera dives into the platform: a chat-style app,
-   someone types, uploads a house design and gets a (fake) 3D model back
+   SCENE CARDS · 5.4 s · a deck of feature cards deals out into a 3D carousel,
+   spins through the features one by one, then gathers back into the deck
    ===================================================================== */
-const APP = { DUR: 6.8, ink: '#1E1424', soft: '#F6F1F8', line: '#E6DDEA', grey: '#8E8496' };
+const CAR = { DUR: 5.4, R: 900, D: 2500, F: 1650, CW: 380, CH: 500, STEP: .55, T0: .9 };
+const FEATS = [
+  { t: ['Cały proces', 'budowy'], s: 'Prowadzimy Cię od działki do kluczy', ic: 'route' },
+  { t: ['Finansowanie'], s: 'Kredyt i ubezpieczenie w jednym miejscu', ic: 'invest' },
+  { t: ['Baza projektów'], s: 'Gotowe projekty domów pod ręką', ic: 'house' },
+  { t: ['Wsparcie', 'ekspertów'], s: 'Doradcy na każdym etapie budowy', ic: 'bubble' },
+  { t: ['Sprawdzeni', 'wykonawcy'], s: 'Zweryfikowane ekipy z opiniami', ic: 'helmet' },
+  { t: ['Architekci'], s: 'Projekt i adaptacja bez szukania', ic: 'architect' },
+  { t: ['Niższe ceny'], s: 'Lepsze stawki na materiały i usługi', ic: 'tag' },
+];
+function carPos(u) { // which feature is in front: snaps from card 0 to card 6
+  let p = 0; for (let k = 0; k < FEATS.length - 1; k++) p += E.outBack(P(u, CAR.T0 + k * CAR.STEP, CAR.T0 + k * CAR.STEP + .45), 1.4);
+  return p;
+}
+function drawFeatureCard(ctx, f, i, u, front, glow) {
+  const w = CAR.CW, h = CAR.CH;
+  if (!front) { // card back: brand purple with the triangle
+    ctx.fillStyle = C.purple2; roundRect(ctx, -w / 2, -h / 2, w, h, 26); ctx.fill();
+    ctx.strokeStyle = hexA(C.teal, .5); ctx.lineWidth = 3; roundRect(ctx, -w / 2 + 14, -h / 2 + 14, w - 28, h - 28, 18); ctx.stroke();
+    ctx.fillStyle = C.teal; poly(ctx, brandTri(0, 0, 60)); ctx.fill();
+    return;
+  }
+  ctx.save(); ctx.shadowColor = 'rgba(20,0,30,.35)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18;
+  ctx.fillStyle = C.white; roundRect(ctx, -w / 2, -h / 2, w, h, 26); ctx.fill(); ctx.restore();
+  if (glow > 0) { ctx.strokeStyle = hexA(C.teal, glow); ctx.lineWidth = 6; roundRect(ctx, -w / 2 - 3, -h / 2 - 3, w + 6, h + 6, 28); ctx.stroke(); }
+  // icon tile
+  ctx.fillStyle = hexA(C.purple, .07); roundRect(ctx, -w / 2 + 34, -h / 2 + 40, 120, 120, 24); ctx.fill();
+  icon(ctx, f.ic, -w / 2 + 94, -h / 2 + 100, .82, 1, { col: C.purple, w: 3, seed: 400 + i, passes: 1 });
+  font(ctx, 16, 700, 3); ctx.fillStyle = C.teal2; ctx.fillText(String(i + 1).padStart(2, '0'), w / 2 - 66, -h / 2 + 64);
+  font(ctx, 40, 700); ctx.fillStyle = C.ink;
+  f.t.forEach((l, k) => ctx.fillText(l, -w / 2 + 34, -h / 2 + 232 + k * 48));
+  font(ctx, 20, 400); ctx.fillStyle = '#7E7287';
+  wrapLines(ctx, f.s, w - 68).forEach((l, k) => ctx.fillText(l, -w / 2 + 34, -h / 2 + 232 + f.t.length * 48 + 16 + k * 30));
+  // footer
+  ctx.fillStyle = hexA(C.purple, .1); ctx.fillRect(-w / 2 + 34, h / 2 - 78, w - 68, 1.5);
+  ctx.fillStyle = C.teal; poly(ctx, brandTri(-w / 2 + 46, h / 2 - 44, 11)); ctx.fill();
+  font(ctx, 18, 600); ctx.fillStyle = C.purple; ctx.fillText('budoexpert', -w / 2 + 66, h / 2 - 37);
+}
 function wrapLines(ctx, str, maxW) {
   const words = str.split(' '), out = []; let cur = '';
   words.forEach(w => { const tryS = cur ? cur + ' ' + w : w; if (ctx.measureText(tryS).width > maxW && cur) { out.push(cur); cur = w; } else cur = tryS; });
   if (cur) out.push(cur); return out;
 }
-function appHouse(ctx, cx, cy, sc, u, build) {
-  // tiny 3D house: box + gable roof + door/windows, perspective, slow turn
-  const V = [[-2, 0, -1.5], [2, 0, -1.5], [2, 0, 1.5], [-2, 0, 1.5], [-2, 2.2, -1.5], [2, 2.2, -1.5], [2, 2.2, 1.5], [-2, 2.2, 1.5], [-2, 3.7, 0], [2, 3.7, 0],
-    [-.4, 0, -1.5], [.4, 0, -1.5], [.4, 1.4, -1.5], [-.4, 1.4, -1.5], [-1.6, 1, -1.5], [-.9, 1, -1.5], [-.9, 1.6, -1.5], [-1.6, 1.6, -1.5], [.9, 1, -1.5], [1.6, 1, -1.5], [1.6, 1.6, -1.5], [.9, 1.6, -1.5]];
-  const Ed = [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [1, 5], [2, 6], [3, 7], [4, 5], [5, 6], [6, 7], [7, 4], [8, 9], [4, 8], [7, 8], [5, 9], [6, 9], [10, 13], [13, 12], [12, 11], [14, 15], [15, 16], [16, 17], [17, 14], [18, 19], [19, 20], [20, 21], [21, 18]];
-  const th = -.7 + u * .55, ph = -.42, D = 9.5;
-  const pr = ([x, y, z]) => { y -= 1.6; const c = Math.cos(th), s = Math.sin(th), x1 = x * c - z * s, z1 = x * s + z * c; const y2 = y * Math.cos(ph) - z1 * Math.sin(ph), z2 = y * Math.sin(ph) + z1 * Math.cos(ph) + D; return [cx + sc * x1 / z2, cy - sc * y2 / z2]; };
-  const Pv = V.map(pr);
-  // floor grid
-  ctx.strokeStyle = hexA(C.sketch, .5 * build); ctx.lineWidth = 1; ctx.beginPath();
-  for (let k = -3; k <= 3; k++) { const a = pr([k, 0, -3]), b = pr([k, 0, 3]), c2 = pr([-3, 0, k]), d = pr([3, 0, k]); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.moveTo(c2[0], c2[1]); ctx.lineTo(d[0], d[1]); }
-  ctx.stroke();
-  const fill = E.outCubic(P(build, .7, 1));
-  if (fill > 0) {
-    ctx.fillStyle = hexA(C.teal, .28 * fill); poly(ctx, [Pv[4], Pv[5], Pv[9], Pv[8]]); ctx.fill(); poly(ctx, [Pv[7], Pv[6], Pv[9], Pv[8]]); ctx.fill();
-    ctx.fillStyle = hexA(C.purple, .08 * fill); poly(ctx, [Pv[0], Pv[1], Pv[5], Pv[4]]); ctx.fill(); poly(ctx, [Pv[1], Pv[2], Pv[6], Pv[5]]); ctx.fill();
-  }
-  ctx.lineCap = 'round';
-  Ed.forEach(([a, b], k) => {
-    const p = E.outCubic(clamp(build * 1.6 - k * .02)); if (p <= 0) return;
-    ctx.strokeStyle = k >= 17 ? C.teal2 : C.purple; ctx.lineWidth = k >= 17 ? 2 : 3;
-    ctx.beginPath(); ctx.moveTo(Pv[a][0], Pv[a][1]); ctx.lineTo(lerp(Pv[a][0], Pv[b][0], p), lerp(Pv[a][1], Pv[b][1], p)); ctx.stroke();
-  });
-  Pv.slice(0, 10).forEach((q, k) => dot(ctx, q[0], q[1], 4 * E.outBack(clamp(build * 1.4 - k * .04), 3), C.teal));
-}
-function sendBtn(ctx, x, y, r, press, col) {
-  ctx.save(); ctx.translate(x, y); ctx.scale(1 - .12 * press, 1 - .12 * press);
-  dot(ctx, 0, 0, r, col); ctx.strokeStyle = C.white; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.beginPath(); ctx.moveTo(0, 10); ctx.lineTo(0, -10); ctx.moveTo(-8, -2); ctx.lineTo(0, -10); ctx.lineTo(8, -2); ctx.stroke(); ctx.restore();
-}
-function sceneApp(ctx, u) {
+function sceneCards(ctx, u) {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  const sh = shake(u + 200); ctx.translate(sh.x, sh.y);
-  ctx.fillStyle = C.white; ctx.fillRect(-50, -50, W + 100, H + 100);
-  // header: logo top-left, a quiet avatar top-right
-  logo(ctx, 205, 78, .2);
-  dot(ctx, 1830, 74, 22, APP.soft); ring(ctx, 1830, 74, 22, 2, APP.line); font(ctx, 18, 600); ctx.fillStyle = C.purple; ctx.textAlign = 'center'; ctx.fillText('P', 1830, 81); ctx.textAlign = 'left';
-  ctx.fillStyle = APP.line; ctx.fillRect(0, 140, W, 1);
+  const sh = shake(u + 300); ctx.translate(sh.x, sh.y);
+  // stage: purple gradient, faint grid, a teal glow on the "floor"
+  const bg = ctx.createRadialGradient(W / 2, 520, 100, W / 2, 520, 1200); bg.addColorStop(0, '#7E1A8C'); bg.addColorStop(1, C.purple2);
+  ctx.fillStyle = bg; ctx.fillRect(-50, -50, W + 100, H + 100);
+  ctx.strokeStyle = hexA(C.white, .045); ctx.lineWidth = 1; ctx.beginPath();
+  for (let x = 0; x <= W; x += 60) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+  for (let y = 0; y <= H; y += 60) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  ctx.stroke();
+  const fg = ctx.createRadialGradient(W / 2, 900, 20, W / 2, 900, 700); fg.addColorStop(0, hexA(C.teal, .28)); fg.addColorStop(1, hexA(C.teal, 0));
+  ctx.save(); ctx.translate(W / 2, 900); ctx.scale(1, .22); ctx.translate(-W / 2, -900); ctx.fillStyle = fg; ctx.fillRect(0, 600, W, 600); ctx.restore();
+  // heading
+  const ha = E.outExpo(P(u, .15, .6)), ho = E.inExpo(P(u, 4.45, 4.75));
+  font(ctx, 18, 600, 6); ctx.fillStyle = C.teal; riseText(ctx, 'CO ZYSKUJESZ Z BUDOEXPERT', W / 2, 104, 18, ha, ho, 'center');
+  font(ctx, 58, 700); ctx.fillStyle = C.white; riseText(ctx, 'Wszystko do budowy domu', W / 2, 178, 58, E.outExpo(P(u, .25, .7)), ho, 'center');
 
-  const typed = 'Cześć, chcę wybudować dom. Mam już swój projekt.';
-  const chat = E.inOutCubic(P(u, 2.25, 2.7));                           // empty state → conversation layout
-  const boxW = 1000, boxH = lerp(150, 112, chat), boxX = W / 2 - boxW / 2, boxY = lerp(500, 930, chat);
-  // greeting (empty state)
-  const ga = (1 - chat) * E.outCubic(P(u, .1, .5));
-  if (ga > 0) {
-    ctx.save(); ctx.globalAlpha = ga;
-    ctx.fillStyle = C.teal; poly(ctx, brandTri(W / 2 - 330, 382, 26)); ctx.fill();
-    font(ctx, 52, 600); ctx.fillStyle = APP.ink; ctx.textAlign = 'center'; ctx.fillText('Co dziś budujemy?', W / 2 + 30, 400); ctx.textAlign = 'left';
+  // cards: deal from the deck → ring → back to the deck
+  const n = FEATS.length, pos = carPos(u), focus = Math.round(pos);
+  const gather = E.inOutCubic(P(u, 4.45, 4.85)), flyOff = E.inExpo(P(u, 5.0, CAR.DUR));
+  const list = FEATS.map((f, i) => {
+    const deal = E.outBack(P(u, .1 + i * .07, .65 + i * .07), 1.2) * (1 - gather);
+    const th = (i - pos) * TAU / n, c = Math.cos(th);
+    const rx = Math.sin(th) * CAR.R, rz = c * CAR.R, s = CAR.F / (CAR.D - rz);
+    const ring = { x: W / 2 + rx * s, y: 610 - (CAR.R - rz) * .2 * s, s, sq: Math.max(.06, Math.abs(c)), z: rz, front: c > 0, sk: -Math.sin(th) * .16 };
+    const r0 = rng(50 + i), deck = { x: W / 2 + (r0() - .5) * 26, y: 610 - i * 5, s: .78, sq: 1, z: -2000 + i, front: false, rot: (r0() - .5) * .14 };
+    return { f, i, deal, x: lerp(deck.x, ring.x, deal), y: lerp(deck.y, ring.y, deal), s: lerp(deck.s, ring.s, deal), sq: lerp(1, ring.sq, deal),
+      z: deal > .5 ? ring.z : deck.z, front: deal > .5 ? ring.front : false, rot: deck.rot * (1 - deal), c, sk: ring.sk * deal };
+  }).sort((a, b) => a.z - b.z);
+  list.forEach(o => {
+    ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot); ctx.transform(1, o.sk, 0, 1, 0, 0); ctx.scale(o.s * o.sq, o.s);   // skew fakes the perspective of a turned card
+    const isF = o.i === focus && o.deal > .9;
+    if (isF) { const lift = E.outBack(clamp((u - CAR.T0 - (focus - 1) * CAR.STEP - .25) / .3), 2); ctx.translate(0, -18 * (u > CAR.T0 ? 1 : 0)); }
+    drawFeatureCard(ctx, o.f, o.i, u, o.front, isF ? .9 : 0);
+    // side cards sink into the purple
+    const dim = o.front ? clamp((1 - o.c) * .55) : 0;
+    if (dim > 0) { ctx.fillStyle = hexA(C.purple2, dim); roundRect(ctx, -CAR.CW / 2, -CAR.CH / 2, CAR.CW, CAR.CH, 26); ctx.fill(); }
+    ctx.restore();
+  });
+  // "+ i wiele więcej" lands on top of the gathered deck
+  const more = E.outBack(P(u, 4.7, 4.95), 2.2);
+  if (more > 0) {
+    ctx.save(); ctx.translate(W / 2, 600 - FEATS.length * 5); ctx.scale(.78 * more, .78 * more); ctx.rotate(-.04);
+    ctx.save(); ctx.shadowColor = 'rgba(20,0,30,.35)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18; ctx.fillStyle = C.teal; roundRect(ctx, -CAR.CW / 2, -CAR.CH / 2, CAR.CW, CAR.CH, 26); ctx.fill(); ctx.restore();
+    font(ctx, 150, 300); ctx.fillStyle = C.white; ctx.textAlign = 'center'; ctx.fillText('+', 0, -20);
+    font(ctx, 40, 700); ctx.fillText('i wiele', 0, 80); ctx.fillText('więcej', 0, 128); ctx.textAlign = 'left';
     ctx.restore();
   }
-  // conversation (scrolls up when the cost estimate arrives; clipped between header and prompt box)
-  const scroll = 330 * E.inOutCubic(P(u, 5.45, 5.85));
-  ctx.save(); ctx.beginPath(); ctx.rect(0, 141, W, (boxY - boxH / 2) - 151); ctx.clip(); ctx.translate(0, -scroll);
-  font(ctx, 28, 400);
-  const bub = (x, y, w, h, a) => { ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = APP.soft; roundRect(ctx, x, y, w, h, 24); ctx.fill(); ctx.restore(); };
-  const ua = E.outBack(P(u, 2.45, 2.75), 2);
-  if (ua > 0) {
-    const tw = ctx.measureText(typed).width, x = 1460 - tw;
-    ctx.save(); ctx.translate(1460 + 28, 240); ctx.scale(ua, ua); ctx.translate(-(1460 + 28), -240);
-    bub(x - 28, 196, tw + 56, 72, 1); ctx.fillStyle = APP.ink; ctx.fillText(typed, x, 242); ctx.restore();
-  }
-  const avatar = (y, a) => { if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.teal; poly(ctx, brandTri(478, y, 18)); ctx.fill(); ctx.restore(); };
-  avatar(318, E.outCubic(P(u, 2.75, 2.95)));
-  if (u > 2.8 && u < 3.1) for (let k = 0; k < 3; k++) dot(ctx, 520 + k * 20, 320, 6 * (.6 + .4 * Math.sin(u * 18 - k)), C.grey);
-  const reply = 'Świetnie! Wgraj swój projekt, a zamienię go w model 3D i przygotuję kosztorys.';
-  if (u >= 3.1) {
-    const n = Math.floor(reply.length * P(u, 3.1, 3.75)), lines = wrapLines(ctx, reply.slice(0, n), 900);
-    ctx.fillStyle = APP.ink; lines.forEach((l, i) => ctx.fillText(l, 516, 330 + i * 42));
-  }
-  // the upload: file chip in the box, then a file card in the conversation with a progress bar
-  const fileName = 'projekt_domu_parterowego.pdf';
-  const fc = E.outBack(P(u, 4.05, 4.35), 2);
-  if (fc > 0) {
-    const fx = 1460 - 500, fy = 430;
-    ctx.save(); ctx.translate(1460, fy); ctx.scale(fc, fc); ctx.translate(-1460, -fy);
-    bub(fx, fy, 500, 96, 1);
-    ctx.fillStyle = C.purple; roundRect(ctx, fx + 22, fy + 20, 44, 56, 6); ctx.fill(); font(ctx, 13, 700); ctx.fillStyle = C.white; ctx.fillText('PDF', fx + 30, fy + 54);
-    font(ctx, 22, 500); ctx.fillStyle = APP.ink; ctx.fillText(fileName, fx + 84, fy + 42);
-    const pr = E.inOutCubic(P(u, 4.2, 4.7));
-    ctx.fillStyle = APP.line; roundRect(ctx, fx + 84, fy + 60, 300, 8, 4); ctx.fill();
-    ctx.fillStyle = C.teal; roundRect(ctx, fx + 84, fy + 60, 300 * pr, 8, 4); ctx.fill();
-    font(ctx, 15, 500); ctx.fillStyle = APP.grey; ctx.fillText(pr < 1 ? `Wczytywanie… ${Math.round(pr * 100)}%` : '4,2 MB · wczytano', fx + 84, fy + 86);
-    ctx.restore();
-  }
-  // the 3D model card
-  avatar(578, E.outCubic(P(u, 4.7, 4.9)));
-  const ca2 = E.outCubic(P(u, 4.75, 5.05));
-  if (ca2 > 0) {
-    const cx0 = 516, cy0 = 556, cw = 900, ch = 300;
-    ctx.save(); ctx.globalAlpha = ca2; ctx.translate(0, (1 - ca2) * 30);
-    ctx.fillStyle = C.white; roundRect(ctx, cx0, cy0, cw, ch, 20); ctx.fill(); ctx.strokeStyle = APP.line; ctx.lineWidth = 2; ctx.stroke();
-    font(ctx, 22, 600); ctx.fillStyle = APP.ink; ctx.fillText('Model 3D · Dom parterowy', cx0 + 28, cy0 + 44);
-    font(ctx, 15, 500, 2); ctx.fillStyle = C.teal2; ctx.fillText('WYGENEROWANO Z PROJEKTU', cx0 + 28, cy0 + 70);
-    ctx.save(); ctx.beginPath(); roundRect(ctx, cx0 + 20, cy0 + 84, 470, ch - 100, 14); ctx.fillStyle = APP.soft; ctx.fill(); ctx.clip();
-    appHouse(ctx, cx0 + 255, cy0 + 168, 250, u, P(u, 4.85, 5.5));
-    ctx.restore();
-    [['142 m²', 'powierzchnia użytkowa'], ['5', 'pomieszczeń'], ['1', 'kondygnacja']].forEach(([big, small], i) => {
-      const a = E.outBack(P(u, 5.1 + i * .1, 5.35 + i * .1), 2.5); if (a <= 0) return;
-      const yy = cy0 + 108 + i * 64;
-      ctx.save(); ctx.translate(cx0 + 512, yy); ctx.scale(a, a);
-      ctx.fillStyle = APP.soft; roundRect(ctx, 0, -28, 372, 52, 26); ctx.fill();
-      font(ctx, 24, 700); ctx.fillStyle = C.purple; ctx.fillText(big, 22, 6);
-      const bwd = ctx.measureText(big).width; font(ctx, 18, 400); ctx.fillStyle = APP.grey; ctx.fillText(small, 22 + bwd + 18, 5);
-      ctx.restore();
-    });
-    ctx.restore();
-  }
-  // the cost estimate for the shell (stan surowy): the total counts up, the line items fill in
-  avatar(906, E.outCubic(P(u, 5.5, 5.7)));
-  const kc = E.outCubic(P(u, 5.55, 5.8));
-  if (kc > 0) {
-    const cx0 = 516, cy0 = 886, cw = 900, ch = 300;
-    const fmt = v => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    ctx.save(); ctx.globalAlpha = kc; ctx.translate(0, (1 - kc) * 30);
-    ctx.fillStyle = C.white; roundRect(ctx, cx0, cy0, cw, ch, 20); ctx.fill(); ctx.strokeStyle = APP.line; ctx.lineWidth = 2; ctx.stroke();
-    font(ctx, 22, 600); ctx.fillStyle = APP.ink; ctx.fillText('Kosztorys · stan surowy', cx0 + 28, cy0 + 44);
-    font(ctx, 15, 500, 2); ctx.fillStyle = C.teal2; ctx.fillText('LICZONY Z MODELU 3D', cx0 + 28, cy0 + 70);
-    const cp = E.outExpo(P(u, 5.65, 6.35)), total = 300000 * cp;
-    font(ctx, 76, 800); ctx.fillStyle = C.purple; ctx.fillText(fmt(Math.round(total / 100) * 100) + ' zł', cx0 + 26, cy0 + 168);
-    font(ctx, 18, 400); ctx.fillStyle = APP.grey; ctx.fillText('szacunkowy koszt stanu surowego', cx0 + 30, cy0 + 204);
-    const done = E.outBack(P(u, 6.35, 6.5), 3);
-    if (done > 0) {
-      ctx.save(); ctx.translate(cx0 + 30, cy0 + 240); ctx.scale(done, done);
-      ctx.fillStyle = hexA(C.teal, .16); roundRect(ctx, 0, -18, 196, 40, 20); ctx.fill();
-      ctx.strokeStyle = C.teal2; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(16, 2); ctx.lineTo(24, 10); ctx.lineTo(38, -6); ctx.stroke();
-      font(ctx, 17, 600); ctx.fillStyle = C.teal2; ctx.fillText('Kosztorys gotowy', 48, 8); ctx.restore();
-    }
-    const items = [['Fundamenty', 48000], ['Ściany i stropy', 126000], ['Dach', 84000], ['Materiały i transport', 42000]];
-    items.forEach(([name, val], i) => {
-      const p = E.outCubic(P(u, 5.7 + i * .12, 6.25 + i * .05)), yy = cy0 + 70 + i * 54;
-      font(ctx, 18, 500); ctx.fillStyle = APP.ink; ctx.fillText(name, cx0 + 470, yy);
-      font(ctx, 18, 700); ctx.fillStyle = C.purple; ctx.textAlign = 'right'; ctx.fillText(fmt(Math.round(val * p / 100) * 100) + ' zł', cx0 + cw - 30, yy); ctx.textAlign = 'left';
-      ctx.fillStyle = APP.line; roundRect(ctx, cx0 + 470, yy + 12, 400, 8, 4); ctx.fill();
-      ctx.fillStyle = i === 1 ? C.purple : C.teal; roundRect(ctx, cx0 + 470, yy + 12, 400 * (val / 126000) * p, 8, 4); ctx.fill();
-    });
-    ctx.restore();
-  }
-  ctx.restore();
-  // prompt box
-  ctx.save();
-  ctx.shadowColor = 'rgba(60,20,80,.10)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 10;
-  ctx.fillStyle = C.white; roundRect(ctx, boxX, boxY - boxH / 2, boxW, boxH, 28); ctx.fill();
-  ctx.restore();
-  ctx.strokeStyle = APP.line; ctx.lineWidth = 2; roundRect(ctx, boxX, boxY - boxH / 2, boxW, boxH, 28); ctx.stroke();
-  const ty = boxY - boxH / 2 + 50;
-  font(ctx, 28, 400);
-  const n = Math.floor(typed.length * P(u, .6, 2.0));
-  const inBox = u < 2.3 ? typed.slice(0, n) : '';
-  const chip = P(u, 3.85, 3.95) > 0 && u < 4.05;
-  if (!inBox && !chip) { ctx.fillStyle = APP.grey; ctx.fillText(u < 2.3 ? 'Napisz, czego potrzebujesz…' : 'Odpowiedz budoexpert…', boxX + 32, ty); }
-  else if (inBox) {
-    ctx.fillStyle = APP.ink; ctx.fillText(inBox, boxX + 32, ty);
-    if (Math.floor(u * 3.4) % 2 === 0 || n < typed.length) { ctx.fillStyle = C.teal; ctx.fillRect(boxX + 36 + ctx.measureText(inBox).width, ty - 26, 3, 34); }
-  }
-  if (chip) { ctx.fillStyle = APP.soft; roundRect(ctx, boxX + 28, ty - 30, 330, 44, 12); ctx.fill(); ctx.fillStyle = C.purple; roundRect(ctx, boxX + 40, ty - 22, 22, 28, 4); ctx.fill(); font(ctx, 18, 500); ctx.fillStyle = C.purple; ctx.fillText(fileName, boxX + 74, ty - 1); }
-  // bottom row of the box: attach, model picker, send
-  const by = boxY + boxH / 2 - 30;
-  ring(ctx, boxX + 42, by, 17, 2, APP.line); font(ctx, 24, 400); ctx.fillStyle = APP.grey; ctx.textAlign = 'center'; ctx.fillText('+', boxX + 42, by + 8); ctx.textAlign = 'left';
-  font(ctx, 17, 500); ctx.fillStyle = APP.grey; ctx.fillText('budoexpert AI', boxX + 74, by + 6);
-  { const vx = boxX + 82 + ctx.measureText('budoexpert AI').width; ctx.strokeStyle = APP.grey; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(vx, by - 3); ctx.lineTo(vx + 6, by + 3); ctx.lineTo(vx + 12, by - 3); ctx.stroke(); }
-  const ready = (u > .7 && u < 2.3) || chip;
-  const press = Math.exp(-Math.max(0, u - 2.15) * 14) * (u >= 2.12 && u < 2.5 ? 1 : 0) + Math.exp(-Math.max(0, u - 3.98) * 14) * (u >= 3.95 && u < 4.3 ? 1 : 0);
-  sendBtn(ctx, boxX + boxW - 46, by - (boxH - 112) * .0, 22, press, ready ? C.teal : APP.line);
-  // cursor clicks send twice
-  const cur = (() => {
-    const a = E.inOutCubic(P(u, 1.7, 2.1)), b = E.inOutCubic(P(u, 3.5, 3.9));
-    const sx = boxX + boxW - 46, sy0 = lerp(500, 930, chat) + lerp(150, 112, chat) / 2 - 30;
-    if (u < 2.6) return [lerp(1500, sx + 6, a), lerp(820, sy0 + 6, a)];
-    return [lerp(1400, sx + 6, b), lerp(760, sy0 + 6, b)];
-  })();
-  if ((u > 1.65 && u < 2.55) || (u > 3.45 && u < 4.35)) {
-    ctx.save(); ctx.translate(cur[0], cur[1]); const cs = 1.5 * (1 - .15 * press); ctx.scale(cs, cs);
-    ctx.fillStyle = C.white; ctx.strokeStyle = APP.ink; ctx.lineWidth = 1.6; ctx.lineJoin = 'round';
-    poly(ctx, [[0, 0], [0, 30], [8, 23], [13, 35], [19, 32], [14, 21], [24, 21]]); ctx.fill(); ctx.stroke(); ctx.restore();
-  }
-  // exit: a purple brand triangle grows out of the model into the CTA
-  const ex = E.inExpo(P(u, 6.4, APP.DUR));
-  if (ex > 0) { ctx.save(); poly(ctx, brandTri(W / 2, 640, lerp(10, 2600, ex))); ctx.clip(); ctx.fillStyle = C.purple; ctx.fillRect(-50, -50, W + 100, H + 100); ctx.restore(); }
+  // progress: which feature is in front
+  const pa = ha * (1 - ho);
+  for (let i = 0; i < n; i++) { ctx.fillStyle = hexA(i === focus ? C.teal : C.white, (i === focus ? 1 : .3) * pa); roundRect(ctx, W / 2 - n * 22 + i * 44, 1000, i === focus ? 32 : 12, 8, 4); ctx.fill(); }
+  // fly the deck into the camera → REWOLUCJA (same purple)
+  if (flyOff > 0) { ctx.fillStyle = hexA(C.purple, flyOff); ctx.fillRect(-50, -50, W + 100, H + 100); }
 }
 
 /* =====================================================================
@@ -1203,19 +1118,19 @@ function post(ctx, t) {
    compositor
    ===================================================================== */
 /* real time → timeline time. Scenes keep their original timeline seconds; the app scene lives at tl 100+. */
-const SEGS = INTRO ? [[0, Infinity, 0]] : [[0, 2.6, 0], [2.6, 10.1, 1.9], [10.1, 10.55, 90 - 10.1], [10.55, 17.35, 100 - 10.55], [17.35, Infinity, 12.4 - 17.35]];
+const SEGS = INTRO ? [[0, Infinity, 0]] : [[0, 2.6, 0], [2.6, 10.1, 1.9], [10.1, 10.55, 90 - 10.1], [10.55, 15.95, 100 - 10.55], [15.95, Infinity, 12.4 - 15.95]];
 const segOf = t => SEGS.findIndex(([a, b]) => t >= a && t < b);
 const mapT = t => t + SEGS[Math.max(0, segOf(t))][2];
 function renderScene(ctx, t) {   // t is timeline time (see mapT)
   T = t;
   if (INTRO) { introMorph(ctx, t); ctx.setTransform(1, 0, 0, 1, 0, 0); return; }
-  if (t >= 100) { sceneApp(ctx, t - 100); ctx.setTransform(1, 0, 0, 1, 0, 0); return; }
-  if (t >= 90) { // after the last question the app opens inside a growing brand triangle
+  if (t >= 100) { sceneCards(ctx, t - 100); ctx.setTransform(1, 0, 0, 1, 0, 0); return; }
+  if (t >= 90) { // after the last question the card scene opens inside a growing brand triangle
     const e = E.inExpo(P(t, 90, 90.45));
     scene3(ctx, 12.0 + (t - 90));
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); poly(ctx, brandTri(540, 560, lerp(8, 2600, e))); ctx.clip();
     ctx.translate(W / 2, H / 2); ctx.scale(lerp(.82, 1, e), lerp(.82, 1, e)); ctx.translate(-W / 2, -H / 2);
-    sceneApp(ctx, 0); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0); return;
+    sceneCards(ctx, 0); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0); return;
   }
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   if (t < 4.5) introMorph(ctx, t, true);

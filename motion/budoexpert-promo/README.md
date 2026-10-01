@@ -1,4 +1,4 @@
-# budoexpert — promo (32 s)
+# budoexpert — promo (30,5 s)
 
 1920×1080 · 60 fps · stereo · kolory z logo (fiolet `#6C0C79`, turkus `#20CFA3`) · font Poppins.
 Styl: szkic architektoniczny na papierze milimetrowym.
@@ -8,11 +8,11 @@ Styl: szkic architektoniczny na papierze milimetrowym.
 | 0.0–2.6 | Kula wtacza się i w trakcie toczenia zamienia w trójkąt, uderza w napis, logo jedzie do góry |
 | 2.6–6.1 | „Platforma, która zmienia rynek budowlany.” — „zmienia” murowane z cegiełek |
 | 6.1–10.1 | Pytania w stylu technicznym (linijki, wymiary, lżejszy Poppins) |
-| 10.1–17.35 | Aplikacja budoexpert (czat): wiadomość, odpowiedź, wgranie projektu PDF, model 3D domu, kosztorys stanu surowego liczony do 300 000 zł |
-| 17.35–20.0 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
-| 20.0–24.4 | Hub: koło z logo w rdzeniu, 10 ról w kółkach, połączenia jako skręcone podwójne helisy z pakietami danych |
-| 24.4–26.9 | Platforma 3D z walcem i logo; „Wszyscy. W jednym miejscu. Jedna platforma.” |
-| 26.9–31.95 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo |
+| 10.1–15.95 | Talia kart z cechami rozkłada się w karuzelę 3D: Cały proces budowy, Finansowanie, Baza projektów, Wsparcie ekspertów, Sprawdzeni wykonawcy, Architekci, Niższe ceny; na koniec karty wracają do talii z „+ i wiele więcej” |
+| 15.95–18.6 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
+| 18.6–23.0 | Hub: koło z logo w rdzeniu, 10 ról w kółkach, połączenia jako skręcone podwójne helisy z pakietami danych |
+| 23.0–25.5 | Platforma 3D z walcem i logo; „Wszyscy. W jednym miejscu. Jedna platforma.” |
+| 25.5–30.55 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo |
 
 W kodzie (`promo.html`) sceny zachowują swoje dawne czasy, a tabela `SEGS` układa je w finalny montaż (scena z aplikacją ma czasy od 100 s w osi roboczej).
 
