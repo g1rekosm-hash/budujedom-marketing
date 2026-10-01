@@ -1,16 +1,17 @@
-# budoexpert — promo (26 s)
+# budoexpert — promo (27,5 s)
 
 1920×1080 · 60 fps · stereo · kolory z logo (fiolet `#6C0C79`, turkus `#20CFA3`) · font Poppins.
 Styl: szkic architektoniczny na papierze milimetrowym.
 
 | Czas | Scena |
 |---|---|
-| 0.0–4.5 | Turkusowa kulka toczy się z lewej, zamienia w trójkąt i dobija do napisu — szkic logo wypełnia się kolorem |
-| 4.5–8.0 | „Platforma, która zmienia rynek budowlany.” |
+| 0.0–4.5 | Na pustej kartce sama turkusowa kula; po sekundzie toczy się, kamera odjeżdża, szkic logo się rysuje, kula zmienia się w trójkąt i dobija do napisu |
+| 4.5–8.0 | „Platforma, która zmienia rynek budowlany.” — koparka przywozi w łyżce słowo „zmienia” i wysypuje je w puste miejsce w zdaniu |
 | 8.0–12.0 | Planujesz budowę domu? / Jesteś w trakcie budowy? / Jesteś wykonawcą? / …albo sprzedawcą? |
 | 12.0–15.5 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
-| 15.5–20.5 | Hub: budoexpert w kole + 6 odnóg (inwestor, deweloper, architekt, wykonawca, sprzedawca, project manager) |
-| 20.5–26.0 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + logo |
+| 15.5–19.3 | Hub: budoexpert w kole + 6 odnóg (inwestor, deweloper, architekt, wykonawca, sprzedawca, project manager), impulsy energii |
+| 19.3–22.0 | Kartka przechyla się w 3D w platformę, środek wyrasta w cokół z logo; na środku „Wszyscy. W jednym miejscu. Jedna platforma.” |
+| 22.0–27.5 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo |
 
 | Plik | Co to jest |
 |---|---|
@@ -28,4 +29,4 @@ FFMPEG=$(python3 -c "import imageio_ffmpeg as i;print(i.get_ffmpeg_exe())") node
 
 ## Projekt After Effects
 
-W folderze `after-effects/` jest skrypt, który buduje z tego filmu natywny projekt `.aep` (instrukcja w `after-effects/README.md`).
+W folderze `after-effects/` jest skrypt, który buduje z tego filmu natywny projekt `.aep` (instrukcja w `after-effects/README.md`). Uwaga: skrypt odpowiada poprzedniej, 26-sekundowej wersji filmu (bez koparki, platformy 3D i adresu strony).
