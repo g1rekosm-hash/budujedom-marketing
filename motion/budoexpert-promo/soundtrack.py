@@ -144,14 +144,13 @@ while b < 21.5:
 
 for i in range(2):
     add(pluck(note(69 + i * 3), 0.4), 4.55 + i * 0.1, 0.18)
-# --- 2. the excavator delivers "zmienia"
-add(engine(2.9), 4.55, 0.3, pan=0.5)
-add(hydraulic(0.55), 5.45, 0.18, pan=0.3)
-add(hydraulic(0.2, 300, 160), 6.0, 0.15, pan=0.2)
-add(whoosh(0.22), 6.1, 0.35)
-add(kick(0.5, 130, 40), 6.32, 0.9); add(clap(), 6.32, 0.4)
-add(lowpass(rng.standard_normal(int(SR * 0.6)), 1200) * np.exp(-t_(0.6) * 6), 6.32, 0.4)   # dust
-add(pluck(note(74), 0.5), 6.32, 0.2)
+# --- 2. "zmienia" is laid brick by brick, then sets
+for i in range(26):                                # bricks landing (old-timeline seconds)
+    tt = 5.1 + i * 0.85 / 26
+    add(tick(700 + (i * 137) % 600, 0.035), tt + 0.18, 0.13, pan=-0.3 + (i % 7) * 0.1)
+add(kick(0.5, 130, 40), 6.25, 0.8); add(clap(), 6.25, 0.35)
+add(lowpass(rng.standard_normal(int(SR * 0.6)), 1200) * np.exp(-t_(0.6) * 6), 6.25, 0.35)   # dust
+add(pluck(note(74), 0.5), 6.25, 0.2)
 add(whoosh(0.5), 7.5, 0.55)                        # page scroll
 for i, tq in enumerate((8.0, 9.0, 10.0, 11.0)):    # questions
     add(pop(520 + i * 80, 0.2), tq + 0.25, 0.3)

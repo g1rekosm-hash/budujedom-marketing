@@ -159,7 +159,7 @@ function icon(ctx, name, x, y, s, p, o = {}) {
 }
 
 /* ---------- camera shake ---------- */
-const IMPACTS = [[0.55, 5], [1.05, 14], [6.32, 9], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
+const IMPACTS = [[0.55, 5], [1.05, 14], [6.25, 7], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
 function shake(t) {
   let a = 0; for (const [ti, A] of IMPACTS) if (t >= ti) a += A * Math.exp(-(t - ti) * 9);
   return { x: a * Math.sin(t * 93.1) * Math.cos(t * 41.7), y: a * Math.cos(t * 77.3) * Math.sin(t * 29.9 + 1), r: a * 0.0006 * Math.sin(t * 61.3) };
@@ -372,69 +372,24 @@ function scene1(ctx, t) {
 /* =====================================================================
    SCENE 2 · 4.5–8.0 · platforma zmieniająca rynek budowlany
    ===================================================================== */
-/* excavator rig: body drives in, 2-link arm solved with IK, bucket carries the word */
-const EXC = { L1: 270, L2: 230 };
-function excBodyX(t) {
-  if (t < 6.7) return lerp(2450, 1770, E.outCubic(P(t, 4.55, 5.35)));
-  return lerp(1770, 2500, E.inCubic(P(t, 6.7, 7.45)));
-}
-function ik(p0, tg, L1, L2) {
-  const dx = tg[0] - p0[0], dy = tg[1] - p0[1], d = clamp(Math.hypot(dx, dy), Math.abs(L1 - L2) + 1, L1 + L2 - 1);
-  const phi = Math.atan2(dy, dx), a = Math.acos(clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1));
-  const pick = s => { const t1 = phi + s * a, e = [p0[0] + L1 * Math.cos(t1), p0[1] + L1 * Math.sin(t1)]; return { t1, e }; };
-  const A = pick(1), B = pick(-1), el = A.e[1] < B.e[1] ? A : B; // elbow up
-  const t2 = Math.atan2(tg[1] - el.e[1], tg[0] - el.e[0]);
-  return { e: el.e, tip: [el.e[0] + L2 * Math.cos(t2), el.e[1] + L2 * Math.sin(t2)], t1: el.t1, t2 };
-}
-function excState(t, slot) {
-  const bx = excBodyX(t), p0 = [bx - 110, 742];
-  const rest = (b) => [b - 360, 575];
-  const up = [slot[0], 452];
-  let tg;
-  if (t < 5.45) tg = rest(bx);
-  else if (t < 6.0) { const e = E.inOutCubic(P(t, 5.45, 6.0)), r = rest(excBodyX(5.45)); tg = [lerp(r[0], up[0], e), lerp(r[1], up[1], e) - 70 * Math.sin(e * Math.PI)]; }
-  else if (t < 6.4) tg = up;
-  else { const e = E.inOutCubic(P(t, 6.4, 6.85)), r = rest(bx); tg = [lerp(up[0], r[0], e), lerp(up[1], r[1], e)]; }
-  const arm = ik(p0, tg, EXC.L1, EXC.L2);
-  const tilt = E.inOutCubic(P(t, 6.0, 6.18)) * 0.95 * (1 - E.inOutCubic(P(t, 6.45, 6.8)));
-  return { bx, p0, arm, tilt };
-}
-function drawExcavator(ctx, t, st) {
-  const { bx, p0, arm, tilt } = st, ol = C.purple;
-  ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  // tracks
-  ctx.fillStyle = C.white; ctx.strokeStyle = ol; ctx.lineWidth = 5;
-  roundRect(ctx, bx - 190, 842, 380, 66, 33); ctx.fill(); ctx.stroke();
-  const wr = (bx - 2450) / 26;
-  [-148, -50, 50, 148].forEach(o => {
-    ring(ctx, bx + o, 875, 22, 4, ol);
-    ctx.beginPath(); for (let k = 0; k < 3; k++) { const a = wr + k * Math.PI / 3; ctx.moveTo(bx + o - Math.cos(a) * 18, 875 - Math.sin(a) * 18); ctx.lineTo(bx + o + Math.cos(a) * 18, 875 + Math.sin(a) * 18); } ctx.stroke();
-  });
-  // house + counterweight + cab
-  ctx.fillStyle = C.teal; ctx.beginPath(); ctx.rect(bx - 150, 742, 330, 92); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = C.teal2; ctx.beginPath(); ctx.rect(bx + 120, 760, 70, 74); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = C.white; ctx.beginPath(); ctx.moveTo(bx - 70, 742); ctx.lineTo(bx - 70, 640); ctx.lineTo(bx + 30, 640); ctx.lineTo(bx + 60, 742); ctx.closePath(); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = hexA(C.teal, .35); ctx.beginPath(); ctx.moveTo(bx - 56, 728); ctx.lineTo(bx - 56, 654); ctx.lineTo(bx + 20, 654); ctx.lineTo(bx + 42, 728); ctx.closePath(); ctx.fill(); ctx.stroke();
-  font(ctx, 18, 800, 2); ctx.fillStyle = C.white; ctx.fillText('BUDOEXPERT', bx - 60, 797);
-  // arm: hydraulic ram, boom, stick
-  const seg = (a, b, w, fill) => {
-    const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), len = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    ctx.save(); ctx.translate(a[0], a[1]); ctx.rotate(ang); ctx.fillStyle = fill; roundRect(ctx, -w / 2, -w / 2, len + w, w, w / 2); ctx.fill(); ctx.stroke(); ctx.restore();
-  };
-  ctx.strokeStyle = ol; ctx.lineWidth = 7;
-  const mid = [lerp(p0[0], arm.e[0], .55), lerp(p0[1], arm.e[1], .55)];
-  ctx.beginPath(); ctx.moveTo(bx - 20, 760); ctx.lineTo(mid[0], mid[1]); ctx.stroke();
-  ctx.lineWidth = 5;
-  seg(p0, arm.e, 34, C.teal);
-  seg(arm.e, arm.tip, 26, C.teal);
-  [p0, arm.e, arm.tip].forEach(q => { dot(ctx, q[0], q[1], 9, C.white); ring(ctx, q[0], q[1], 9, 4, ol); });
-  // bucket
-  ctx.save(); ctx.translate(arm.tip[0], arm.tip[1]); ctx.rotate(-tilt);
-  ctx.fillStyle = C.teal2; ctx.beginPath();
-  ctx.moveTo(-70, -6); ctx.lineTo(70, -6); ctx.lineTo(56, 34); ctx.quadraticCurveTo(0, 50, -58, 30); ctx.closePath(); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); for (let k = 0; k < 4; k++) { const x = -48 + k * 30; ctx.moveTo(x, 36); ctx.lineTo(x - 6, 50); } ctx.stroke();
-  ctx.restore();
-  ctx.restore();
+/* "zmienia" is laid brick by brick: bricks are sampled from the glyph shapes once */
+let BRICKS2 = null;
+function brickWord(zx, base, size) {
+  if (BRICKS2) return BRICKS2;
+  const c = document.createElement('canvas'); c.width = 520; c.height = 160;
+  const x = c.getContext('2d'); font(x, size, 800); x.fillStyle = '#000'; x.fillText('zmienia', 10, 120);
+  const d = x.getImageData(0, 0, c.width, c.height).data, bw = 8, bh = 5, out = [], r = rng(77);
+  for (let row = 0; row * bh < c.height; row++) {
+    const off = row % 2 ? bw / 2 : 0;
+    for (let bx = -off; bx < c.width; bx += bw) {
+      let hit = 0, n = 0;
+      for (let yy = row * bh; yy < row * bh + bh; yy++) for (let xx = Math.max(0, bx); xx < Math.min(c.width, bx + bw); xx++) { n++; if (d[(yy * c.width + xx) * 4 + 3] > 110) hit++; }
+      if (n && hit / n > .3) out.push({ x: zx + bx - 10, y: base + row * bh - 120, row, shade: r(), j: r() });
+    }
+  }
+  const maxRow = Math.max(...out.map(b => b.row));
+  out.forEach(b => { b.order = (maxRow - b.row) / maxRow; });
+  BRICKS2 = out; return out;
 }
 function scene2(ctx, t, oy = 0) {
   camera(ctx, t, 1, W / 2, H / 2, oy);
@@ -442,8 +397,8 @@ function scene2(ctx, t, oy = 0) {
   logo(ctx, 961, 300, .62);
   ctx.fillStyle = C.ink; font(ctx, 78, 600);
   const l1 = 'Platforma, która zmienia', l1w = ctx.measureText(l1).width, x1 = W / 2 - l1w / 2;
-  const zx = x1 + ctx.measureText('Platforma, która ').width, zw = ctx.measureText('zmienia').width;
-  const slot = [zx + zw / 2, 560], LAND = 6.32;
+  const zx = x1 + ctx.measureText('Platforma, która ').width; font(ctx, 78, 800); const zw = ctx.measureText('zmienia').width; font(ctx, 78, 600);
+  const slot = [zx + zw / 2, 560], LAND = 6.25;
   ['Platforma,', 'która'].reduce((x, w, i) => {
     const ww = ctx.measureText(w + ' ').width;
     ctx.fillStyle = C.ink; riseText(ctx, w, x, 560, 78, E.outExpo(P(t, 4.55 + i * .1, 5.0 + i * .1)));
@@ -468,25 +423,27 @@ function scene2(ctx, t, oy = 0) {
   }
   ctx.fillStyle = C.purple; riseText(ctx, l2, x2, 730, 132, E.outExpo(P(t, 4.85, 5.4)));
 
-  // the excavator brings "zmienia" and drops it into the slot
-  const st = excState(t, slot);
-  if (t > 4.55 && t < 7.5) drawExcavator(ctx, t, st);
-  font(ctx, 78, 700);
-  const DROP = 6.1;
-  let wx, wy, wr = 0, sq = 0;
-  if (t < DROP) { const tip = st.arm.tip; wx = tip[0]; wy = tip[1] - 8; wr = -st.tilt; }
-  else {
-    const s0 = excState(DROP, slot), from = [s0.arm.tip[0], s0.arm.tip[1] - 8], e = P(t, DROP, LAND);
-    wx = lerp(from[0], slot[0], e); wy = lerp(from[1], slot[1], e * e); wr = lerp(-s0.tilt, 0, E.outCubic(e));
-    if (t >= LAND) { const dt = t - LAND; sq = 0.3 * Math.exp(-dt * 10) * Math.cos(dt * 32); }
-  }
-  if (t > 4.55) {
-    ctx.save(); ctx.translate(wx, wy); ctx.rotate(wr); ctx.scale(1 + sq * .5, 1 - sq);
-    ctx.fillStyle = C.teal2; ctx.textAlign = 'center'; ctx.fillText('zmienia', 0, 0); ctx.textAlign = 'left';
+  // the word is bricked up into the slot, bottom row first, then sets solid
+  const bricks = brickWord(zx, 560, 78), SET = 6.25;
+  if (t < SET + .15) {
+    ctx.save(); ctx.globalAlpha = 1 - P(t, SET, SET + .15);
+    bricks.forEach(b => {
+      const st = 5.05 + (b.x - zx) / zw * .8 + b.order * .12 + b.j * .03, p = P(t, st, st + .2); // left → right, each letter bottom-up
+      if (p <= 0) return;
+      const yo = -110 * (1 - E.outBack(p, 2.4));
+      ctx.fillStyle = b.shade < .2 ? C.teal2 : b.shade > .85 ? '#4FE0BB' : C.teal;
+      ctx.fillRect(b.x + .5, b.y + .5 + yo, 7, 4);
+    });
     ctx.restore();
   }
-  // dust when it lands
-  const dp = P(t, LAND, LAND + .7);
+  if (t >= SET) {
+    const dt = t - SET, sq = 0.22 * Math.exp(-dt * 10) * Math.cos(dt * 32);
+    ctx.save(); ctx.globalAlpha = P(t, SET, SET + .12); ctx.translate(zx + zw / 2, 560); ctx.scale(1 + sq * .5, 1 - sq);
+    font(ctx, 78, 800); ctx.fillStyle = C.teal2; ctx.textAlign = 'center'; ctx.fillText('zmienia', 0, 0); ctx.textAlign = 'left';
+    ctx.restore();
+  }
+  // a puff of mortar dust when it sets
+  const dp = P(t, SET, SET + .7);
   if (dp > 0 && dp < 1) {
     const r = rng(17);
     for (let k = 0; k < 12; k++) {
@@ -494,9 +451,6 @@ function scene2(ctx, t, oy = 0) {
       const x = slot[0] + side * (zw / 2 + 10 + 120 * sp * E.outCubic(dp)), y = slot[1] + 8 - 50 * sp * E.outCubic(dp) * r();
       dot(ctx, x, y, (10 + 22 * r()) * (0.4 + dp), hexA(C.sketch, .45 * (1 - dp)));
     }
-    ctx.strokeStyle = hexA(C.teal2, 1 - dp); ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath();
-    [[-1, -1], [1, -1], [-1, -.3], [1, -.3]].forEach(([sx, sy]) => { const ox = slot[0] + sx * (zw / 2 + 24), oy2 = slot[1] - 40 + sy * 20; ctx.moveTo(ox + sx * 30 * dp, oy2 + sy * 30 * dp); ctx.lineTo(ox + sx * (30 + 40 * (1 - dp)) , oy2 + sy * (30 + 40 * (1 - dp))); });
-    ctx.stroke();
   }
   // dimension under line 2
   const dm = E.outExpo(P(t, 6.55, 7.0));
@@ -760,7 +714,7 @@ function scene6(ctx, tr) {
     const a = E.outBack(P(t, 20.6 + k * .1, 21.2 + k * .1));
     if (a <= 0) return;
     ctx.save(); ctx.translate(x, y); ctx.rotate((t - 20.5) * sp + k); ctx.scale(a, a);
-    ctx.strokeStyle = hexA(C.teal, .35); ctx.lineWidth = 3; poly(ctx, [[0, -s], [s * .87, s * .5], [-s * .87, s * .5]]); ctx.stroke(); ctx.restore();
+    ctx.strokeStyle = hexA(C.teal, .35); ctx.lineWidth = 3; ctx.lineJoin = 'round'; poly(ctx, roundedTri([[0, -s], [s * .87, s * .5], [-s * .87, s * .5]], s * .12, 10)); ctx.stroke(); ctx.restore();
   });
 
   // headline
@@ -808,7 +762,7 @@ function scene6(ctx, tr) {
     const a = clamp(1.6 - ct);
     ctx.save(); ctx.translate(x, y); ctx.rotate(c.spin * ct); ctx.globalAlpha = a;
     ctx.fillStyle = c.c > .6 ? C.teal : c.c > .25 ? C.white : '#C58BD0'; const s = c.s;
-    poly(ctx, [[0, -s * .6], [s * .52, s * .3], [-s * .52, s * .3]]); ctx.fill(); ctx.restore();
+    poly(ctx, roundedTri([[0, -s * .6], [s * .52, s * .3], [-s * .52, s * .3]], s * .08, 4)); ctx.fill(); ctx.restore();
   });
   // cursor
   if (t > 21.95 && t < 24.6) {

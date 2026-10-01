@@ -6,12 +6,12 @@ Styl: szkic architektoniczny na papierze milimetrowym.
 | Czas | Scena |
 |---|---|
 | 0.0–2.6 | Turkusowa kula wystrzeliwuje z lewej, wpada w naszkicowany trójkąt, zgniata się i zmienia w trójkąt, który uderza w napis; iskry przy uderzeniu (ClickSpark) i błysk po logo (ShinyText), logo jedzie do góry |
-| 2.6–6.1 | „Platforma, która zmienia rynek budowlany.” — koparka przywozi w łyżce słowo „zmienia” i wysypuje je w puste miejsce w zdaniu |
+| 2.6–6.1 | „Platforma, która zmienia rynek budowlany.” — słowo „zmienia” jest murowane z cegiełek w pustym miejscu w zdaniu, litera po literze, po czym zastyga w pełny napis |
 | 6.1–10.1 | Planujesz budowę domu? / Jesteś w trakcie budowy? / Jesteś wykonawcą? / …albo sprzedawcą? |
 | 10.1–13.6 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
 | 13.6–17.4 | Hub: budoexpert w kole + 6 odnóg, impulsy energii |
 | 17.4–20.1 | Kartka przechyla się w 3D w platformę z cokołem; na środku „Wszyscy. W jednym miejscu. Jedna platforma.” |
-| 20.1–25.6 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo |
+| 20.1–25.6 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo; trójkąty w tle i konfetti z zaokrąglonymi narożnikami jak w logo |
 
 W kodzie (`promo.html`) sceny 2–6 zachowują swoje dawne czasy; `mapT()` przesuwa je o 1,9 s po skróconym intro.
 
@@ -33,4 +33,4 @@ FFMPEG=$(python3 -c "import imageio_ffmpeg as i;print(i.get_ffmpeg_exe())") node
 
 ## Projekt After Effects
 
-W folderze `after-effects/` jest skrypt, który buduje z tego filmu natywny projekt `.aep` (instrukcja w `after-effects/README.md`). Uwaga: skrypt odpowiada pierwszej, 26-sekundowej wersji filmu (bez szybkiego intro, koparki, platformy 3D i adresu strony).
+W folderze `after-effects/` jest skrypt, który buduje z tego filmu natywny projekt `.aep` (instrukcja w `after-effects/README.md`). Uwaga: skrypt odpowiada pierwszej, 26-sekundowej wersji filmu (bez szybkiego intro, murowanego słowa, platformy 3D i adresu strony).
