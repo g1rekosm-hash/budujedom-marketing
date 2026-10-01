@@ -6,7 +6,7 @@ import numpy as np
 
 import sys
 INTRO_ONLY = len(sys.argv) > 1 and sys.argv[1] == 'intro'   # python3 soundtrack.py intro → intro-test.wav
-SR, DUR = 48000, (3.2 if INTRO_ONLY else 30.9)
+SR, DUR = 48000, (3.2 if INTRO_ONLY else 31.95)
 N = int(SR * DUR)
 rng = np.random.default_rng(3)
 L = np.zeros(N); R = np.zeros(N)
@@ -17,7 +17,8 @@ def t_(d):
 
 
 # Events are written in the scenes' own timeline seconds and mapped to the final cut:
-# scenes 2-5 (4.5-22.0) play 1.9 s earlier, the CTA (22.0+) plays 3.9 s later (the app scene sits in between).
+# scenes 2-3 (4.5-12.0) play 1.9 s earlier; from REWOLUCJA on (12.4+) everything plays 4.95 s later,
+# because the app scene now sits right after the questions. The old iris (12.0-12.4) is gone.
 # App-scene events are written in real seconds with raw=True.
 INTRO_PHASE = False
 
@@ -26,8 +27,10 @@ def add(sig, at, gain=1.0, pan=0.0, raw=False):
     if INTRO_ONLY and not INTRO_PHASE:
         return
     if not raw:
-        if at >= 22.0:
-            at += 3.9
+        if at >= 12.4:
+            at += 4.95
+        elif at >= 12.0:
+            return
         elif at >= 4.5:
             at -= 1.9
     i = int(at * SR)
@@ -193,10 +196,11 @@ for i, tt in enumerate((20.05, 20.25, 20.55)):
     add(kick(0.3, 180, 70), tt, 0.25)
 add(whoosh(0.5), 21.5, 0.55)                       # platform -> CTA
 
-# --- app scene (real seconds 20.1-25.9)
-A0 = 20.1
-add(pad([note(57), note(62), note(66), note(69)], 5.8), A0, 0.16, raw=True)
-for i in range(23):                                # soft hats under the demo
+# --- app scene (real seconds 10.55-17.35), right after the questions
+A0 = 10.55
+add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → app
+add(pad([note(57), note(62), note(66), note(69)], 6.8), A0, 0.16, raw=True)
+for i in range(27):                                # soft hats under the demo
     add(hat(), A0 + 0.1 + i * 0.25, 0.07, pan=0.3 if i % 2 else -0.3, raw=True)
 for i in range(46):                                # typing
     add(tick(1800 + (i * 211) % 900, 0.02), A0 + 0.6 + i * 1.4 / 46 + (0.01 if i % 3 else 0), 0.09, pan=0.15, raw=True)
@@ -217,7 +221,11 @@ for i in range(10):                                # model builds
     add(tick(1400 + i * 120, 0.03), A0 + 4.9 + i * 0.06, 0.08, pan=-0.4 + i * 0.08, raw=True)
 for i in range(3):
     add(pop(600 + i * 90, 0.15), A0 + 5.1 + i * 0.1, 0.22, raw=True)
-add(whoosh(0.4), A0 + 5.4, 0.5, raw=True)          # into the CTA
+add(whoosh(0.35), A0 + 5.45, 0.25, raw=True)       # conversation scrolls
+for i in range(24):                                # cost counting up
+    add(tick(2000 + i * 40, 0.015), A0 + 5.65 + 0.7 * (i / 24) ** 1.6, 0.07, raw=True)
+add(pluck(note(86), 0.8) + pluck(note(90), 0.8) * .7 + pluck(note(93), 0.8) * .5, A0 + 6.35, 0.3, raw=True)   # total = 300 000 zł
+add(whoosh(0.4), A0 + 6.4, 0.5, raw=True)          # into REWOLUCJA
 
 # --- CTA (+1.5 s)
 add(kick(0.6, 150, 40), 22.0, 0.9); add(clap(), 22.0, 0.45)
