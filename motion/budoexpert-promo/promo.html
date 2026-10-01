@@ -159,7 +159,7 @@ function icon(ctx, name, x, y, s, p, o = {}) {
 }
 
 /* ---------- camera shake ---------- */
-const IMPACTS = [[2.5, 12], [6.32, 9], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
+const IMPACTS = [[2.85, 12], [6.32, 9], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
 function shake(t) {
   let a = 0; for (const [ti, A] of IMPACTS) if (t >= ti) a += A * Math.exp(-(t - ti) * 9);
   return { x: a * Math.sin(t * 93.1) * Math.cos(t * 41.7), y: a * Math.cos(t * 77.3) * Math.sin(t * 29.9 + 1), r: a * 0.0006 * Math.sin(t * 61.3) };
@@ -248,40 +248,48 @@ function logo(ctx, cx, cy, s, triCol = C.teal, txtCol = C.purple, a = 1) {
 /* =====================================================================
    SCENE 1 · 0.0–4.5 · kulka toczy się → trójkąt → dobija do napisu
    ===================================================================== */
-const BALL_R = 58, BALL_Y = LOGO.base - BALL_R, BALL_X1 = 399, BALL_X0 = BALL_X1 - TAU * BALL_R; // one full turn → lands upright
+const BALL_R = 58, BALL_Y = LOGO.base - BALL_R, BALL_X1 = 399, BALL_X0 = BALL_X1 - 3 * TAU * BALL_R; // three full turns → lands upright
+const M0 = 1.55, M1 = 1.95, HIT = 2.85;           // morph start / end, hit on the wordmark
 const CIRC_PTS = Array.from({ length: NP }, (_, k) => { const a = -Math.PI / 2 + TAU * k / NP; return [Math.cos(a), Math.sin(a)]; });
-function ballX(t) { return lerp(BALL_X0, BALL_X1, E.outCubic(P(t, 1.0, 1.85))); }
+function ballX(t) { return lerp(BALL_X0, BALL_X1, E.outQuad(P(t, 0, M0))); }
 function scene1(ctx, t) {
   // logo group travels up for the tagline scene
   const up = E.inOutExpo(P(t, 4.0, 4.6));
-  // first second: only the ball, framed close; then the camera pulls back to the whole sheet
-  const cp = E.inOutCubic(P(t, 0.95, 1.95));
-  camera(ctx, t, lerp(1.9, 1.0, cp), lerp(BALL_X0, W / 2, cp), lerp(BALL_Y, H / 2, cp));
-  paper(ctx, E.outCubic(P(t, 1.0, 1.8)));
+  // tracking shot: the ball rolls in from the left edge, the camera catches it and holds it dead centre,
+  // pushes in while it turns into the triangle, then pulls back to the whole sheet
+  const Z0 = 1.55, fx0 = BALL_X0 - BALL_R - 12 + W / 2 / Z0;
+  const m = E.outBack(P(t, M0, M1), 2);
+  const zm = Z0 * (1 + .18 * E.inOutCubic(P(t, M0 - .15, M1)));
+  const pb = E.inOutCubic(P(t, M1 + .05, 2.65));
+  // camera waits until the ball reaches the centre, then locks onto it (soft max = smooth hand-off)
+  const bxw = Math.min(ballX(t), BALL_X1), kk = 90;
+  const fxT = (fx0 + bxw + Math.sqrt((fx0 - bxw) ** 2 + kk * kk)) / 2, fyT = lerp(BALL_Y, TRI_C[1], clamp(m));
+  camera(ctx, t, lerp(zm, 1, pb), lerp(fxT, W / 2, pb), lerp(fyT, H / 2, pb));
+  paper(ctx);
 
   // construction guides
   const gA = 1 - P(t, 3.4, 4.1);
   if (gA > 0) {
     ctx.save(); ctx.globalAlpha = gA;
-    const g1 = E.outExpo(P(t, 1.0, 1.7)), g2 = E.outExpo(P(t, 1.1, 1.8)), g3 = E.outExpo(P(t, 1.2, 1.9));
+    const g2 = E.outExpo(P(t, 1.7, 2.4)), g3 = E.outExpo(P(t, 1.8, 2.5));
     ctx.setLineDash([10, 8]);
-    sLine(ctx, 0, LOGO.base, W * g1, LOGO.base, 1, { col: C.sketch, w: 1.6, seed: 11, passes: 1 });
+    sLine(ctx, -W, LOGO.base, W, LOGO.base, 1, { col: C.sketch, w: 1.6, seed: 11, passes: 1 });
     sLine(ctx, W, 485, W - W * g2, 485, 1, { col: C.grid2, w: 1.4, seed: 12, passes: 1 });
     sLine(ctx, 0, 452, W * g3, 452, 1, { col: C.grid2, w: 1.4, seed: 13, passes: 1 });
     ctx.setLineDash([]);
-    font(ctx, 14, 600, 3); ctx.fillStyle = hexA(C.sketch, P(t, 1.5, 1.8));
+    font(ctx, 14, 600, 3); ctx.fillStyle = hexA(C.sketch, P(t, 2.2, 2.5));
     ctx.fillText('BASELINE', 1640, LOGO.base - 10); ctx.fillText('X-HEIGHT', 1640, 478); ctx.fillText('ASCENDER', 1640, 445);
-    // triangle construction + centre marks
-    sPoly(ctx, LOGO.tri, E.inOutCubic(P(t, 1.25, 1.75)), { col: C.sketch, w: 2, seed: 21 }, true);
-    sLine(ctx, 399, 420, 399, 630, E.outCubic(P(t, 1.3, 1.65)), { col: C.grid2, w: 1.4, seed: 22, passes: 1 });
-    sArc(ctx, TRI_C[0], TRI_C[1], 104, 104, -Math.PI * .9, Math.PI * .6, E.inOutCubic(P(t, 1.35, 1.9)), { col: C.grid2, w: 1.4, seed: 23, passes: 1 });
+    // the triangle is already sketched, waiting for the ball
+    sPoly(ctx, LOGO.tri, E.inOutCubic(P(t, 0.75, 1.3)), { col: C.sketch, w: 2, seed: 21 }, true);
+    sLine(ctx, 399, 420, 399, 630, E.outCubic(P(t, 0.85, 1.2)), { col: C.grid2, w: 1.4, seed: 22, passes: 1 });
+    sArc(ctx, TRI_C[0], TRI_C[1], 104, 104, -Math.PI * .9, Math.PI * .6, E.inOutCubic(P(t, 0.9, 1.45)), { col: C.grid2, w: 1.4, seed: 23, passes: 1 });
     // dimension line under the wordmark
-    const dm = E.outExpo(P(t, 1.5, 2.1));
+    const dm = E.outExpo(P(t, 2.0, 2.6));
     if (dm > 0) {
       const mx = LOGO.tx + LOGO.tw / 2, hw = LOGO.tw / 2 * dm;
       ctx.strokeStyle = hexA(C.teal2, .8); ctx.lineWidth = 1.6; ctx.beginPath();
       ctx.moveTo(mx - hw, 680); ctx.lineTo(mx + hw, 680); ctx.moveTo(mx - hw, 670); ctx.lineTo(mx - hw, 690); ctx.moveTo(mx + hw, 670); ctx.lineTo(mx + hw, 690); ctx.stroke();
-      font(ctx, 16, 600, 3); ctx.fillStyle = hexA(C.teal2, P(t, 1.8, 2.1)); ctx.textAlign = 'center';
+      font(ctx, 16, 600, 3); ctx.fillStyle = hexA(C.teal2, P(t, 2.3, 2.6)); ctx.textAlign = 'center';
       ctx.fillText('1048 PX · POPPINS', mx, 716); ctx.textAlign = 'left';
     }
     ctx.restore();
@@ -294,11 +302,11 @@ function scene1(ctx, t) {
   // wordmark: pencil outline writes on, then the hit fills it letter by letter
   font(ctx, WM_SIZE, 500);
   const L = layout(ctx, 'budoexpert');
-  const wr = E.inOutCubic(P(t, 1.0, 2.0));
+  const wr = E.inOutCubic(P(t, 1.5, 2.5));
   if (wr > 0) {
     ctx.save(); ctx.beginPath(); ctx.rect(LOGO.tx - 20, 300, (LOGO.tw + 60) * wr, 400); ctx.clip();
     L.forEach((l, k) => {
-      const dt = t - (2.5 + (l.x + l.w / 2) / 3600);
+      const dt = t - (HIT + (l.x + l.w / 2) / 3600);
       if (dt > 0) return;
       const j = rng(k * 7 + Math.floor(T * 8) * 13);
       ctx.strokeStyle = C.sketch; ctx.lineWidth = 2;
@@ -308,33 +316,22 @@ function scene1(ctx, t) {
     ctx.restore();
   }
   L.forEach((l, k) => {
-    const dt = t - (2.5 + (l.x + l.w / 2) / 3600);
+    const dt = t - (HIT + (l.x + l.w / 2) / 3600);
     if (dt <= 0) return;
     const sq = 0.32 * Math.exp(-dt * 9) * Math.cos(dt * 34);
     ctx.save(); ctx.translate(LOGO.tx + l.x + l.w / 2, LOGO.base); ctx.scale(1 + sq * .6, 1 - sq);
     ctx.fillStyle = C.purple; ctx.fillText(l.ch, -l.w / 2, 0); ctx.restore();
   });
-  drawReg(ctx, C.purple, E.outBack(P(t, 3.0, 3.25), 3));
+  drawReg(ctx, C.purple, E.outBack(P(t, HIT + .45, HIT + .7), 3));
 
   // the ball → triangle
-  if (t < 1.95) {
-    // alone on the page: pop in, a little hop, wind-up, then roll
-    const appear = E.spring(P(t, 0.05, 0.6), 3, 6);
-    const h = P(t, 0.42, 0.76), hop = h > 0 && h < 1 ? 95 * 4 * h * (1 - h) : 0;
-    const land = t >= 0.76 ? 0.3 * Math.exp(-(t - 0.76) * 16) * Math.cos((t - 0.76) * 38) : 0;
-    const air = h > 0 && h < 1 ? 0.14 * Math.sin(h * Math.PI) : 0;
-    const wind = E.outCubic(P(t, 0.84, 1.0)) * (1 - E.inExpo(P(t, 1.0, 1.08)));
-    const x = ballX(t) - 16 * wind;
-    const sqx = (1 + land - air * .6 + .1 * wind) * appear, sqy = (1 - land + air - .08 * wind) * appear;
-    const v = (ballX(t + 1 / 120) - ballX(t - 1 / 120)) * 60;
-    const settle = 0;
-    // shadow
-    ctx.fillStyle = hexA(C.purple, .12 * (1 - hop / 120) * appear); ctx.beginPath(); ctx.ellipse(x, LOGO.base + 4, BALL_R * (1 - hop / 200) * appear, 7, 0, 0, TAU); ctx.fill();
-    // speed lines
+  if (t < M0) {
+    const x = ballX(t), v = (ballX(t + 1 / 120) - ballX(Math.max(0, t - 1 / 120))) * 60;
+    ctx.fillStyle = hexA(C.purple, .12); ctx.beginPath(); ctx.ellipse(x, LOGO.base + 4, BALL_R, 7, 0, 0, TAU); ctx.fill();
     const sl = clamp(v / 1400);
-    for (let i = 0; i < 3; i++) { if (sl < .05) break; ctx.strokeStyle = hexA(C.teal, .6 - i * .15); ctx.lineWidth = 5 - i; ctx.lineCap = 'round'; ctx.beginPath(); const yy = BALL_Y - hop - 24 + i * 24; ctx.moveTo(x - BALL_R - 20 - 10 * i, yy); ctx.lineTo(x - BALL_R - 20 - 10 * i - 220 * sl, yy); ctx.stroke(); }
+    for (let i = 0; i < 3; i++) { if (sl < .05) break; ctx.strokeStyle = hexA(C.teal, .6 - i * .15); ctx.lineWidth = 5 - i; ctx.lineCap = 'round'; ctx.beginPath(); const yy = BALL_Y - 24 + i * 24; ctx.moveTo(x - BALL_R - 20 - 10 * i, yy); ctx.lineTo(x - BALL_R - 20 - 10 * i - 260 * sl, yy); ctx.stroke(); }
     const rot = (x - BALL_X0) / BALL_R;
-    ctx.save(); ctx.translate(x + settle, BALL_Y - hop + BALL_R * (1 - sqy)); ctx.scale(sqx, sqy); ctx.rotate(rot);
+    ctx.save(); ctx.translate(x, BALL_Y); ctx.rotate(rot);
     dot(ctx, 0, 0, BALL_R, C.teal);
     ctx.strokeStyle = hexA(C.white, .85); ctx.lineWidth = 6; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.arc(0, 0, BALL_R * .62, -.5, .5); ctx.stroke();
@@ -342,18 +339,20 @@ function scene1(ctx, t) {
     ctx.restore();
   } else {
     // morph circle → rounded triangle, then the punch into the wordmark
-    const m = E.outBack(P(t, 1.95, 2.3), 2);
     const cx = lerp(BALL_X1, TRI_C[0], m), cy = lerp(BALL_Y, TRI_C[1], m);
     let dx = 0;
-    if (t < 2.5) dx = -34 * E.outCubic(P(t, 2.2, 2.4)) + 74 * E.inExpo(P(t, 2.4, 2.5));
-    else dx = 40 * (1 - E.spring(P(t, 2.5, 3.1), 3, 6));
+    if (t < HIT) dx = -34 * E.outCubic(P(t, HIT - .3, HIT - .1)) + 74 * E.inExpo(P(t, HIT - .1, HIT));
+    else dx = 40 * (1 - E.spring(P(t, HIT, HIT + .6), 3, 6));
     const pts = CIRC_PTS.map(([x, y], k) => [lerp(cx + x * BALL_R, TRI_PTS[k][0], m) + dx, lerp(cy + y * BALL_R, TRI_PTS[k][1], m)]);
     ctx.fillStyle = C.teal; poly(ctx, pts); ctx.fill();
+    // a soft ring marks the moment the circle becomes the triangle
+    const mr = P(t, M1 - .12, M1 + .4);
+    if (mr > 0 && mr < 1) ring(ctx, TRI_C[0], TRI_C[1], 70 + 110 * E.outExpo(mr), 4 * (1 - mr), C.teal);
   }
   ctx.restore();
 
   // impact ring at the hit
-  const ir = P(t, 2.5, 3.0);
+  const ir = P(t, HIT, HIT + .5);
   if (ir > 0 && ir < 1) { ring(ctx, 520, 530, 260 * E.outExpo(ir), 6 * (1 - ir), C.teal); ring(ctx, 520, 530, 150 * E.outExpo(ir), 3 * (1 - ir), C.purple); }
 }
 
@@ -908,7 +907,7 @@ function frame(t, samples = 1, shutter = .5) {
   octx.setTransform(1, 0, 0, 1, 0, 0);
   octx.drawImage(acc, 0, 0);
   const sheet = t < 7.75 ? '01' : t < 12 ? '02' : '03';
-  if ((t >= 1.0 && t < 12.0) || (t >= 15.5 && t < 19.5)) titleBlock(octx, t, sheet, t < 1.4 ? P(t, 1.0, 1.4) : 1 - P(t, 19.2, 19.45));
+  if ((t >= 2.3 && t < 12.0) || (t >= 15.5 && t < 19.5)) titleBlock(octx, t, sheet, t < 2.7 ? P(t, 2.3, 2.7) : 1 - P(t, 19.2, 19.45));
   post(octx, t);
 }
 

@@ -106,21 +106,20 @@ def hydraulic(dur, f0=180, f1=420):
     return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / dur) * 0.5
 
 
-# --- 1. the ball alone, then it rolls in, morphs and hits the wordmark
-add(pop(420, 0.3), 0.08, 0.4)                      # ball appears
-add(boing(300, 0.3), 0.42, 0.25)                   # hop
-add(tick(900, 0.05), 0.76, 0.25); add(kick(0.3, 140, 60), 0.76, 0.35)
-add(whoosh(0.18), 0.84, 0.2)                       # wind-up
-add(roll(0.9), 1.0, 0.55, pan=-0.3)
-for i in range(7):                                 # pencil scratches as the sheet draws in
-    add(whoosh(0.12) * 0.4, 1.0 + i * 0.13, 0.12, pan=0.3)
-add(pop(380, 0.35), 1.95, 0.45)                    # circle -> triangle
-add(whoosh(0.1), 2.4, 0.3)
-add(kick(0.6, 160, 40), 2.5, 1.0); add(clap(), 2.5, 0.6)
+# --- 1. the ball rolls straight in, turns into the triangle, hits the wordmark
+add(roll(1.6), 0.0, 0.6, pan=-0.4)
+add(whoosh(0.35), 0.0, 0.25, pan=-0.6)
+add(pop(380, 0.4), 1.55, 0.5)                      # circle -> triangle
+add(pluck(note(74), 0.6), 1.9, 0.2)
+add(whoosh(0.6), 1.95, 0.3)                        # camera pulls back
+for i in range(6):                                 # pencil scratches as the wordmark draws in
+    add(whoosh(0.12) * 0.4, 1.5 + i * 0.16, 0.12, pan=0.3)
+add(whoosh(0.1), 2.75, 0.3)
+add(kick(0.6, 160, 40), 2.85, 1.0); add(clap(), 2.85, 0.6)
 for i in range(10):
-    add(pluck(note([62, 65, 69, 72, 74, 77, 74, 72, 69, 74][i]), 0.35), 2.5 + i * 0.03, 0.08, pan=-0.5 + i * 0.1)
-add(tick(3200, 0.04), 3.0, 0.2)
-add(pad([note(50), note(57), note(62), note(69)], 2.0), 2.5, 0.18)
+    add(pluck(note([62, 65, 69, 72, 74, 77, 74, 72, 69, 74][i]), 0.35), 2.85 + i * 0.03, 0.08, pan=-0.5 + i * 0.1)
+add(tick(3200, 0.04), 3.3, 0.2)
+add(pad([note(50), note(57), note(62), note(69)], 1.7), 2.85, 0.18)
 
 # --- groove 4.5 -> 21.5 (drops out under the REWOLUCJA build-up)
 bass_line = [38, 38, 45, 43, 41, 41, 43, 45]

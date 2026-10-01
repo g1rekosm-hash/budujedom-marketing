@@ -5,7 +5,7 @@ Styl: szkic architektoniczny na papierze milimetrowym.
 
 | Czas | Scena |
 |---|---|
-| 0.0–4.5 | Na pustej kartce sama turkusowa kula; po sekundzie toczy się, kamera odjeżdża, szkic logo się rysuje, kula zmienia się w trójkąt i dobija do napisu |
+| 0.0–4.5 | Turkusowa kula od razu wtacza się z lewej; kamera łapie ją i trzyma na środku kadru, kula zatrzymuje się w naszkicowanym trójkącie i zmienia w trójkąt, kamera odjeżdża i trójkąt dobija do napisu |
 | 4.5–8.0 | „Platforma, która zmienia rynek budowlany.” — koparka przywozi w łyżce słowo „zmienia” i wysypuje je w puste miejsce w zdaniu |
 | 8.0–12.0 | Planujesz budowę domu? / Jesteś w trakcie budowy? / Jesteś wykonawcą? / …albo sprzedawcą? |
 | 12.0–15.5 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
