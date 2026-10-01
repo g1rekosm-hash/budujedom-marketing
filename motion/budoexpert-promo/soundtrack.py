@@ -4,7 +4,9 @@ Uruchom: python3 soundtrack.py  →  soundtrack.wav
 import wave
 import numpy as np
 
-SR, DUR = 48000, 25.6
+import sys
+INTRO_ONLY = len(sys.argv) > 1 and sys.argv[1] == 'intro'   # python3 soundtrack.py intro → intro-test.wav
+SR, DUR = 48000, (3.2 if INTRO_ONLY else 25.6)
 N = int(SR * DUR)
 rng = np.random.default_rng(3)
 L = np.zeros(N); R = np.zeros(N)
@@ -17,7 +19,12 @@ def t_(d):
 SHIFT_FROM, SHIFT = 4.5, 1.9   # intro got 1.9 s shorter: everything from 4.5 s on plays 1.9 s earlier
 
 
+INTRO_PHASE = False
+
+
 def add(sig, at, gain=1.0, pan=0.0):
+    if INTRO_ONLY and not INTRO_PHASE:
+        return
     if at >= SHIFT_FROM:
         at -= SHIFT
     i = int(at * SR)
@@ -110,6 +117,24 @@ def hydraulic(dur, f0=180, f1=420):
     t = t_(dur); f = f0 + (f1 - f0) * t / dur
     return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / dur) * 0.5
 
+
+# --- test intro: the ball tumbles into a triangle and slams the wordmark
+if INTRO_ONLY:
+    INTRO_PHASE = True
+    add(whoosh(0.6), 0.0, 0.5, pan=-0.6)
+    add(roll(0.95), 0.0, 0.45, pan=-0.3)
+    for i, tt in enumerate((0.42, 0.55, 0.66, 0.75, 0.83, 0.9)):   # corners knocking on the baseline as it tumbles
+        add(kick(0.18, 220, 90), tt, 0.18 + i * 0.05); add(tick(500 + i * 60, 0.03), tt, 0.1)
+    add(kick(0.6, 160, 40), 0.95, 1.0); add(clap(), 0.95, 0.6)
+    add(pop(380, 0.3), 0.97, 0.35)
+    for i in range(10):
+        add(pluck(note([62, 65, 69, 72, 74, 77, 74, 72, 69, 74][i]), 0.35), 0.95 + i * 0.03, 0.08, pan=-0.5 + i * 0.1)
+    for i in range(8):
+        add(tick(2600 + i * 180, 0.03), 0.96 + i * 0.012, 0.08, pan=np.sin(i * 2.3) * 0.7)
+    add(tick(3200, 0.04), 1.35, 0.2)
+    rt = t_(0.6); add(np.sin(2 * np.pi * np.cumsum(1800 + 2400 * rt / .6) / SR) * np.sin(np.pi * rt / .6) * 0.15, 1.55, 0.4)
+    add(pad([note(50), note(57), note(62), note(69)], 2.2), 0.95, 0.2)
+    INTRO_PHASE = False
 
 # --- 1. the ball fires in, snaps into the triangle, punches the wordmark (real time, < 2.6 s)
 add(whoosh(0.5), 0.0, 0.6, pan=-0.6)
@@ -210,6 +235,6 @@ L *= fade; R *= fade
 peak = max(np.abs(L).max(), np.abs(R).max())
 L = np.tanh(L / peak * 1.4) / np.tanh(1.4); R = np.tanh(R / peak * 1.4) / np.tanh(1.4)
 pcm = (np.stack([L, R], 1) * 0.89 * 32767).astype(np.int16)
-with wave.open('soundtrack.wav', 'wb') as w:
+with wave.open('intro-test.wav' if INTRO_ONLY else 'soundtrack.wav', 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(pcm.tobytes())
-print('soundtrack.wav', pcm.shape)
+print('intro-test.wav' if INTRO_ONLY else 'soundtrack.wav', pcm.shape)

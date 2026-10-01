@@ -34,3 +34,12 @@ FFMPEG=$(python3 -c "import imageio_ffmpeg as i;print(i.get_ffmpeg_exe())") node
 ## Projekt After Effects
 
 W folderze `after-effects/` jest skrypt, który buduje z tego filmu natywny projekt `.aep` (instrukcja w `after-effects/README.md`). Uwaga: skrypt odpowiada pierwszej, 26-sekundowej wersji filmu (bez szybkiego intro, murowanego słowa, platformy 3D i adresu strony).
+
+## Test intro (sama scena 1)
+
+Wariant intro, w którym kula zamienia się w trójkąt w trakcie toczenia (przetacza się po rosnących rogach), uderza w napis i dociska do pełnego trójkąta: `intro-test.mp4` (3,2 s). Główny film się nie zmienia.
+
+```bash
+python3 soundtrack.py intro
+node render.mjs --query only=intro --audio intro-test.wav --out intro-test.mp4
+```

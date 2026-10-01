@@ -37,6 +37,8 @@ const CFG = {
   },
   font: 'Poppins',
 };
+const INTRO = new URLSearchParams(location.search).get('only') === 'intro';   // ?only=intro → render just the test intro
+if (INTRO) CFG.DUR = 3.2;
 const { W, H, C } = CFG;
 let T = 0; // current render time (for pencil "boil")
 
@@ -159,7 +161,7 @@ function icon(ctx, name, x, y, s, p, o = {}) {
 }
 
 /* ---------- camera shake ---------- */
-const IMPACTS = [[0.55, 5], [1.05, 14], [6.25, 7], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
+const IMPACTS = INTRO ? [[0.95, 16]] : [[0.55, 5], [1.05, 14], [6.25, 7], [12.0, 8], [14.0, 26], [19.0, 16], [22.0, 10], [24.5, 6]];
 function shake(t) {
   let a = 0; for (const [ti, A] of IMPACTS) if (t >= ti) a += A * Math.exp(-(t - ti) * 9);
   return { x: a * Math.sin(t * 93.1) * Math.cos(t * 41.7), y: a * Math.cos(t * 77.3) * Math.sin(t * 29.9 + 1), r: a * 0.0006 * Math.sin(t * 61.3) };
@@ -365,6 +367,116 @@ function scene1(ctx, t) {
     const e = E.outCubic(sk), len = 46 * (1 - sk);
     ctx.strokeStyle = C.teal; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.beginPath();
     for (let i = 0; i < 10; i++) { const a = i / 10 * TAU + .3, r0 = 40 + 120 * e; ctx.moveTo(500 + Math.cos(a) * r0, 530 + Math.sin(a) * r0); ctx.lineTo(500 + Math.cos(a) * (r0 + len), 530 + Math.sin(a) * (r0 + len)); }
+    ctx.stroke();
+  }
+}
+
+/* =====================================================================
+   TEST INTRO (?only=intro) · the ball turns into the triangle WHILE it rolls,
+   tumbling on its growing corners, then slams the wordmark and locks into the logo
+   ===================================================================== */
+const IM = { HIT: 0.95, XH: 452, TURNS: 6 };           // 6 × 120° → lands apex-up at the hit
+const TRI_REL = TRI_PTS.map(([x, y]) => [x - TRI_C[0], y - TRI_C[1]]);
+const CIRC_REL = CIRC_PTS.map(([x, y]) => [x * BALL_R, y * BALL_R]);
+const IM_X0 = IM.XH - IM.TURNS * (TAU / 3) * BALL_R;
+function imRoll(t) { const p = P(t, 0, IM.HIT); return .7 * p + .3 * (1 - (1 - p) * (1 - p)); } // still fast at contact
+function imState(t) {
+  let x, rot, m, sx = 1;
+  if (t < IM.HIT) {
+    const f = imRoll(t);
+    x = lerp(IM_X0, IM.XH, f); rot = f * IM.TURNS * TAU / 3;
+    m = .78 * E.inOutCubic(P(t, .12, IM.HIT));
+  } else {
+    const dt = t - IM.HIT;
+    x = lerp(IM.XH, TRI_C[0], E.spring(P(t, IM.HIT, IM.HIT + .75), 3.2, 5.5));
+    rot = -.16 * Math.exp(-dt * 6) * Math.sin(dt * 22);
+    m = lerp(.78, 1, E.outBack(P(t, IM.HIT, IM.HIT + .28), 2.6));
+    sx = 1 - .2 * Math.exp(-dt * 13) * Math.cos(dt * 30);
+  }
+  const cr = Math.cos(rot), sr = Math.sin(rot);
+  const pts = CIRC_REL.map((c, k) => { const px = lerp(c[0], TRI_REL[k][0], m) * sx, py = lerp(c[1], TRI_REL[k][1], m) / sx; return [px * cr - py * sr, px * sr + py * cr]; });
+  let maxY = -1e9, minX = 1e9, maxX = -1e9; pts.forEach(([px, py]) => { maxY = Math.max(maxY, py); minX = Math.min(minX, px); maxX = Math.max(maxX, px); });
+  const y = LOGO.base - maxY;                          // whatever corner is lowest sits on the baseline → tumbling bounce
+  return { x, y, pts: pts.map(([px, py]) => [px + x, py + y]), m, minX: minX + x, maxX: maxX + x };
+}
+function introMorph(ctx, t) {
+  camera(ctx, t, lerp(1.1, 1.0, E.inOutCubic(P(t, 0, 1.4))), lerp(700, W / 2, E.inOutCubic(P(t, 0, 1.4))), H / 2);
+  paper(ctx);
+  // guides + the target triangle sketched where the logo mark will lock in
+  ctx.save();
+  ctx.setLineDash([10, 8]);
+  sLine(ctx, -W, LOGO.base, 2 * W, LOGO.base, 1, { col: C.sketch, w: 1.6, seed: 11, passes: 1 });
+  sLine(ctx, W, 485, W - W * E.outExpo(P(t, 0, .5)), 485, 1, { col: C.grid2, w: 1.4, seed: 12, passes: 1 });
+  sLine(ctx, 0, 452, W * E.outExpo(P(t, .05, .55)), 452, 1, { col: C.grid2, w: 1.4, seed: 13, passes: 1 });
+  ctx.setLineDash([]);
+  font(ctx, 14, 600, 3); ctx.fillStyle = hexA(C.sketch, P(t, .3, .5));
+  ctx.fillText('BASELINE', 1640, LOGO.base - 10); ctx.fillText('X-HEIGHT', 1640, 478); ctx.fillText('ASCENDER', 1640, 445);
+  sPoly(ctx, LOGO.tri, E.inOutCubic(P(t, .25, .65)) * (1 - P(t, IM.HIT + .3, IM.HIT + .5)), { col: C.sketch, w: 2, seed: 21 }, true);
+  const dm = E.outExpo(P(t, 1.2, 1.7));
+  if (dm > 0) {
+    const mx = LOGO.tx + LOGO.tw / 2, hw = LOGO.tw / 2 * dm;
+    ctx.strokeStyle = hexA(C.teal2, .8); ctx.lineWidth = 1.6; ctx.beginPath();
+    ctx.moveTo(mx - hw, 680); ctx.lineTo(mx + hw, 680); ctx.moveTo(mx - hw, 670); ctx.lineTo(mx - hw, 690); ctx.moveTo(mx + hw, 670); ctx.lineTo(mx + hw, 690); ctx.stroke();
+    font(ctx, 16, 600, 3); ctx.fillStyle = hexA(C.teal2, P(t, 1.4, 1.7)); ctx.textAlign = 'center'; ctx.fillText('1048 PX · POPPINS', mx, 716); ctx.textAlign = 'left';
+  }
+  ctx.restore();
+
+  // wordmark: pencil outline, filled by the impact wave (squash + shine on its own layer)
+  font(ctx, WM_SIZE, 500);
+  const L = layout(ctx, 'budoexpert'), HIT = IM.HIT;
+  const wr = E.inOutCubic(P(t, 0, .6));
+  ctx.save(); ctx.beginPath(); ctx.rect(LOGO.tx - 20, 300, (LOGO.tw + 60) * wr, 400); ctx.clip();
+  L.forEach((l, k) => {
+    if (t > HIT + (l.x + l.w / 2) / 3600) return;
+    const j = rng(k * 7 + Math.floor(T * 8) * 13);
+    ctx.strokeStyle = C.sketch; ctx.lineWidth = 2; ctx.strokeText(l.ch, LOGO.tx + l.x, LOGO.base);
+    ctx.globalAlpha = .35; ctx.strokeText(l.ch, LOGO.tx + l.x + (j() - .5) * 3, LOGO.base + (j() - .5) * 3); ctx.globalAlpha = 1;
+  });
+  ctx.restore();
+  if (t > HIT) {
+    if (!WMC) { WMC = document.createElement('canvas'); WMC.width = W; WMC.height = H; }
+    const w = WMC.getContext('2d'); w.setTransform(1, 0, 0, 1, 0, 0); w.clearRect(0, 0, W, H); font(w, WM_SIZE, 500);
+    L.forEach(l => {
+      const dt = t - (HIT + (l.x + l.w / 2) / 3600); if (dt <= 0) return;
+      const sq = 0.32 * Math.exp(-dt * 9) * Math.cos(dt * 34);
+      w.save(); w.translate(LOGO.tx + l.x + l.w / 2, LOGO.base); w.scale(1 + sq * .6, 1 - sq); w.fillStyle = C.purple; w.fillText(l.ch, -l.w / 2, 0); w.restore();
+    });
+    const sp = P(t, 1.55, 2.15);
+    if (sp > 0 && sp < 1) {
+      const sx = lerp(LOGO.tx - 300, LOGO.tx + LOGO.tw + 300, E.inOutCubic(sp)), g = w.createLinearGradient(sx - 160, 0, sx + 160, 0);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(255,255,255,.75)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      w.globalCompositeOperation = 'source-atop'; w.save(); w.translate(sx, LOGO.base - 70); w.transform(1, 0, -.35, 1, 0, 0); w.translate(-sx, -(LOGO.base - 70));
+      w.fillStyle = g; w.fillRect(sx - 200, 300, 400, 420); w.restore(); w.globalCompositeOperation = 'source-over';
+    }
+    ctx.drawImage(WMC, 0, 0);
+  }
+  drawReg(ctx, C.purple, E.outBack(P(t, 1.35, 1.6), 3));
+
+  // the shape
+  const st = imState(t);
+  const v = (imState(Math.min(t + 1 / 120, IM.HIT - 1e-4)).x - imState(Math.max(0, Math.min(t, IM.HIT) - 1 / 120)).x) * 60;
+  ctx.fillStyle = hexA(C.purple, .12); ctx.beginPath(); ctx.ellipse(st.x, LOGO.base + 4, (st.maxX - st.minX) / 2, 7, 0, 0, TAU); ctx.fill();
+  const sl = t < IM.HIT ? clamp(v / 2200) : 0;
+  for (let i = 0; i < 4; i++) { if (sl < .05) break; ctx.strokeStyle = hexA(C.teal, .6 - i * .13); ctx.lineWidth = 6 - i; ctx.lineCap = 'round'; ctx.beginPath(); const yy = st.y - 33 + i * 22; ctx.moveTo(st.minX - 14 - 12 * i, yy); ctx.lineTo(st.minX - 14 - 12 * i - 460 * sl, yy); ctx.stroke(); }
+  ctx.fillStyle = C.teal; poly(ctx, st.pts); ctx.fill();
+  // highlight fades as the ball stops being a ball
+  const hl = 1 - P(t, .2, .75);
+  if (hl > 0) {
+    const rot = imRoll(Math.min(t, IM.HIT)) * IM.TURNS * TAU / 3;
+    ctx.save(); ctx.translate(st.x, st.y); ctx.rotate(rot); ctx.globalAlpha = hl;
+    ctx.strokeStyle = hexA(C.white, .85); ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(0, 0, BALL_R * .62, -.5, .5); ctx.stroke();
+    dot(ctx, -BALL_R * .5, -BALL_R * .2, 6, hexA(C.white, .85)); ctx.restore();
+  }
+
+  // impact: rings + spark burst at the contact point
+  const cxp = LOGO.tx - 4, cyp = 530;
+  const ir = P(t, HIT, HIT + .5);
+  if (ir > 0 && ir < 1) { ring(ctx, cxp, cyp, 260 * E.outExpo(ir), 6 * (1 - ir), C.teal); ring(ctx, cxp, cyp, 150 * E.outExpo(ir), 3 * (1 - ir), C.purple); }
+  const sk = P(t, HIT, HIT + .35);
+  if (sk > 0 && sk < 1) {
+    const e = E.outCubic(sk), len = 46 * (1 - sk);
+    ctx.strokeStyle = C.teal; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.beginPath();
+    for (let i = 0; i < 10; i++) { const a = i / 10 * TAU + .3, r0 = 40 + 120 * e; ctx.moveTo(cxp + Math.cos(a) * r0, cyp + Math.sin(a) * r0); ctx.lineTo(cxp + Math.cos(a) * (r0 + len), cyp + Math.sin(a) * (r0 + len)); }
     ctx.stroke();
   }
 }
@@ -816,10 +928,11 @@ function post(ctx, t) {
 /* =====================================================================
    compositor
    ===================================================================== */
-const S1END = 2.6, SHIFT = 1.9;                // scene 1 now ends at 2.6 s; later scenes keep their original timing
+const S1END = INTRO ? Infinity : 2.6, SHIFT = 1.9;                // scene 1 now ends at 2.6 s; later scenes keep their original timing
 const mapT = t => t < S1END ? t : t + SHIFT;
 function renderScene(ctx, t) {   // t is timeline time (see mapT)
   T = t;
+  if (INTRO) { introMorph(ctx, t); ctx.setTransform(1, 0, 0, 1, 0, 0); return; }
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   if (t < 4.5) scene1(ctx, t);
   else if (t < 7.5) scene2(ctx, t);
@@ -879,7 +992,7 @@ function frame(t, samples = 1, shutter = .5) {
   octx.setTransform(1, 0, 0, 1, 0, 0);
   octx.drawImage(acc, 0, 0);
   const sheet = tl0 < 7.75 ? '01' : tl0 < 12 ? '02' : '03';
-  if ((tl0 >= 0.9 && tl0 < 12.0) || (tl0 >= 15.5 && tl0 < 19.5)) titleBlock(octx, tl0, sheet, tl0 < 1.3 ? P(tl0, 0.9, 1.3) : 1 - P(tl0, 19.2, 19.45));
+  if (!INTRO && ((tl0 >= 0.9 && tl0 < 12.0) || (tl0 >= 15.5 && tl0 < 19.5))) titleBlock(octx, tl0, sheet, tl0 < 1.3 ? P(tl0, 0.9, 1.3) : 1 - P(tl0, 19.2, 19.45));
   post(octx, tl0);
 }
 
