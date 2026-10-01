@@ -1,10 +1,10 @@
-"""Syntezuje 27,5-sekundowy soundtrack (120 BPM) zsynchronizowany z promo budoexpert.
+"""Syntezuje 25,6-sekundowy soundtrack (120 BPM) zsynchronizowany z promo budoexpert.
 Uruchom: python3 soundtrack.py  →  soundtrack.wav
 """
 import wave
 import numpy as np
 
-SR, DUR = 48000, 27.5
+SR, DUR = 48000, 25.6
 N = int(SR * DUR)
 rng = np.random.default_rng(3)
 L = np.zeros(N); R = np.zeros(N)
@@ -14,7 +14,12 @@ def t_(d):
     return np.arange(int(SR * d)) / SR
 
 
+SHIFT_FROM, SHIFT = 4.5, 1.9   # intro got 1.9 s shorter: everything from 4.5 s on plays 1.9 s earlier
+
+
 def add(sig, at, gain=1.0, pan=0.0):
+    if at >= SHIFT_FROM:
+        at -= SHIFT
     i = int(at * SR)
     if i >= N:
         return
@@ -106,20 +111,20 @@ def hydraulic(dur, f0=180, f1=420):
     return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / dur) * 0.5
 
 
-# --- 1. the ball rolls straight in, turns into the triangle, hits the wordmark
-add(roll(1.6), 0.0, 0.6, pan=-0.4)
-add(whoosh(0.35), 0.0, 0.25, pan=-0.6)
-add(pop(380, 0.4), 1.55, 0.5)                      # circle -> triangle
-add(pluck(note(74), 0.6), 1.9, 0.2)
-add(whoosh(0.6), 1.95, 0.3)                        # camera pulls back
-for i in range(6):                                 # pencil scratches as the wordmark draws in
-    add(whoosh(0.12) * 0.4, 1.5 + i * 0.16, 0.12, pan=0.3)
-add(whoosh(0.1), 2.75, 0.3)
-add(kick(0.6, 160, 40), 2.85, 1.0); add(clap(), 2.85, 0.6)
+# --- 1. the ball fires in, snaps into the triangle, punches the wordmark (real time, < 2.6 s)
+add(whoosh(0.5), 0.0, 0.6, pan=-0.6)
+add(roll(0.55), 0.0, 0.5, pan=-0.3)
+add(kick(0.3, 200, 80), 0.55, 0.4); add(pop(380, 0.3), 0.58, 0.45)   # brake + snap to triangle
+add(whoosh(0.15), 0.9, 0.3)
+add(kick(0.6, 160, 40), 1.05, 1.0); add(clap(), 1.05, 0.6)
 for i in range(10):
-    add(pluck(note([62, 65, 69, 72, 74, 77, 74, 72, 69, 74][i]), 0.35), 2.85 + i * 0.03, 0.08, pan=-0.5 + i * 0.1)
-add(tick(3200, 0.04), 3.3, 0.2)
-add(pad([note(50), note(57), note(62), note(69)], 1.7), 2.85, 0.18)
+    add(pluck(note([62, 65, 69, 72, 74, 77, 74, 72, 69, 74][i]), 0.35), 1.05 + i * 0.03, 0.08, pan=-0.5 + i * 0.1)
+for i in range(8):                                 # sparks
+    add(tick(2600 + i * 180, 0.03), 1.06 + i * 0.012, 0.08, pan=np.sin(i * 2.3) * 0.7)
+add(tick(3200, 0.04), 1.35, 0.2)                   # (R)
+rt = t_(0.5); add(np.sin(2 * np.pi * np.cumsum(1800 + 2400 * rt / .5) / SR) * np.sin(np.pi * rt / .5) * 0.15, 1.45, 0.4)  # shine
+add(pad([note(50), note(57), note(62), note(69)], 1.6), 1.05, 0.18)
+add(whoosh(0.5), 2.1, 0.35)                        # logo moves up
 
 # --- groove 4.5 -> 21.5 (drops out under the REWOLUCJA build-up)
 bass_line = [38, 38, 45, 43, 41, 41, 43, 45]
