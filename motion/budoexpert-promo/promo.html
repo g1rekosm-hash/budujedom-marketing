@@ -728,8 +728,29 @@ function scene5flat(ctx, t, withHub = true, beta = 0, zoom = 1) {
     const st = 16.0 + r.k * .11, lp = E.inOutCubic(P(t, st, st + .4));
     const d = Math.hypot(r.x - HUB.x, r.y - HUB.y), vx = (r.x - HUB.x) / d, vy = (r.y - HUB.y) / d;
     const ax = HUB.x + vx * 112, ay = HUB.y + vy * 112, bx = r.x - vx * (NODE_R * .62), by = r.y - vy * (NODE_R * .62);
-    if (beam > .02) { ctx.strokeStyle = hexA(C.teal, .5 * beam); ctx.lineWidth = 22 * beam; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); }
-    sLine(ctx, ax, ay, lerp(ax, bx, lp), lerp(ay, by, lp), 1, { col: C.purple, w: 3, seed: 110 + r.k, over: 0 });
+    // connector = a bent "cable" from the core to the role (quadratic curve, all bending the same way → a swirl)
+    const len = Math.hypot(bx - ax, by - ay), cxq = (ax + bx) / 2 - vy * len * .2, cyq = (ay + by) / 2 + vx * len * .2;
+    const cv = u => { const w = 1 - u; return [w * w * ax + 2 * w * u * cxq + u * u * bx, w * w * ay + 2 * w * u * cyq + u * u * by]; };
+    const path = (u0, u1) => { ctx.beginPath(); for (let i = 0; i <= 28; i++) { const q = cv(lerp(u0, u1, i / 28)); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); } };
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    if (lp > 0) {
+      ctx.strokeStyle = hexA(C.teal, .16 + .3 * beam); ctx.lineWidth = 11 + 18 * beam; path(0, lp); ctx.stroke();   // glow
+      ctx.strokeStyle = C.purple; ctx.lineWidth = 3; path(0, lp); ctx.stroke();
+      ctx.setLineDash([2, 14]); ctx.lineDashOffset = -t * 60; ctx.strokeStyle = hexA(C.white, .9); ctx.lineWidth = 2; path(0, lp); ctx.stroke(); ctx.setLineDash([]);
+    }
+    // arrowhead at the core once the cable has arrived
+    const ah = E.outBack(P(t, st + .35, st + .6), 3);
+    if (ah > 0) {
+      const p0 = cv(0), p1 = cv(.05), an = Math.atan2(p0[1] - p1[1], p0[0] - p1[0]);
+      ctx.save(); ctx.translate(p0[0], p0[1]); ctx.rotate(an); ctx.scale(ah, ah); ctx.fillStyle = C.purple;
+      poly(ctx, roundedTri([[6, 0], [-10, -8], [-10, 8]], 2, 3)); ctx.fill(); ctx.restore();
+    }
+    // data packets flowing from the role into the core
+    const fl = P(t, st + .5, st + .9);
+    if (fl > 0) for (let i = 0; i < 3; i++) {
+      const u = 1 - ((t * .55 + i / 3 + r.k * .137) % 1);
+      for (let j = 0; j < 4; j++) { const q = cv(clamp(u + j * .018)); dot(ctx, q[0], q[1], (5 - j) * fl, hexA(j ? C.teal : C.teal2, (1 - j * .22) * fl)); }
+    }
     // node: white brand triangle with a teal outline
     const np = E.spring(P(t, st + .3, st + .95));
     if (np > 0) {
@@ -751,11 +772,11 @@ function scene5flat(ctx, t, withHub = true, beta = 0, zoom = 1) {
     for (const [ts, big] of [[18.0 + r.k * .08, 0], [18.55, 1]]) {
       const pp = P(t, ts, ts + .45); if (pp <= 0 || pp >= 1) continue;
       const e = E.inCubic(pp);
-      for (let k = 0; k < 5; k++) { const q = clamp(e - k * .04); dot(ctx, lerp(bx, ax, q), lerp(by, ay, q), (big ? 14 : 9) * (1 - k * .18), hexA(C.teal, 1 - k * .18)); }
+      for (let k = 0; k < 5; k++) { const q = cv(1 - clamp(e - k * .04)); dot(ctx, q[0], q[1], (big ? 14 : 9) * (1 - k * .18), hexA(C.teal, 1 - k * .18)); }
     }
   });
   // hub
-  if (withHub) hubCore(ctx, t, E.spring(P(t, 15.25, 15.85), 3, 6));
+  if (withHub) hubCore(ctx, t, E.spring(P(t, 15.3, 15.9), 3, 6));
   const hb = P(t, 19.0, 19.8); if (hb > 0 && hb < 1) { ring(ctx, HUB.x, HUB.y, HUB.r + 500 * E.outExpo(hb), 8 * (1 - hb), C.teal); ring(ctx, HUB.x, HUB.y, HUB.r + 280 * E.outExpo(hb), 4 * (1 - hb), C.purple); }
 }
 
@@ -979,12 +1000,12 @@ function renderScene(ctx, t) {   // t is timeline time (see mapT)
   }
   else if (t < 15.0) scene4(ctx, t);
   else if (t < 15.5) { // collapse into the hub
-    const e = E.inOutExpo(P(t, 15.0, 15.5)), r = lerp(1150, 0, e), k = Math.max(r, 1) / 1150;
+    const e = E.inOutExpo(P(t, 15.0, 15.5)), r = lerp(2300, HUB_TRI + 30, e), k = r / 2300;
     scene5(ctx, t);
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.beginPath(); ctx.arc(W / 2, H / 2, r, 0, TAU); ctx.clip();
-    ctx.fillStyle = C.purple; ctx.fillRect(0, 0, W, H);
-    ctx.globalAlpha = 1 - P(t, 15.02, 15.22);
+    poly(ctx, brandTri(HUB.x, HUB.y, r)); ctx.clip();   // the purple world folds into the core triangle
+    ctx.globalAlpha = 1 - P(t, 15.38, 15.5); ctx.fillStyle = C.purple; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = (1 - P(t, 15.02, 15.22)) * (1 - P(t, 15.38, 15.5));
     ctx.translate(W / 2, H / 2); ctx.scale(k, k); ctx.translate(-W / 2, -H / 2); scene4content(ctx, t);
     ctx.restore();
   }
@@ -992,7 +1013,7 @@ function renderScene(ctx, t) {   // t is timeline time (see mapT)
   else if (t < 22.0) { // the pedestal top expands into the CTA
     scene5(ctx, t);
     const g3 = hub3D(t), e = E.inExpo(P(t, 21.5, 22.0)), r = lerp(g3.rx, 1500, e);
-    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.beginPath(); ctx.ellipse(W / 2, g3.top, r, lerp(g3.ry, 1500, e), 0, 0, TAU); ctx.clip();
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); poly(ctx, brandTri(W / 2, g3.top, lerp(g3.rx, 2600, e))); ctx.clip();
     ctx.fillStyle = C.purple; ctx.fillRect(0, 0, W, H);
     ctx.restore();
   }

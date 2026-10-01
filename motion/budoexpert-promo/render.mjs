@@ -28,17 +28,18 @@ if (preview) {
 }
 
 const args = ['-y', '-f', 'image2pipe', '-framerate', '60', '-c:v', 'mjpeg', '-i', '-'];
-if (audio) args.push('-i', audio);
+if (audio) { if (arg('--from')) args.push('-ss', arg('--from')); if (arg('--to')) args.push('-t', String(+arg('--to') - +arg('--from', 0))); args.push('-i', audio); }
 args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p', '-movflags', '+faststart');
 if (audio) args.push('-c:a', 'aac', '-b:a', '256k', '-shortest');
 args.push(out);
 const ff = spawn(FFMPEG, args, { stdio: ['pipe', 'inherit', 'inherit'] });
 const t0 = Date.now();
 const total = Math.round(await page.evaluate('window.DUR') * 60);
-for (let f = 0; f < total; f++) {
+const f0 = Math.round(+arg('--from', 0) * 60), f1 = arg('--to') ? Math.round(+arg('--to') * 60) : total;
+for (let f = f0; f < f1; f++) {
   const url = await page.evaluate(([f, s]) => window.renderFrameData(f, s, .97), [f, samples]);
   if (!ff.stdin.write(Buffer.from(url.split(',')[1], 'base64'))) await new Promise(r => ff.stdin.once('drain', r));
-  if (f % 60 === 0) console.log(`frame ${f}/${total}  ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+  if (f % 60 === 0) console.log(`frame ${f}/${f1}  ${((Date.now() - t0) / 1000).toFixed(1)}s`);
 }
 ff.stdin.end();
 await new Promise(r => ff.on('close', r));

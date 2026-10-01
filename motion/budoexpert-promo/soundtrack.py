@@ -188,10 +188,10 @@ add(rs * 0.25 + whoosh(1.0) * 0.8, 13.0, 0.5)      # riser -> REWOLUCJA
 it = t_(2.0); boom = np.sin(2 * np.pi * np.cumsum(32 + 90 * np.exp(-it * 6)) / SR) * np.exp(-it * 2)
 add(boom * 1.2 + lowpass(rng.standard_normal(len(it)), 2500) * np.exp(-it * 5) * 0.6, 14.0, 1.0)
 add(whoosh(0.5, up=False), 15.0, 0.5)              # collapse into hub
-for i in range(6):                                 # nodes pop
-    add(pop(440 + i * 60, 0.2), 16.3 + i * 0.17, 0.25, pan=-0.6 + i * 0.24)
-for i in range(6):                                 # energy pulses
-    add(tick(1500 + i * 200, 0.06), 18.3 + i * 0.12, 0.15)
+for i in range(10):                                # 10 roles pop in
+    add(pop(420 + i * 40, 0.2), 16.3 + i * 0.11, 0.22, pan=np.cos(-np.pi / 2 + i * 2 * np.pi / 10) * 0.7)
+for i in range(10):                                # energy pulses arriving at the core
+    add(tick(1500 + i * 120, 0.06), 18.45 + i * 0.08, 0.13)
 rt = t_(0.9); add(np.sin(2 * np.pi * np.cumsum(300 + 1500 * (rt / .9) ** 2) / SR) * (rt / .9) ** 2 * 0.3, 18.1, 0.5)
 add(kick(0.8, 140, 34) * 1.2, 19.0, 1.0)           # powers combine
 # --- the sheet tilts into a 3D platform, the pedestal rises
