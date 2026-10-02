@@ -18,7 +18,9 @@ deweloperów i osoby szukające pracy w branży. Obecnie etap przedstartowy: lis
 Źródło animacji: `promo.html` (canvas), render: `render.mjs`, muzyka: `soundtrack.py` — szczegóły w `motion/budoexpert-promo/README.md`.
 Pliki MP4 mają ~33 MB; na stronę lepiej użyć wersji skompresowanej (`ffmpeg -crf 23`, `-movflags +faststart`).
 
-## Następne zadanie: prosty landing page
+## Landing page — `landing/` (zrobiony, szczegóły w `landing/README.md`)
+- Formularze jeszcze niepodpięte: `SIGNUP_ENDPOINT` / `CONTACT_ENDPOINT` w `landing/index.html` (bez nich zapis tylko do localStorage).
+- Założenia:
 - Ma pokazać **video promo budoexpert v1**, a pod filmem baner/formularz **„Zapisz się”** (lista przedstartowa).
 - Copy i formularze można brać ze starego landingu (Buduje-dom.com, specyfikacja treści od użytkownika): role w formularzu —
   Inwestor prywatny, Wykonawca i usługodawca, Architekt / Projektant, Dostawca materiałów, Deweloper, Szukam pracy / Kariera; pole województwo.
