@@ -5,8 +5,8 @@ Styl: szkic architektoniczny na papierze milimetrowym.
 
 Są dwie wersje z tego samego silnika i tym samym dźwiękiem:
 
-- **Wersja 1** (`budoexpert-promo.mp4`): pytania „Planujesz budowę domu?…”, cechy platformy, hub z 10 rolami, CTA z budoexpert.pl.
-- **Wersja 2 — na landing** (`budoexpert-promo-v2.mp4`, render z `--query v=2`): w miejsce pytań „Stary świat” — ból każdej grupy (inwestor, wykonawca, hurtownia, architekt); karty z etykietami ról; hub z 6 rolami z formularza zapisu; na końcu „Dołącz poniżej ↓”, czyli prowadzi do banera pod filmem.
+- **video promo budoexpert v1** (`video-promo-budoexpert-v1.mp4`): pytania „Planujesz budowę domu?…”, cechy platformy, hub z 10 rolami, CTA z budoexpert.pl.
+- **video promo budoexpert problem** (`video-promo-budoexpert-problem.mp4`, render z `--query v=2`): w miejsce pytań „Stary świat” — ból każdej grupy (inwestor, wykonawca, hurtownia, architekt); karty z etykietami ról; hub z 6 rolami z formularza zapisu; na końcu „Dołącz poniżej ↓”, czyli prowadzi do banera pod filmem.
 
 | Czas | Scena |
 |---|---|
@@ -25,8 +25,8 @@ Efekty iskier i błysku są inspirowane komponentami [React Bits](https://github
 
 | Plik | Co to jest |
 |---|---|
-| `budoexpert-promo.mp4` | gotowy render, wersja 1 |
-| `budoexpert-promo-v2.mp4` | gotowy render, wersja 2 (landing) |
+| `video-promo-budoexpert-v1.mp4` | video promo budoexpert v1 |
+| `video-promo-budoexpert-problem.mp4` | video promo budoexpert problem (wersja ze „starym światem”) |
 | `promo.html` | silnik animacji (otwórz w przeglądarce: spacja = pauza, ←/→ = przewijanie) |
 | `render.mjs` | render HTML → MP4 z motion blurem |
 | `soundtrack.py` | syntezowana muzyka 120 BPM |
@@ -35,9 +35,8 @@ Teksty i kolory edytujesz w `promo.html` (paleta w `CFG.C`). Ponowny render:
 
 ```bash
 python3 soundtrack.py
-FFMPEG=$(python3 -c "import imageio_ffmpeg as i;print(i.get_ffmpeg_exe())") node render.mjs --audio soundtrack.wav
-# wersja 2:
-node render.mjs --query v=2 --audio soundtrack.wav --out budoexpert-promo-v2.mp4
+FFMPEG=$(python3 -c "import imageio_ffmpeg as i;print(i.get_ffmpeg_exe())") node render.mjs --audio soundtrack.wav --out video-promo-budoexpert-v1.mp4
+node render.mjs --query v=2 --audio soundtrack.wav --out video-promo-budoexpert-problem.mp4
 ```
 
 ## Projekt After Effects

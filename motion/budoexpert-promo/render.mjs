@@ -1,4 +1,4 @@
-// Renders promo.html → budoexpert-promo.mp4 frame by frame (deterministic, motion-blurred).
+// Renders promo.html → video-promo-budoexpert-v1.mp4 frame by frame (deterministic, motion-blurred).
 // usage: node render.mjs [--preview t1,t2,...] [--samples 8] [--audio soundtrack.wav]
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
@@ -10,7 +10,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > -1 ? process.argv[i + 1] : d; };
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 const samples = +arg('--samples', 8), preview = arg('--preview'), audio = arg('--audio');
-const out = arg('--out', path.join(here, 'budoexpert-promo.mp4'));
+const out = arg('--out', path.join(here, 'video-promo-budoexpert-v1.mp4'));
 
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ['--allow-file-access-from-files'] });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
