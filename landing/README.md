@@ -3,6 +3,7 @@
 Jedna statyczna strona (`index.html`, bez buildu) z filmem **video promo budoexpert v1** na środku, CTA „Zapisz się” pod filmem i nawigacją: O nas · Jak to działa · Zapisz się · Kontakt.
 
 ## Podgląd lokalnie
+Można po prostu otworzyć `index.html` dwuklikiem albo uruchomić serwer:
 ```bash
 cd landing && python3 -m http.server 8000   # → http://localhost:8000
 ```
@@ -30,5 +31,6 @@ Copy oparte na starym landingu, **bez** obietnic liczbowych i gwarancji (1250 os
 
 ## Assety
 - `assets/video-promo-budoexpert-v1.mp4` — wersja webowa (H.264 CRF 24, AAC 128k, faststart, ~10,5 MB) z `motion/budoexpert-promo/`.
+- `assets/video-promo-budoexpert-v1.webm` — zapasowa wersja VP9/Opus (~10,4 MB) dla przeglądarek bez H.264.
 - `assets/poster.jpg` — klatka z 24 s („Wszyscy. W jednym miejscu.”).
 - `assets/fonts/` — Poppins 400–800 (woff2).
