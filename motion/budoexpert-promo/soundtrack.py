@@ -196,26 +196,19 @@ for i, tt in enumerate((20.05, 20.25, 20.55)):
     add(kick(0.3, 180, 70), tt, 0.25)
 add(whoosh(0.5), 21.5, 0.55)                       # platform -> CTA
 
-# --- construction-site board (real seconds 10.55-15.95), right after the questions
+# --- feature blocks stack into a house (real seconds 10.55-15.95), right after the questions
 A0 = 10.55
-add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → board
+add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → blocks
 add(pad([note(57), note(62), note(66), note(69)], 5.4), A0, 0.16, raw=True)
-for i in range(5):                                 # pencil outline
-    add(whoosh(0.12) * 0.4, A0 + i * 0.1, 0.12, pan=-0.3 + i * 0.15, raw=True)
-add(kick(0.4, 90, 40), A0 + 0.42, 0.6, raw=True); add(kick(0.4, 90, 40), A0 + 0.52, 0.55, raw=True)   # posts hammered in
-add(whoosh(0.3), A0 + 0.6, 0.3, raw=True)          # header band
-b2 = A0 + 1.0
-while b2 < A0 + 4.4:                               # light pulse under the checklist
-    add(hat(), b2, 0.1, raw=True); add(kick(0.25, 110, 50), b2, 0.25, raw=True)
-    b2 += 0.46
-for i in range(7):                                 # each row: writing + tick
-    tt = A0 + 1.0 + i * 0.46
-    for j in range(6):
-        add(tick(2400 + (j * 173) % 500, 0.012), tt + j * 0.05, 0.05, raw=True)
-    add(pop(620 + i * 30, 0.12), tt + 0.3, 0.3, raw=True); add(pluck(note([69, 71, 74, 76, 78, 81, 83][i]), 0.4), tt + 0.3, 0.16, raw=True)
-add(whoosh(0.15), A0 + 4.45, 0.3, raw=True)
-add(kick(0.6, 150, 40), A0 + 4.6, 1.0, raw=True); add(clap(), A0 + 4.6, 0.6, raw=True)   # ZATWIERDZONO stamp
-add(whoosh(0.4), A0 + 5.0, 0.5, raw=True)          # iris into REWOLUCJA
+for i in range(7):                                 # each block falls and lands
+    t0 = A0 + 0.45 + i * 0.36
+    add(whoosh(0.22) * 0.5, t0, 0.2, pan=-0.5 + (i % 3) * 0.5, raw=True)
+    add(kick(0.35, 120, 45), t0 + 0.26, 0.55, raw=True); add(tick(700 + i * 40, 0.04), t0 + 0.26, 0.2, raw=True)
+    add(pluck(note([62, 64, 66, 69, 71, 74, 76][i]), 0.4), t0 + 0.27, 0.14, raw=True)
+add(whoosh(0.3), A0 + 3.0, 0.4, raw=True)          # roof falls
+add(kick(0.7, 140, 35), A0 + 3.3, 1.0, raw=True); add(clap(), A0 + 3.3, 0.5, raw=True)
+add(pluck(note(74), 1.0) + pluck(note(78), 1.0) * .7 + pluck(note(81), 1.0) * .5, A0 + 3.32, 0.3, raw=True)
+add(whoosh(0.4), A0 + 4.95, 0.5, raw=True)         # iris into REWOLUCJA
 
 # --- CTA (+1.5 s)
 add(kick(0.6, 150, 40), 22.0, 0.9); add(clap(), 22.0, 0.45)

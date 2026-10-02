@@ -8,9 +8,9 @@ Styl: szkic architektoniczny na papierze milimetrowym.
 | 0.0–2.6 | Kula wtacza się i w trakcie toczenia zamienia w trójkąt, uderza w napis, logo jedzie do góry |
 | 2.6–6.1 | „Platforma, która zmienia rynek budowlany.” — „zmienia” murowane z cegiełek |
 | 6.1–10.1 | Pytania w stylu technicznym (linijki, wymiary, lżejszy Poppins) |
-| 10.1–15.95 | Tablica informacyjna budowy: pola wypełniają się po kolei i są odhaczane (zakres, finansowanie, projekty, eksperci, wykonawcy, architekci, ceny), na koniec pieczątka „ZATWIERDZONO” |
+| 10.1–15.95 | Cechy jako klocki spadające w ścianę domu (cały proces, finansowanie, baza projektów, eksperci, wykonawcy, architekci, niższe ceny), dach z trójkąta z napisem „budoexpert”, podpis „Wszystko, czego potrzebujesz do budowy domu.”, przejście irysem w REWOLUCJA |
 | 15.95–18.6 | „Tworzymy nowy świat dla rynku budowlanego.” → REWOLUCJA |
-| 18.6–23.0 | Hub: koło z logo w rdzeniu, 10 ról w kółkach, połączenia jako skręcone podwójne helisy z pakietami danych |
+| 18.6–23.0 | Hub: koło z logo w rdzeniu, 10 ról w kółkach, proste linie z impulsami jak w wersji 1, potem efekt 3D i „Wszyscy. W jednym miejscu.” |
 | 23.0–25.5 | Platforma 3D z walcem i logo; „Wszyscy. W jednym miejscu. Jedna platforma.” |
 | 25.5–30.55 | CTA: „Nie czekaj! Zapisz się już dziś.” + przycisk + budoexpert.pl + logo |
 
