@@ -17,9 +17,9 @@ def t_(d):
 
 
 # Events are written in the scenes' own timeline seconds and mapped to the final cut:
-# scenes 2-3 (4.5-12.0) play 1.9 s earlier; from REWOLUCJA on (12.4+) everything plays 3.55 s later,
-# because the feature-card scene now sits right after the questions. The old iris (12.0-12.4) is gone.
-# App-scene events are written in real seconds with raw=True.
+# scenes 2-4 (4.5-15.0) play 1.9 s earlier; from the hub on (15.0+) everything plays 3.55 s later,
+# because the feature-card carousel (real 13.1-18.55) sits between REWOLUCJA and the hub.
+# Carousel events are written in real seconds with raw=True.
 INTRO_PHASE = False
 
 
@@ -27,10 +27,8 @@ def add(sig, at, gain=1.0, pan=0.0, raw=False):
     if INTRO_ONLY and not INTRO_PHASE:
         return
     if not raw:
-        if at >= 12.4:
+        if at >= 15.0:
             at += 3.55
-        elif at >= 12.0:
-            return
         elif at >= 4.5:
             at -= 1.9
     i = int(at * SR)
@@ -196,19 +194,28 @@ for i, tt in enumerate((20.05, 20.25, 20.55)):
     add(kick(0.3, 180, 70), tt, 0.25)
 add(whoosh(0.5), 21.5, 0.55)                       # platform -> CTA
 
-# --- feature blocks stack into a house (real seconds 10.55-15.95), right after the questions
-A0 = 10.55
-add(pop(500, 0.25), 10.1, 0.3, raw=True); add(whoosh(0.45), 10.1, 0.4, raw=True)   # questions → blocks
-add(pad([note(57), note(62), note(66), note(69)], 5.4), A0, 0.16, raw=True)
-for i in range(7):                                 # each block falls and lands
-    t0 = A0 + 0.45 + i * 0.36
-    add(whoosh(0.22) * 0.5, t0, 0.2, pan=-0.5 + (i % 3) * 0.5, raw=True)
-    add(kick(0.35, 120, 45), t0 + 0.26, 0.55, raw=True); add(tick(700 + i * 40, 0.04), t0 + 0.26, 0.2, raw=True)
-    add(pluck(note([62, 64, 66, 69, 71, 74, 76][i]), 0.4), t0 + 0.27, 0.14, raw=True)
-add(whoosh(0.3), A0 + 3.0, 0.4, raw=True)          # roof falls
-add(kick(0.7, 140, 35), A0 + 3.3, 1.0, raw=True); add(clap(), A0 + 3.3, 0.5, raw=True)
-add(pluck(note(74), 1.0) + pluck(note(78), 1.0) * .7 + pluck(note(81), 1.0) * .5, A0 + 3.32, 0.3, raw=True)
-add(whoosh(0.4), A0 + 4.95, 0.5, raw=True)         # iris into REWOLUCJA
+# --- feature cards: parallax carousel (real seconds 13.1-18.55), right after REWOLUCJA
+A0 = 13.1
+add(whoosh(0.45), A0 - 0.05, 0.5, raw=True)                                   # REWOLUCJA pushed out
+add(pad([note(57), note(62), note(66), note(69)], 4.6), A0, 0.14, raw=True)
+for i in range(10):                                                          # light groove under the cards
+    bt = A0 + i * 0.5
+    add(kick(0.35, 130, 45), bt, 0.55 if i % 2 == 0 else 0.4, raw=True)
+    if i % 2 == 1:
+        add(clap(), bt, 0.25, raw=True)
+    for h in range(2):
+        add(hat(), bt + 0.25 * h + 0.125, 0.1, pan=0.35 if h else -0.35, raw=True)
+for i, ld in enumerate((0.5, 1.25, 2.0, 2.75, 3.5)):                         # each card slides into the centre
+    if i:
+        add(whoosh(0.4) * 0.6, A0 + ld - 0.4, 0.35, pan=0.4, raw=True)
+    add(tick(900 + i * 80, 0.04), A0 + ld, 0.22, raw=True)
+    add(pluck(note([62, 66, 69, 71, 74][i]), 0.5), A0 + ld, 0.2, raw=True)
+add(whoosh(0.45, up=False), A0 + 3.85, 0.35, raw=True)                         # pull back: all cards in a row
+for i in range(5):
+    add(pop(560 + i * 70, 0.15), A0 + 4.55 + i * 0.05, 0.16, pan=-0.6 + i * 0.3, raw=True)
+add(whoosh(0.5), A0 + 4.5, 0.45, raw=True)                                    # cards fly into the centre
+add(kick(0.7, 140, 35), A0 + 5.05, 1.0, raw=True); add(clap(), A0 + 5.05, 0.45, raw=True)
+add(pluck(note(74), 1.0) + pluck(note(78), 1.0) * .7 + pluck(note(81), 1.0) * .5, A0 + 5.07, 0.3, raw=True)
 
 # --- CTA (+1.5 s)
 add(kick(0.6, 150, 40), 22.0, 0.9); add(clap(), 22.0, 0.45)
