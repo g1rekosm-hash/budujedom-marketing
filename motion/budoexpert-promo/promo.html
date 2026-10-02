@@ -37,7 +37,8 @@ const CFG = {
   },
   font: 'Poppins',
 };
-const INTRO = new URLSearchParams(location.search).get('only') === 'intro';   // ?only=intro → render just the test intro
+const INTRO = new URLSearchParams(location.search).get('only') === 'intro';
+const V2 = new URLSearchParams(location.search).get('v') === '2';   // ?v=2 → landing version: pains, role-tagged cards, 6 roles, sign-up CTA   // ?only=intro → render just the test intro
 if (INTRO) CFG.DUR = 3.2;
 const { W, H, C } = CFG;
 let T = 0; // current render time (for pencil "boil")
@@ -588,7 +589,12 @@ function scene2(ctx, t, oy = 0) {
 /* =====================================================================
    SCENE 3 · 8.0–12.0 · pytania
    ===================================================================== */
-const QS = [
+const QS = V2 ? [   // the old world, one pain per role
+  { t: 8.0, a: 'Budżet znowu', b: 'przekroczony', ic: 'house', tag: 'STARY ŚWIAT · INWESTOR' },
+  { t: 9.0, a: 'Kolejna wycena', b: 'bez odzewu', ic: 'helmet', tag: 'STARY ŚWIAT · WYKONAWCA' },
+  { t: 10.0, a: 'Pytają o ceny,', b: 'nie kupują', ic: 'shop', tag: 'STARY ŚWIAT · HURTOWNIA' },
+  { t: 11.0, a: 'Znów darmowe', b: 'poprawki', ic: 'architect', tag: 'STARY ŚWIAT · ARCHITEKT' },
+] : [
   { t: 8.0, a: 'Planujesz', b: 'budowę domu', ic: 'house', tag: 'ETAP 01 · PLANOWANIE' },
   { t: 9.0, a: 'Jesteś w trakcie', b: 'budowy', ic: 'crane', tag: 'ETAP 02 · REALIZACJA' },
   { t: 10.0, a: 'Jesteś', b: 'wykonawcą', ic: 'helmet', tag: 'ROLA · WYKONAWCA' },
@@ -716,7 +722,14 @@ function scene4(ctx, t) {
    SCENE 5 · 15.5–20.5 · hub (jak Kapitan Planeta)
    ===================================================================== */
 const HUB = { x: 960, y: 540, r: 150 };
-const ROLES = [
+const ROLES = (V2 ? [   // the same six profiles as the sign-up form
+  { n: ['Inwestor'], ic: 'invest' },
+  { n: ['Wykonawca'], ic: 'hammer' },
+  { n: ['Architekt'], ic: 'architect' },
+  { n: ['Dostawca', 'materiałów'], ic: 'shop' },
+  { n: ['Deweloper'], ic: 'developer' },
+  { n: ['Kariera', 'w branży'], ic: 'helmet' },
+] : [
   { n: ['Inwestor'], ic: 'invest' },
   { n: ['Deweloper'], ic: 'developer' },
   { n: ['Architekt'], ic: 'architect' },
@@ -727,7 +740,7 @@ const ROLES = [
   { n: ['Sprzedawca'], ic: 'shop' },
   { n: ['Obsługa kredytów', 'i ubezpieczeń'], ic: 'shield' },
   { n: ['Project Manager'], ic: 'pm' },
-].map((r, k, all) => { const a = -Math.PI / 2 + k * TAU / all.length; return { ...r, k, ang: a, x: HUB.x + Math.cos(a) * 700, y: HUB.y + Math.sin(a) * 350 }; });
+]).map((r, k, all) => { const a = -Math.PI / 2 + k * TAU / all.length; return { ...r, k, ang: a, x: HUB.x + Math.cos(a) * 700, y: HUB.y + Math.sin(a) * 350 }; });
 const NODE_R = 60, HUB_TRI = 135;
 /* equilateral, centroid at (cx, cy), apex up (rot rotates it), corners rounded like the logo mark */
 function brandTri(cx, cy, R, rot = 0, round = .12) {
@@ -860,110 +873,176 @@ function scene5(ctx, t) {
 
 /* =====================================================================
    SCENE CARDS · 5.45 s · parallax carousel of feature cards, right after REWOLUCJA.
-   Each card: a sketch window (parallax layers), an icon badge, title + one line.
-   At the end the cards line up, fly into the centre and become the hub's logo.
+   Many cards in the strip: it stops on five, whips past the rest (each jump longer),
+   far cards dissolve in purple fog. At the end the camera pulls back over rows of
+   cards, then they fly into the centre and become the hub's logo.
    ===================================================================== */
 const CAR = { DUR: 5.45, CW: 600, CH: 760, CY: 560 };
-const CARDS = [
-  { t: 'Cały proces budowy', d: ['Prowadzimy Cię krok po kroku —', 'od działki do odbioru kluczy.'], ic: 'route', ill: 'process', tint: '#F3EAF5' },
-  { t: 'Finansowanie', d: ['Kredyt i ubezpieczenie', 'bez biegania po bankach.'], ic: 'invest', ill: 'finance', tint: '#E6F8F2' },
-  { t: 'Baza projektów', d: ['Gotowe projekty domów.', 'Wybierz, porównaj, buduj.'], ic: 'pm', ill: 'elevation', tint: '#F3EAF5' },
-  { t: 'Eksperci i architekci', d: ['Wsparcie specjalistów', 'na każdym etapie budowy.'], ic: 'architect', ill: 'plan', tint: '#E6F8F2' },
-  { t: 'Sprawdzeni wykonawcy', d: ['Zaufane ekipy i materiały', 'w niższych cenach.'], ic: 'helmet', ill: 'build', tint: '#F3EAF5' },
-];
-const CAR_LAND = [0.5, 1.25, 2.0, 2.75, 3.5], CAR_MOVE = .4;
+const T1 = '#F3EAF5', T2 = '#E6F8F2';
+const CARDS = (V2 ? [
+  ['INWESTOR', 'Dom bez chaosu', 'Prowadzimy Cię od projektu', 'aż po odbiór kluczy.', 'route', 'process'],
+  ['INWESTOR', 'Projekt na Twój budżet', 'Filtrujesz gotowe projekty', 'według swoich możliwości.', 'house', 'elevation'],
+  ['WYKONAWCA', 'Zlecenia bez szukania', 'Gotowe tematy z okolicy', 'zamiast pustych wycen.', 'hammer', 'map'],
+  ['WYKONAWCA', 'Płatności etapami', 'Jasny harmonogram płatności', 'za każdy etap prac.', 'invest', 'finance'],
+  ['INWESTOR', 'Przejrzyste oferty', 'Porównujesz oferty', 'zweryfikowanych firm.', 'tag', 'docs'],
+  ['HURTOWNIA', 'Zamówienia, nie zapytania', 'Klienci zdecydowani na zakup', 'zamiast pustych wycen.', 'shop', 'build'],
+  ['ARCHITEKT', 'Koniec poprawek „na słowo”', 'Klient zatwierdza etapy', 'cyfrowo, z pełną historią.', 'pm', 'plan'],
+  ['WYKONAWCA', 'Mniej papierów', 'Dokumenty i faktury', 'w jednym cyfrowym obiegu.', 'pm', 'docs'],
+  ['HURTOWNIA', 'Lepsza logistyka', 'Prognozy zapotrzebowania', 'w Twoim regionie.', 'crane', 'map'],
+  ['ARCHITEKT', 'Jeden projekt, wielu klientów', 'Twoje gotowe projekty', 'trafiają do nowych inwestorów.', 'architect', 'elevation'],
+  ['INWESTOR', 'Finansowanie', 'Kredyt i ubezpieczenie', 'bez biegania po bankach.', 'shield', 'finance'],
+  ['INWESTOR', 'Odbiór z ekspertem', 'Specjaliści sprawdzą', 'Twój dom przed odbiorem.', 'helmet', 'plan'],
+  ['WYKONAWCA', 'Zlecenia przez cały rok', 'Stały dostęp do inwestycji', 'także poza sezonem.', 'crane', 'calendar'],
+  ['ARCHITEKT', 'Wirtualne biuro', 'Ustalenia, rzuty i pliki', 'w jednym miejscu.', 'bubble', 'chat'],
+  ['DEWELOPER', 'Widzisz realny popyt', 'Klienci szukający domów', 'jeszcze przed budową.', 'developer', 'finance'],
+  ['DEWELOPER', 'Budżet pod kontrolą', 'Każdy etap i kosztorys', 'widoczny od początku.', 'invest', 'calendar'],
+  ['KARIERA', 'Praca w branży', 'Szkolenia i zlecenia', 'w Twojej okolicy.', 'wrench', 'process'],
+  ['INWESTOR', 'Wszystko pod ręką', 'Faktury, umowy, protokoły', 'na Twoim koncie.', 'pm', 'docs'],
+] : [
+  [null, 'Cały proces budowy', 'Prowadzimy Cię krok po kroku —', 'od działki do odbioru kluczy.', 'route', 'process'],
+  [null, 'Bezpieczne płatności', 'Płatności rozłożone', 'na etapy budowy.', 'shield', 'finance'],
+  [null, 'Finansowanie', 'Kredyt i ubezpieczenie', 'bez biegania po bankach.', 'invest', 'finance'],
+  [null, 'Harmonogram budowy', 'Każdy etap budowy', 'w jednym kalendarzu.', 'pm', 'calendar'],
+  [null, 'Porównanie ofert', 'Przejrzyste oferty', 'od zweryfikowanych firm.', 'tag', 'docs'],
+  [null, 'Baza projektów', 'Gotowe projekty domów.', 'Wybierz, porównaj, buduj.', 'house', 'elevation'],
+  [null, 'Dokumenty i faktury', 'Wszystko na Twoim koncie,', 'zawsze pod ręką.', 'pm', 'docs'],
+  [null, 'Materiały budowlane', 'Zamówienia wyliczone', 'pod Twój projekt.', 'shop', 'build'],
+  [null, 'Odbiory techniczne', 'Odbiór domu', 'ze wsparciem specjalistów.', 'helmet', 'plan'],
+  [null, 'Eksperci i architekci', 'Wsparcie specjalistów', 'na każdym etapie budowy.', 'architect', 'plan'],
+  [null, 'Zlecenia w okolicy', 'Nowe tematy dla ekip', 'z Twojego regionu.', 'hammer', 'map'],
+  [null, 'Wirtualne biuro', 'Projekty, ustalenia i pliki', 'w jednym miejscu.', 'bubble', 'chat'],
+  [null, 'Mediacja w sporach', 'Bezstronne wsparcie,', 'gdy coś pójdzie nie tak.', 'bubble', 'chat'],
+  [null, 'Sprzedaż projektów', 'Architekt sprzedaje', 'swój projekt wielokrotnie.', 'architect', 'elevation'],
+  [null, 'Sprawdzeni wykonawcy', 'Zaufane ekipy i materiały', 'w niższych cenach.', 'helmet', 'build'],
+  [null, 'Dla hurtowni', 'Gotowe zamówienia', 'zamiast pustych wycen.', 'shop', 'map'],
+  [null, 'Dla deweloperów', 'Klienci, wykonawcy i budżet', 'w jednym systemie.', 'developer', 'calendar'],
+  [null, 'Kariera w branży', 'Szkolenia i zlecenia', 'dla nowych fachowców.', 'wrench', 'process'],
+]).map(([r, t, d1, d2, ic, ill], k) => ({ r, t, d: [d1, d2], ic, ill, tint: k % 2 ? T2 : T1 }));
+const CAR_STOPS = [0, 2, 5, 9, 14];   // each jump is longer → the strip keeps speeding up
+const CAR_LAND = [0.5, 1.25, 2.0, 2.75, 3.5], CAR_MOVE = .5;
 const CAR_SUM = [3.85, 4.3], CAR_CONV = 4.5, CAR_LOGO = 5.0;
 let CARD_CV = null;
 function carIndex(u) {   // which card sits in the middle (continuous)
   let s = lerp(-1.7, 0, E.outCubic(P(u, 0, CAR_LAND[0])));
-  for (let i = 1; i < CARDS.length; i++) {
-    const a = CAR_LAND[i] - CAR_MOVE; s += E.inOutCubic(P(u, a, CAR_LAND[i]));
-    const dt = u - CAR_LAND[i]; if (dt > 0) s -= .045 * Math.exp(-dt * 9) * Math.sin(dt * 26);
+  for (let i = 1; i < CAR_STOPS.length; i++) {
+    const a = CAR_LAND[i] - CAR_MOVE, n = CAR_STOPS[i] - CAR_STOPS[i - 1];
+    s += n * E.inOutCubic(P(u, a, CAR_LAND[i]));
+    const dt = u - CAR_LAND[i]; if (dt > 0) s -= .05 * Math.exp(-dt * 9) * Math.sin(dt * 26);
   }
-  return lerp(s, 2, E.inOutCubic(P(u, ...CAR_SUM)));
+  return s;
 }
 function wrapLines(ctx, lines, x, y, lh, p) { lines.forEach((l, i) => riseText(ctx, l, x, y + i * lh, lh, clamp(p * 1.4 - i * .25))); }
 /* the sketch illustrations (card-local, centred on 0,0, about 500×360) */
 function cardIll(ctx, kind, p, sd) {
   const ink = { col: hexA(C.purple, .85), w: 3, seed: sd }, soft = { col: C.sketch, w: 2, seed: sd + 50, passes: 1 };
   const lbl = (s, x, y) => { font(ctx, 13, 600, 2); ctx.fillStyle = hexA(C.purple, .7 * clamp(p * 2 - .6)); ctx.textAlign = 'center'; ctx.fillText(s, x, y); ctx.textAlign = 'left'; };
+  const q = (a) => clamp(p * 2 - a);
   if (kind === 'process') {
     const pts = [[-200, 110], [-110, 30], [-10, 80], [80, -10], [190, -90]];
-    sPoly(ctx, pts, p, { ...soft, dash: null, w: 4, col: hexA(C.teal, .9) });
-    ['DZIAŁKA', 'PROJEKT', 'BUDOWA', 'KLUCZE'].forEach((s, i) => { const [x, y] = pts[i + (i > 1 ? 1 : 0)]; const q = clamp(p * 4 - i * .7); if (q > 0) { dot(ctx, x, y, 11 * q, C.purple); dot(ctx, x, y, 5 * q, C.white); lbl(s, x, y + 36); } });
+    sPoly(ctx, pts, p, { ...soft, w: 4, col: hexA(C.teal, .9) });
+    ['DZIAŁKA', 'PROJEKT', 'BUDOWA', 'KLUCZE'].forEach((s, i) => { const [x, y] = pts[i + (i > 1 ? 1 : 0)]; const r = clamp(p * 4 - i * .7); if (r > 0) { dot(ctx, x, y, 11 * r, C.purple); dot(ctx, x, y, 5 * r, C.white); lbl(s, x, y + 36); } });
     icon(ctx, 'house', 190, -150, .9, clamp(p * 1.6 - .5), { ...ink, w: 2.5 });
   } else if (kind === 'finance') {
     [60, 95, 80, 135, 175].forEach((h, i) => sPoly(ctx, [[-200 + i * 70, 120], [-200 + i * 70, 120 - h], [-155 + i * 70, 120 - h], [-155 + i * 70, 120]], clamp(p * 2 - i * .2), { ...ink, w: 2.5, seed: sd + i }));
     sPoly(ctx, [[-180, 30], [-110, -10], [-40, 10], [30, -50], [110, -90]], clamp(p * 1.6 - .5), { ...soft, col: C.teal2, w: 3 });
-    for (let k = 0; k < 4; k++) sArc(ctx, 180, 110 - k * 22, 46, 13, 0, TAU, clamp(p * 2 - .8 - k * .1), { ...ink, w: 2.5, seed: sd + 20 + k });
-    font(ctx, 90, 300); ctx.fillStyle = hexA(C.teal2, clamp(p * 2 - 1)); ctx.fillText('%', 140, -40);
+    for (let k = 0; k < 4; k++) sArc(ctx, 180, 110 - k * 22, 46, 13, 0, TAU, q(.8 + k * .1), { ...ink, w: 2.5, seed: sd + 20 + k });
+    font(ctx, 90, 300); ctx.fillStyle = hexA(C.teal2, q(1)); ctx.fillText('%', 140, -40);
   } else if (kind === 'elevation') {
     sPoly(ctx, [[-150, 120], [-150, -10], [150, -10], [150, 120]], p, ink);
     sPoly(ctx, [[-180, 0], [0, -130], [180, 0]], clamp(p * 1.4 - .2), { ...ink, seed: sd + 3 });
-    sPoly(ctx, [[-30, 120], [-30, 40], [30, 40], [30, 120]], clamp(p * 2 - .6), { ...ink, w: 2.5, seed: sd + 4 }, false);
-    [[-120, 20], [70, 20]].forEach(([x, y], i) => sPoly(ctx, [[x, y], [x + 50, y], [x + 50, y + 45], [x, y + 45]], clamp(p * 2 - .8), { ...ink, w: 2.5, seed: sd + 6 + i }, true));
-    sPoly(ctx, [[90, -65], [90, -110], [118, -110], [118, -45]], clamp(p * 2 - .9), { ...ink, w: 2.5, seed: sd + 9 });
-    sLine(ctx, -150, 150, 150, 150, clamp(p * 2 - 1), soft); sLine(ctx, -150, 142, -150, 158, clamp(p * 2 - 1), soft); sLine(ctx, 150, 142, 150, 158, clamp(p * 2 - 1), soft);
+    sPoly(ctx, [[-30, 120], [-30, 40], [30, 40], [30, 120]], q(.6), { ...ink, w: 2.5, seed: sd + 4 });
+    [[-120, 20], [70, 20]].forEach(([x, y], i) => sPoly(ctx, [[x, y], [x + 50, y], [x + 50, y + 45], [x, y + 45]], q(.8), { ...ink, w: 2.5, seed: sd + 6 + i }, true));
+    sPoly(ctx, [[90, -65], [90, -110], [118, -110], [118, -45]], q(.9), { ...ink, w: 2.5, seed: sd + 9 });
+    sLine(ctx, -150, 150, 150, 150, q(1), soft); sLine(ctx, -150, 142, -150, 158, q(1), soft); sLine(ctx, 150, 142, 150, 158, q(1), soft);
     lbl('12,40 m', 0, 176);
   } else if (kind === 'plan') {
     sPoly(ctx, [[-210, -130], [210, -130], [210, 130], [-210, 130]], p, ink, true);
-    sLine(ctx, -40, -130, -40, 40, clamp(p * 2 - .5), ink); sLine(ctx, -210, 40, 60, 40, clamp(p * 2 - .6), ink); sLine(ctx, 90, -130, 90, 130, clamp(p * 2 - .7), ink);
-    sArc(ctx, -40, 40, 50, 50, -Math.PI / 2, 0, clamp(p * 2 - 1), soft); sArc(ctx, 90, 40, 46, 46, Math.PI, Math.PI * 1.5, clamp(p * 2 - 1), soft);
-    lbl('SALON 32 m²', -125, -40); lbl('KUCHNIA', 25, -40); lbl('SYPIALNIA', 150, 10); lbl('RZUT PARTERU · 1:100', -60, 100);
+    sLine(ctx, -40, -130, -40, 40, q(.5), ink); sLine(ctx, -210, 40, 60, 40, q(.6), ink); sLine(ctx, 90, -130, 90, 130, q(.7), ink);
+    sArc(ctx, -40, 40, 50, 50, -Math.PI / 2, 0, q(1), soft); sArc(ctx, 90, 40, 46, 46, Math.PI, Math.PI * 1.5, q(1), soft);
+    lbl('SALON', -125, -40); lbl('KUCHNIA', 25, -40); lbl('SYPIALNIA', 150, 10); lbl('RZUT PARTERU · 1:100', -60, 100);
   } else if (kind === 'build') {
     icon(ctx, 'crane', -90, 10, 2.5, p, { ...ink, w: 2.5 });
     icon(ctx, 'tag', 150, -40, 1.3, clamp(p * 1.5 - .4), { col: C.teal2, w: 3, seed: sd + 8 });
-    font(ctx, 34, 800); ctx.fillStyle = hexA(C.purple, clamp(p * 2 - 1)); ctx.textAlign = 'center'; ctx.fillText('−%', 150, 90); ctx.textAlign = 'left';
+  } else if (kind === 'calendar') {
+    sPoly(ctx, [[-220, -130], [220, -130], [220, 130], [-220, 130]], p, ink, true);
+    sLine(ctx, -220, -90, 220, -90, q(.4), ink);
+    for (let c = 1; c < 6; c++) sLine(ctx, -220 + c * 73, -90, -220 + c * 73, 130, q(.5 + c * .05), soft);
+    [[0, 2.2, 0], [1.4, 2.4, 1], [2.8, 1.8, 0], [3.4, 2.4, 1], [1, 1.6, 0]].forEach(([x0, w, tc], i) => {
+      const bp = clamp(p * 2.4 - 1 - i * .12); if (bp <= 0) return;
+      ctx.fillStyle = tc ? hexA(C.teal, .85) : hexA(C.purple, .75); roundRect(ctx, -212 + x0 * 73, -70 + i * 38, w * 73 * bp, 22, 11); ctx.fill();
+    });
+    lbl('HARMONOGRAM', -150, -104);
+  } else if (kind === 'docs') {
+    for (let k = 2; k >= 0; k--) { const o = k * 22; sPoly(ctx, [[-130 + o, -140 + o], [90 + o, -140 + o], [130 + o, -100 + o], [130 + o, 130 + o], [-130 + o, 130 + o]], clamp(p * 1.6 - k * .2), { ...ink, w: 2.5, seed: sd + k }, true); }
+    for (let i = 0; i < 6; i++) sLine(ctx, -100, -90 + i * 32, i % 3 === 2 ? 20 : 90, -90 + i * 32, q(.6 + i * .1), soft);
+    sArc(ctx, 70, 80, 42, 42, 0, TAU, q(1), { col: C.teal2, w: 3, seed: sd + 9 });
+    font(ctx, 18, 800, 2); ctx.fillStyle = hexA(C.teal2, q(1.3)); ctx.textAlign = 'center'; ctx.fillText('OK', 70, 87); ctx.textAlign = 'left';
+  } else if (kind === 'map') {
+    sPoly(ctx, [[-200, -60], [-120, -130], [10, -110], [120, -140], [210, -40], [170, 90], [40, 130], [-90, 110], [-210, 50]], p, { ...soft, w: 2.5 }, true);
+    [[-110, -20], [20, -60], [120, 20], [-30, 70], [150, -80]].forEach(([x, y], i) => {
+      const r = clamp(p * 3 - .8 - i * .25); if (r <= 0) return;
+      ctx.fillStyle = i % 2 ? C.teal : C.purple; ctx.beginPath(); ctx.arc(x, y - 30 * r, 16 * r, Math.PI * .85, Math.PI * 2.15); ctx.lineTo(x, y); ctx.closePath(); ctx.fill();
+      dot(ctx, x, y - 30 * r, 6 * r, C.white);
+    });
+    sPoly(ctx, [[-110, -20], [20, -60], [120, 20], [-30, 70]], q(1.1), { ...soft, col: hexA(C.teal2, .8) });
+  } else if (kind === 'chat') {
+    sPoly(ctx, [[-210, -130], [60, -130], [60, -30], [-150, -30], [-190, 0], [-180, -30], [-210, -30]], p, ink, true);
+    sPoly(ctx, [[-40, 10], [210, 10], [210, 110], [180, 110], [190, 140], [140, 110], [-40, 110]], clamp(p * 1.5 - .4), { ...ink, col: C.teal2, seed: sd + 3 }, true);
+    for (let i = 0; i < 2; i++) sLine(ctx, -180, -100 + i * 34, i ? -40 : 30, -100 + i * 34, q(.6 + i * .1), soft);
+    for (let i = 0; i < 2; i++) sLine(ctx, -10, 40 + i * 34, i ? 110 : 180, 40 + i * 34, q(1 + i * .1), soft);
   }
 }
-/* paint one card into its own canvas; d = signed distance from the centre slot */
-function paintCard(c, k, d, u) {
+/* paint one card into its own canvas; d = signed distance from the centre slot, fog = extra fade */
+function paintCard(c, k, d, fog = 0) {
   const { CW, CH } = CAR, cd = CARDS[k], ctx = c.getContext('2d');
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, CW, CH);
   ctx.fillStyle = C.white; roundRect(ctx, 0, 0, CW, CH, 36); ctx.fill();
-  // window with the parallax sketch
   const wx = 22, wy = 22, ww = CW - 44, wh = 400;
   ctx.save(); roundRect(ctx, wx, wy, ww, wh, 24); ctx.clip();
   ctx.fillStyle = cd.tint; ctx.fillRect(wx, wy, ww, wh);
-  const gx = -210 * d, ix = -130 * d;
+  const ad = Math.abs(d), gx = -210 * d, ix = -130 * d;
   ctx.strokeStyle = hexA(C.purple, .08); ctx.lineWidth = 1; ctx.beginPath();
   for (let x = ((gx % 30) + 30) % 30; x < CW; x += 30) { ctx.moveTo(x, wy); ctx.lineTo(x, wy + wh); }
   for (let y = wy; y < wy + wh; y += 30) { ctx.moveTo(wx, y); ctx.lineTo(wx + ww, y); }
   ctx.stroke();
   const draw = d > .4 ? clamp((1.9 - d) / 1.4) : 1;
-  ctx.save(); ctx.translate(CW / 2 + ix, wy + wh / 2 + 6); cardIll(ctx, cd.ill, E.outCubic(draw), 700 + k * 40); ctx.restore();
+  if (draw > 0) { ctx.save(); ctx.translate(CW / 2 + ix, wy + wh / 2 + 6); cardIll(ctx, cd.ill, E.outCubic(draw), 700 + k * 40); ctx.restore(); }
   ctx.restore();
-  // text reveal follows how close the card is to the centre
-  const tp = E.outCubic(clamp(1 - Math.abs(d) * 1.7)), tx = 46 - 30 * d;
+  if (cd.r) {   // role chip
+    font(ctx, 15, 700, 3); const cw = ctx.measureText(cd.r).width + 30;
+    ctx.fillStyle = C.purple; roundRect(ctx, wx + 18, wy + 18, cw, 34, 17); ctx.fill();
+    ctx.fillStyle = C.white; ctx.fillText(cd.r, wx + 33, wy + 41);
+  }
+  const tp = E.outCubic(clamp(1 - ad * 1.7)), tx = 46 - 30 * d;
   const bs = .75 + .25 * E.outBack(tp, 2.5), bx = CW - 100 - 60 * d, by = wy + wh;
   dot(ctx, bx, by, 64 * bs, C.teal); ring(ctx, bx, by, 64 * bs + 2, 8, C.white);
   icon(ctx, cd.ic, bx, by, .72 * bs, 1, { col: C.white, w: 3, seed: 760 + k, passes: 1 });
-  font(ctx, 17, 700, 4); ctx.fillStyle = C.teal2; riseText(ctx, `${String(k + 1).padStart(2, '0')} / 05`, tx, 492, 17, tp);
+  font(ctx, 17, 700, 4); ctx.fillStyle = C.teal2; riseText(ctx, String(k + 1).padStart(2, '0'), tx, 492, 17, tp);
   font(ctx, 100, 800); const fs = Math.min(54, 100 * (CW - 92) / ctx.measureText(cd.t).width);
   font(ctx, fs, 800, -.5); ctx.fillStyle = C.purple; riseText(ctx, cd.t, tx, 565, fs, tp);
   font(ctx, 27, 400); ctx.fillStyle = hexA(C.ink, .78); wrapLines(ctx, cd.d, tx, 630, 40, clamp(tp * 1.25 - .2));
   ctx.fillStyle = C.teal; ctx.fillRect(tx, 700, 60 * tp, 5);
-  // cards away from the centre sink into the purple
-  const dim = clamp(Math.abs(d) * .55, 0, .6);
+  // away from the centre the cards sink into the purple fog
+  const dim = clamp(ad * .38 + fog, 0, .9);
   if (dim > 0) { ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = hexA(C.purple2, dim); ctx.fillRect(0, 0, CW, CH); ctx.globalCompositeOperation = 'source-over'; }
 }
 /* draw a card canvas rotated about its vertical axis, by column slices */
-function projectCard(ctx, c, X, th, z0, s) {
-  const { CW, CH, CY } = CAR, F = 1500, ct = Math.cos(th), st = Math.sin(th), STEP = 4;
+function projectCard(ctx, c, X, th, z0, s, cy = CAR.CY) {
+  const { CW, CH } = CAR, F = 1500, ct = Math.cos(th), st = Math.sin(th), STEP = 4;
   const sc0 = F / (F + z0);
-  ctx.fillStyle = 'rgba(25,0,35,.32)'; ctx.beginPath(); ctx.ellipse(W / 2 + X * sc0 * s, CY + (CH / 2 + 34) * sc0 * s, CW * .46 * sc0 * s * Math.max(.3, ct), 26 * sc0 * s, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(25,0,35,.32)'; ctx.beginPath(); ctx.ellipse(W / 2 + X * sc0 * s, cy + (CH / 2 + 34) * sc0 * s, CW * .46 * sc0 * s * Math.max(.3, ct), 26 * sc0 * s, 0, 0, TAU); ctx.fill();
+  if (Math.abs(th) < 1e-3) { const w = CW * sc0 * s, h = CH * sc0 * s; ctx.drawImage(c, W / 2 + X * sc0 * s - w / 2, cy - h / 2, w, h); return; }
   for (let x = 0; x < CW; x += STEP) {
     const xa = x - CW / 2, xb = xa + STEP;
     const pa = F / (F + z0 + xa * st), pb = F / (F + z0 + xb * st), pm = (pa + pb) / 2;
     const sxa = W / 2 + (X + xa * ct) * pa * s, sxb = W / 2 + (X + xb * ct) * pb * s;
     const w = sxb - sxa; if (Math.abs(w) < .05) continue;
-    ctx.drawImage(c, x, 0, STEP, CH, Math.min(sxa, sxb), CY - CH / 2 * pm * s, Math.abs(w) + .7, CH * pm * s);
+    ctx.drawImage(c, x, 0, STEP, CH, Math.min(sxa, sxb), cy - CH / 2 * pm * s, Math.abs(w) + .7, CH * pm * s);
   }
 }
 function sceneCards(ctx, u) {
   camera(ctx, u + 300);
-  // purple blueprint background (far parallax layer)
-  const s = carIndex(u);
+  const s = carIndex(u), N = CARDS.length;
   const bg = ctx.createRadialGradient(W / 2, H / 2, 100, W / 2, H / 2, 1200); bg.addColorStop(0, '#7E1A8C'); bg.addColorStop(1, C.purple2);
   ctx.fillStyle = bg; ctx.fillRect(-200, -200, W + 400, H + 400);
   const go = -s * 70;
@@ -973,29 +1052,61 @@ function sceneCards(ctx, u) {
   ctx.stroke();
   const gl = ctx.createRadialGradient(W / 2, CAR.CY, 50, W / 2, CAR.CY, 650); gl.addColorStop(0, hexA(C.teal, .22)); gl.addColorStop(1, hexA(C.teal, 0));
   ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H);
-  // REWOLUCJA is pushed out to the left as the first card comes in
   const ex = E.inCubic(P(u, 0, .45));
   if (ex < 1) { ctx.save(); ctx.globalAlpha = 1 - ex; ctx.translate(-1500 * ex, 0); scene4content(ctx, 15.0 + u); ctx.restore(); }
+  if (!CARD_CV) CARD_CV = CARDS.map(() => { const c = document.createElement('canvas'); c.width = CAR.CW; c.height = CAR.CH; return c; });
+  const m = E.inOutCubic(P(u, ...CAR_SUM)), G = lerp(1, .42, m);
+  const gone = E.inCubic(P(u, CAR_CONV, CAR_CONV + .35));
+  // pull-back: more rows of cards appear above and below, deep in the fog
+  if (m > 0 && gone < 1) {
+    const gs = G * .86, sp = 680 * gs;
+    [[-1, 5, 1], [1, 11, -1]].forEach(([row, sh, dir]) => {
+      const cy = CAR.CY + row * (CAR.CH * G * 1.12) * lerp(.6, 1, m) * (1 - gone * .6);
+      const drift = (u - CAR_SUM[0]) * 140 * dir, base = Math.floor(s) + sh;
+      for (let j = -5; j <= 5; j++) {
+        const k = (((base + j) % N) + N) % N, x = (j - (s % 1)) * sp + drift;
+        if (Math.abs(x) > W / 2 + 300) continue;
+        const fogA = .45 + Math.min(.4, Math.abs(x) / 2400);
+        paintCard(CARD_CV[k], k, 0, fogA);
+        ctx.save(); ctx.globalAlpha = m * (1 - gone); projectCard(ctx, CARD_CV[k], x / gs * (1 - gone * .5), 0, 0, gs * (1 - gone * .5), cy); ctx.restore();
+      }
+    });
+  }
+  // main strip, far cards first
+  const vis = [];
+  for (let k = 0; k < N; k++) if (Math.abs(k - s) < (m > 0 ? 6.5 : 4.6)) vis.push(k);
+  vis.sort((a, b) => Math.abs(b - s) - Math.abs(a - s));
+  for (const k of vis) {
+    const d = k - s, ad = Math.abs(d);
+    const cv = E.inBack(P(u, CAR_CONV + .1 - Math.min(ad, 4) * .05, CAR_CONV + .52 - Math.min(ad, 4) * .05), .7);
+    if (cv >= 1) continue;
+    paintCard(CARD_CV[k], k, d * (1 - m), m * Math.min(.5, Math.max(0, ad - 1) * .12));
+    const off = Math.sign(d) * (ad < 1 ? ad * 640 : 640 + (ad - 1) * 400);
+    const X = lerp(off, d * 680, m) * (1 - cv);
+    const th = clamp(d, -1.3, 1.3) * .55 * (1 - m), z0 = Math.min(ad, 3) * 260 * (1 - m);
+    ctx.save(); ctx.globalAlpha = clamp(1 - (ad - 2.2) / 2.4 * (1 - m)) * (m > 0 ? clamp(1 - (ad - 4.5) / 2) : 1);
+    projectCard(ctx, CARD_CV[k], X, th, z0, G * (1 - cv));
+    ctx.restore();
+  }
+  // fog banks on both sides
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  [[0, 1], [W, -1]].forEach(([x0, dir]) => {
+    const g = ctx.createLinearGradient(x0, 0, x0 + dir * 620, 0); g.addColorStop(0, hexA(C.purple2, .92)); g.addColorStop(.55, hexA(C.purple2, .4)); g.addColorStop(1, hexA(C.purple2, 0));
+    ctx.fillStyle = g; ctx.fillRect(dir > 0 ? 0 : W - 620, 0, 620, H);
+  });
+  for (let i = 0; i < 6; i++) {   // slow drifting haze
+    const r = rng(880 + i), x = ((r() * W + u * (40 + 60 * r()) * (i % 2 ? 1 : -1)) % W + W) % W, y = 200 + r() * 700, R = 300 + r() * 300;
+    const h = ctx.createRadialGradient(x, y, 0, x, y, R); h.addColorStop(0, `rgba(190,150,205,${.07 + .05 * r()})`); h.addColorStop(1, 'rgba(190,150,205,0)');
+    ctx.fillStyle = h; ctx.fillRect(x - R, y - R, R * 2, R * 2);
+  }
+  ctx.restore();
   // heading + progress
   const hp = E.outExpo(P(u, .3, .75)) * (1 - E.inCubic(P(u, CAR_SUM[0], CAR_SUM[0] + .3)));
   if (hp > 0) {
     font(ctx, 18, 700, 7); ctx.fillStyle = hexA(C.teal, hp); ctx.textAlign = 'center'; ctx.fillText('CO ZYSKUJESZ Z BUDOEXPERT', W / 2, 112); ctx.textAlign = 'left';
-    for (let i = 0; i < 5; i++) { const on = clamp(s - i + 1); ctx.fillStyle = hexA(C.white, .25 * hp); ctx.fillRect(W / 2 - 185 + i * 76, 1012, 66, 3); ctx.fillStyle = hexA(C.teal, hp); ctx.fillRect(W / 2 - 185 + i * 76, 1011, 66 * on, 5); }
-  }
-  // cards
-  if (!CARD_CV) CARD_CV = CARDS.map(() => { const c = document.createElement('canvas'); c.width = CAR.CW; c.height = CAR.CH; return c; });
-  const m = E.inOutCubic(P(u, ...CAR_SUM)), G = lerp(1, .5, m);
-  const order = CARDS.map((_, k) => k).sort((a, b) => Math.abs(b - s) - Math.abs(a - s));
-  for (const k of order) {
-    const d = k - s, ad = Math.abs(d);
-    if (ad > 2.7) continue;
-    const cv = E.inBack(P(u, CAR_CONV + Math.abs(k - 2) * -.05 + .1, CAR_CONV + .42 + Math.abs(k - 2) * -.05 + .1), .7);
-    if (cv >= 1) continue;
-    paintCard(CARD_CV[k], k, d * (1 - m), u);
-    const off = Math.sign(d) * (ad < 1 ? ad * 640 : 640 + (ad - 1) * 400);
-    const X = lerp(off, d * 680, m) * (1 - cv);
-    const th = clamp(d, -1.3, 1.3) * .55 * (1 - m), z0 = Math.min(ad, 2) * 260 * (1 - m);
-    projectCard(ctx, CARD_CV[k], X, th, z0, G * (1 - cv));
+    const pw = 420, fr = clamp((s + 1) / N);
+    ctx.fillStyle = hexA(C.white, .25 * hp); ctx.fillRect(W / 2 - pw / 2, 1012, pw, 3);
+    ctx.fillStyle = hexA(C.teal, hp); ctx.fillRect(W / 2 - pw / 2, 1011, pw * fr, 5);
   }
   // they collapse into the logo — the hub's core
   const lp = P(u, CAR_LOGO, CAR_LOGO + .3);
@@ -1089,9 +1200,9 @@ function scene6(ctx, tr) {
   }
   // tagline + logo
   font(ctx, 40, 500); ctx.fillStyle = hexA(C.white, .85);
-  riseText(ctx, 'Dołącz do rewolucji na rynku budowlanym.', W / 2, 712, 40, E.outExpo(P(t, 23.4, 23.9)), 0, 'center');
+  riseText(ctx, V2 ? 'Bądź jednym z pierwszych na liście przedstartowej.' : 'Dołącz do rewolucji na rynku budowlanym.', W / 2, 712, 40, E.outExpo(P(t, 23.4, 23.9)), 0, 'center');
   // the website, typed in
-  const url = 'budoexpert.pl';
+  const url = V2 ? 'Dołącz poniżej' : 'budoexpert.pl';
   font(ctx, 76, 700);
   const uw = ctx.measureText(url).width, ux = W / 2 - uw / 2, n = Math.round(url.length * P(t, 23.75, 24.35));
   if (t > 23.7) {
@@ -1099,6 +1210,12 @@ function scene6(ctx, tr) {
     if (n < url.length || Math.floor(t * 3.4) % 2 === 0) { const cw = ctx.measureText(url.slice(0, n)).width; ctx.fillStyle = C.teal; ctx.fillRect(ux + cw + 6, 784, 6, 66); }
     const ul = E.inOutCubic(P(t, 24.35, 24.75));
     if (ul > 0) { ctx.fillStyle = C.teal; ctx.fillRect(ux, 862, uw * ul, 7); }
+    const ar = E.outBack(P(t, 24.5, 24.85), 2);   // V2: arrow pointing at the sign-up banner below the video
+    if (V2 && ar > 0) {
+      const by = 806 + 12 * Math.abs(Math.sin((t - 24.5) * 5));
+      ctx.save(); ctx.translate(ux + uw + 70, by); ctx.scale(ar, ar); ctx.strokeStyle = C.teal; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); ctx.moveTo(0, -34); ctx.lineTo(0, 26); ctx.moveTo(-26, 2); ctx.lineTo(0, 28); ctx.lineTo(26, 2); ctx.stroke(); ctx.restore();
+    }
   }
   const la = E.outExpo(P(t, 24.6, 25.2));
   logo(ctx, W / 2, 975 + (1 - la) * 40, .28, C.teal, C.white, la);
