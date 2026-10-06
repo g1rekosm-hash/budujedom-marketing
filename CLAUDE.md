@@ -18,6 +18,11 @@ deweloperów i osoby szukające pracy w branży. Obecnie etap przedstartowy: lis
 Źródło animacji: `promo.html` (canvas), render: `render.mjs`, muzyka: `soundtrack.py` — szczegóły w `motion/budoexpert-promo/README.md`.
 Pliki MP4 mają ~33 MB; na stronę lepiej użyć wersji skompresowanej (`ffmpeg -crf 23`, `-movflags +faststart`).
 
+## Storyboard „Dwa światy budowania” — `motion/dwa-swiaty-storyboard/`
+Explainer 2D (~1:59) dla montażysty: najpierw cały stary świat (inwestor ×2, wykonawca ×2, hurtownia), potem zwrot z trójkątem
+i lustrzany nowy świat; CTA „Nie czekaj. Zapisz się już dziś.” PDF: `budoexpert-dwa-swiaty-storyboard.pdf`, treść w `content.mjs`,
+build: `node build.mjs`. W tekście lektora nie używać słowa „chaos”.
+
 ## Landing page — usunięty na prośbę właściciela (był w PR #3, można go odzyskać z historii gita)
 - Ma pokazać **video promo budoexpert v1**, a pod filmem baner/formularz **„Zapisz się”** (lista przedstartowa).
 - Copy i formularze można brać ze starego landingu (Buduje-dom.com, specyfikacja treści od użytkownika): role w formularzu —
