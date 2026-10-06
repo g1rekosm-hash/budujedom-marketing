@@ -1,5 +1,5 @@
 // Renders promo.html → video-promo-budoexpert-v1.mp4 frame by frame (deterministic, motion-blurred).
-// usage: node render.mjs [--preview t1,t2,...] [--samples 8] [--audio soundtrack.wav]
+// usage: node render.mjs [--page doodle.html] [--preview t1,t2,...] [--samples 8] [--audio soundtrack.wav]
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -15,7 +15,7 @@ const out = arg('--out', path.join(here, 'video-promo-budoexpert-v1.mp4'));
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ['--allow-file-access-from-files'] });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
 page.on('pageerror', e => { console.error('PAGE ERROR', e); process.exit(1); });
-await page.goto(pathToFileURL(path.join(here, 'promo.html')).href + '?export=1' + (arg('--query') ? '&' + arg('--query') : ''));
+await page.goto(pathToFileURL(path.join(here, arg('--page', 'promo.html'))).href + '?export=1' + (arg('--query') ? '&' + arg('--query') : ''));
 await page.waitForFunction('window.ready === true');
 
 if (preview) {

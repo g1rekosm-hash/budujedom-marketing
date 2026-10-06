@@ -13,6 +13,7 @@ deweloperów i osoby szukające pracy w branży. Obecnie etap przedstartowy: lis
 | Nazwa | Plik | Opis |
 |---|---|---|
 | **video promo budoexpert v1** | `video-promo-budoexpert-v1.mp4` | 30,5 s, 1920×1080, z dźwiękiem. Intro z kulą → „platforma, która zmienia rynek budowlany” → pytania („Planujesz budowę domu?”…) → REWOLUCJA → karuzela 18 kart z cechami (paralaksa, mgła) → hub ról + platforma 3D „Wszyscy. W jednym miejscu.” → CTA „Nie czekaj! Zapisz się już dziś.” + budoexpert.pl |
+| **video promo budoexpert doodle** | `video-promo-budoexpert-doodle.mp4` | 30,5 s, ta sama historia i muzyka co v1, ale w stylu odręcznego szkicu (białe/fioletowe tła, serduszka, strzałki, dopiski fontem Caveat). Źródło: `doodle.html` |
 | **video promo budoexpert problem** | `video-promo-budoexpert-problem.mp4` | Ta sama struktura, ale zamiast pytań „Stary świat” (problem każdej grupy), karty z etykietami ról, hub z 6 rolami z formularza, na końcu „Dołącz poniżej ↓” |
 
 Źródło animacji: `promo.html` (canvas), render: `render.mjs`, muzyka: `soundtrack.py` — szczegóły w `motion/budoexpert-promo/README.md`.

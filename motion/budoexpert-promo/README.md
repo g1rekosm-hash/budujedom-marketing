@@ -6,6 +6,7 @@ Styl: szkic architektoniczny na papierze milimetrowym.
 Są dwie wersje z tego samego silnika i tym samym dźwiękiem:
 
 - **video promo budoexpert v1** (`video-promo-budoexpert-v1.mp4`): pytania „Planujesz budowę domu?…”, cechy platformy, hub z 10 rolami, CTA z budoexpert.pl.
+- **video promo budoexpert doodle** (`video-promo-budoexpert-doodle.mp4`, z `doodle.html`): ta sama historia i ten sam dźwięk co v1, ale w stylu odręcznego szkicu — białe / fioletowe tła, „gotujące się” podwójne kontury, serduszka, strzałki, iskierki, buźki i dopiski odręcznym fontem Caveat („Dobra energia!”, „Dobre rzeczy się budują”, „razem od A do Z”). Pytania co sekundę, karteczki z taśmą zamiast kart 3D, hub z 10 rolami na papierze, CTA z klikającym kursorem i konfetti, plansza końcowa z logo i budoexpert.pl.
 - **video promo budoexpert problem** (`video-promo-budoexpert-problem.mp4`, render z `--query v=2`): w miejsce pytań „Stary świat” — ból każdej grupy (inwestor, wykonawca, hurtownia, architekt); karty z etykietami ról; hub z 6 rolami z formularza zapisu; na końcu „Dołącz poniżej ↓”, czyli prowadzi do banera pod filmem.
 
 | Czas | Scena |
@@ -27,6 +28,8 @@ Efekty iskier i błysku są inspirowane komponentami [React Bits](https://github
 |---|---|
 | `video-promo-budoexpert-v1.mp4` | video promo budoexpert v1 |
 | `video-promo-budoexpert-problem.mp4` | video promo budoexpert problem (wersja ze „starym światem”) |
+| `video-promo-budoexpert-doodle.mp4` | video promo budoexpert doodle (styl odręczny) |
+| `doodle.html` | silnik wersji doodle (osobny plik, czasy w sekundach filmu; font Caveat w `fonts/caveat-*`) |
 | `promo.html` | silnik animacji (otwórz w przeglądarce: spacja = pauza, ←/→ = przewijanie) |
 | `render.mjs` | render HTML → MP4 z motion blurem |
 | `soundtrack.py` | syntezowana muzyka 120 BPM |
@@ -37,7 +40,10 @@ Teksty i kolory edytujesz w `promo.html` (paleta w `CFG.C`). Ponowny render:
 python3 soundtrack.py
 FFMPEG=$(python3 -c "import imageio_ffmpeg as i;print(i.get_ffmpeg_exe())") node render.mjs --audio soundtrack.wav --out video-promo-budoexpert-v1.mp4
 node render.mjs --query v=2 --audio soundtrack.wav --out video-promo-budoexpert-problem.mp4
+node render.mjs --page doodle.html --samples 6 --audio soundtrack.wav --out video-promo-budoexpert-doodle.mp4
 ```
+
+`render.mjs` potrzebuje Playwrighta (`npm i playwright` albo symlink `node_modules` do globalnej instalacji).
 
 ## Projekt After Effects
 
