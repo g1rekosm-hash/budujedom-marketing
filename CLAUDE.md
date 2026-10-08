@@ -16,7 +16,7 @@ deweloperów i osoby szukające pracy w branży. Obecnie etap przedstartowy: lis
 | **video promo budoexpert doodle** | `video-promo-budoexpert-doodle.mp4` | 30,5 s, ta sama historia i muzyka co v1, ale w stylu odręcznego szkicu (białe/fioletowe tła, serduszka, strzałki, dopiski fontem Caveat). Źródło: `doodle.html` |
 | **video promo budoexpert problem** | `video-promo-budoexpert-problem.mp4` | Ta sama struktura, ale zamiast pytań „Stary świat” (problem każdej grupy), karty z etykietami ról, hub z 6 rolami z formularza, na końcu „Dołącz poniżej ↓” |
 
-**video budoexpert dwa światy** — `motion/budoexpert-dwa-swiaty/video-budoexpert-dwa-swiaty.mp4`: explainer 2D ~2:06 z polskim lektorem (syntetyczny, Piper „darkman”), wg storyboardu v3 „Dwa światy budowania” (stary świat w deszczu → trójkąt → nowy świat w aplikacji). Silnik `film.html`, lektor `voiceover.py`, dźwięk `soundtrack.py` — szczegóły i podmiana na prawdziwego lektora w README tego folderu.
+**video budoexpert dwa światy** — `motion/budoexpert-dwa-swiaty/video-budoexpert-dwa-swiaty.mp4`: explainer 2.5D 1:58 **bez lektora** (właściciel kazał go usunąć), wg storyboardu v3 „Dwa światy budowania”. Styl „pro”: warstwy z paralaksą i głębią ostrości, wolumetryczne światło, deszcz w planach, UI telefonów w 3D, kinetyczne napisy. Silnik `engine.js` + `scenes-old.js` / `scenes-new.js`, montaż `film.html`, dźwięk `soundtrack.py` — szczegóły w README tego folderu. Płaska wersja 1:1 ze storyboardem odrzucona jako „turbo płytka”.
 
 Źródło animacji: `promo.html` (canvas), render: `render.mjs`, muzyka: `soundtrack.py` — szczegóły w `motion/budoexpert-promo/README.md`.
 Pliki MP4 mają ~33 MB; na stronę lepiej użyć wersji skompresowanej (`ffmpeg -crf 23`, `-movflags +faststart`).

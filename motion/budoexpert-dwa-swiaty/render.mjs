@@ -10,7 +10,7 @@ import path from 'node:path';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > -1 ? process.argv[i + 1] : d; };
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
-const samples = +arg('--samples', 2), preview = arg('--preview'), audio = arg('--audio');
+const samples = +arg('--samples', 1), preview = arg('--preview'), audio = arg('--audio');
 const out = arg('--out', path.join(here, 'video-budoexpert-dwa-swiaty.mp4'));
 
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ['--allow-file-access-from-files'] });
@@ -39,7 +39,7 @@ const t0 = Date.now(), total = Math.round(DUR * FPS);
 for (let f = 0; f < total; f++) {
   const url = await page.evaluate(([f, s]) => window.renderFrameData(f, s, .95), [f, samples]);
   if (!ff.stdin.write(Buffer.from(url.split(',')[1], 'base64'))) await new Promise(r => ff.stdin.once('drain', r));
-  if (f % 250 === 0) console.log(`klatka ${f}/${total}  ${((Date.now() - t0) / 1000).toFixed(0)} s`);
+  if (f % 100 === 0) console.log(`klatka ${f}/${total}  ${((Date.now() - t0) / 1000).toFixed(0)} s`);
 }
 ff.stdin.end();
 await new Promise(r => ff.on('close', r));

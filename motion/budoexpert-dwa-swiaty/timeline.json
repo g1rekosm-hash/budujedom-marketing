@@ -1,354 +1,156 @@
 {
  "fps": 25,
- "dur": 126.0,
+ "dur": 117.6,
  "shots": [
   {
    "id": "00A",
    "start": 0.0,
-   "dur": 4.0
+   "dur": 3.6
   },
   {
    "id": "00B",
-   "start": 4.0,
-   "dur": 3.0
+   "start": 3.6,
+   "dur": 3.4
   },
   {
    "id": "01A",
    "start": 7.0,
-   "dur": 6.0
+   "dur": 4.6
   },
   {
    "id": "01B",
-   "start": 13.0,
-   "dur": 6.24
+   "start": 11.6,
+   "dur": 5.0
   },
   {
    "id": "02A",
-   "start": 19.24,
-   "dur": 3.0
+   "start": 16.6,
+   "dur": 3.2
   },
   {
    "id": "02B",
-   "start": 22.24,
-   "dur": 4.12
+   "start": 19.8,
+   "dur": 4.0
   },
   {
    "id": "03A",
-   "start": 26.36,
-   "dur": 6.0
+   "start": 23.8,
+   "dur": 4.4
   },
   {
    "id": "03B",
-   "start": 32.36,
+   "start": 28.2,
    "dur": 3.0
   },
   {
    "id": "03C",
-   "start": 35.36,
-   "dur": 3.44
+   "start": 31.2,
+   "dur": 3.6
   },
   {
    "id": "04A",
-   "start": 38.8,
-   "dur": 5.0
+   "start": 34.8,
+   "dur": 4.4
   },
   {
    "id": "04B",
-   "start": 43.8,
-   "dur": 4.0
+   "start": 39.2,
+   "dur": 4.2
   },
   {
    "id": "05A",
-   "start": 47.8,
-   "dur": 7.6
+   "start": 43.4,
+   "dur": 4.8
   },
   {
    "id": "05B",
-   "start": 55.4,
-   "dur": 5.0
+   "start": 48.2,
+   "dur": 4.4
   },
   {
    "id": "06A",
-   "start": 60.4,
-   "dur": 5.48
+   "start": 52.6,
+   "dur": 4.4
   },
   {
    "id": "06B",
-   "start": 65.88,
+   "start": 57.0,
    "dur": 2.0
   },
   {
    "id": "06C",
-   "start": 67.88,
-   "dur": 3.04
+   "start": 59.0,
+   "dur": 3.2
   },
   {
    "id": "07A",
-   "start": 70.92,
-   "dur": 5.0
-  },
-  {
-   "id": "07B",
-   "start": 75.92,
-   "dur": 6.04
-  },
-  {
-   "id": "08A",
-   "start": 81.96,
+   "start": 62.2,
    "dur": 4.0
   },
   {
+   "id": "07B",
+   "start": 66.2,
+   "dur": 5.4
+  },
+  {
+   "id": "08A",
+   "start": 71.6,
+   "dur": 4.4
+  },
+  {
    "id": "08B",
-   "start": 85.96,
+   "start": 76.0,
    "dur": 3.0
   },
   {
    "id": "09A",
-   "start": 88.96,
-   "dur": 4.0
+   "start": 79.0,
+   "dur": 3.8
   },
   {
    "id": "09B",
-   "start": 92.96,
-   "dur": 3.0
+   "start": 82.8,
+   "dur": 3.4
   },
   {
    "id": "09C",
-   "start": 95.96,
-   "dur": 4.0
+   "start": 86.2,
+   "dur": 3.8
   },
   {
    "id": "10A",
-   "start": 99.96,
-   "dur": 4.24
+   "start": 90.0,
+   "dur": 4.4
   },
   {
    "id": "10B",
-   "start": 104.2,
+   "start": 94.4,
    "dur": 4.0
   },
   {
    "id": "11A",
-   "start": 108.2,
-   "dur": 4.0
+   "start": 98.4,
+   "dur": 4.4
   },
   {
    "id": "11B",
-   "start": 112.2,
-   "dur": 3.24
+   "start": 102.8,
+   "dur": 3.4
   },
   {
    "id": "12A",
-   "start": 115.44,
-   "dur": 3.0
+   "start": 106.2,
+   "dur": 3.6
   },
   {
    "id": "12B",
-   "start": 118.44,
-   "dur": 2.0
+   "start": 109.8,
+   "dur": 2.6
   },
   {
    "id": "12C",
-   "start": 120.44,
-   "dur": 5.56
-  }
- ],
- "vo": [
-  {
-   "id": "00",
-   "shot": "00A",
-   "at": 0.9,
-   "dur": 2.349,
-   "text": "Budowa domu miała być spełnieniem marzeń."
-  },
-  {
-   "id": "01a",
-   "shot": "01A",
-   "at": 7.6,
-   "dur": 4.41,
-   "text": "To oszczędności całego życia. Kredyt na trzydzieści lat."
-  },
-  {
-   "id": "01b",
-   "shot": "01B",
-   "at": 13.4,
-   "dur": 5.404,
-   "text": "A Ty stoisz przed własnym domem… i nie masz pojęcia, co się na nim dzieje."
-  },
-  {
-   "id": "02a",
-   "shot": "02A",
-   "at": 19.84,
-   "dur": 0.884,
-   "text": "Trzy wyceny."
-  },
-  {
-   "id": "02b",
-   "shot": "02B",
-   "at": 22.74,
-   "dur": 3.161,
-   "text": "Trzy różne ceny. I żadnej pewności."
-  },
-  {
-   "id": "03a",
-   "shot": "03A",
-   "at": 26.96,
-   "dur": 2.845,
-   "text": "Po dwunastu godzinach na budowie siada do wycen."
-  },
-  {
-   "id": "03b",
-   "shot": "03B",
-   "at": 32.66,
-   "dur": 1.744,
-   "text": "Po nocach liczy od zera…"
-  },
-  {
-   "id": "03c",
-   "shot": "03C",
-   "at": 35.56,
-   "dur": 2.784,
-   "text": "to, co powinno wynikać wprost z projektu."
-  },
-  {
-   "id": "04a",
-   "shot": "04A",
-   "at": 39.4,
-   "dur": 3.789,
-   "text": "Rano ekipa jest na placu. Materiał – nie."
-  },
-  {
-   "id": "04b",
-   "shot": "04B",
-   "at": 44.1,
-   "dur": 3.135,
-   "text": "Bo nikt nikomu nie powiedział, kiedy będzie potrzebny."
-  },
-  {
-   "id": "05a",
-   "shot": "05A",
-   "at": 48.3,
-   "dur": 6.652,
-   "text": "A w hurtowni sprzedawca pół godziny tłumaczy, czego trzeba do budowy. Bo nikt tego wcześniej nie policzył."
-  },
-  {
-   "id": "05b",
-   "shot": "05B",
-   "at": 55.7,
-   "dur": 3.188,
-   "text": "Klient dziękuje… i wychodzi z niczym."
-  },
-  {
-   "id": "06a",
-   "shot": "06A",
-   "at": 60.7,
-   "dur": 4.176,
-   "text": "Każdy z nich robi, co może. Tylko każdy osobno."
-  },
-  {
-   "id": "06c",
-   "shot": "06C",
-   "at": 68.13,
-   "dur": 2.346,
-   "text": "A gdyby wszyscy byli w jednym miejscu?"
-  },
-  {
-   "id": "07a",
-   "shot": "07A",
-   "at": 71.52,
-   "dur": 1.432,
-   "text": "Teraz wiesz wszystko."
-  },
-  {
-   "id": "07b",
-   "shot": "07B",
-   "at": 76.22,
-   "dur": 5.294,
-   "text": "Każdy etap widzisz w aplikacji, a ekspert Budoexpert pilnuje budowy razem z Tobą."
-  },
-  {
-   "id": "08a",
-   "shot": "08A",
-   "at": 82.46,
-   "dur": 2.586,
-   "text": "Sprawdzone firmy. Przejrzyste oferty."
-  },
-  {
-   "id": "08b",
-   "shot": "08B",
-   "at": 86.26,
-   "dur": 1.348,
-   "text": "I wreszcie pewność."
-  },
-  {
-   "id": "09a",
-   "shot": "09A",
-   "at": 89.46,
-   "dur": 2.662,
-   "text": "Kosztorys jest gotowy, wprost z projektu."
-  },
-  {
-   "id": "09b",
-   "shot": "09B",
-   "at": 93.26,
-   "dur": 1.969,
-   "text": "A zlecenia przychodzą same."
-  },
-  {
-   "id": "09c",
-   "shot": "09C",
-   "at": 96.36,
-   "dur": 1.972,
-   "text": "Wieczór znowu należy do niego."
-  },
-  {
-   "id": "10a",
-   "shot": "10A",
-   "at": 100.46,
-   "dur": 3.284,
-   "text": "Rano ekipa jest na placu. Materiał też."
-  },
-  {
-   "id": "10b",
-   "shot": "10B",
-   "at": 104.5,
-   "dur": 2.448,
-   "text": "Bo każdy wie, kiedy będzie potrzebny."
-  },
-  {
-   "id": "11a",
-   "shot": "11A",
-   "at": 108.7,
-   "dur": 2.194,
-   "text": "Hurtownia dostaje gotowe zamówienie."
-  },
-  {
-   "id": "11b",
-   "shot": "11B",
-   "at": 112.5,
-   "dur": 2.488,
-   "text": "Bo wszystko zostało policzone wcześniej."
-  },
-  {
-   "id": "12a",
-   "shot": "12A",
-   "at": 115.84,
-   "dur": 2.135,
-   "text": "Wszyscy. W jednym miejscu."
-  },
-  {
-   "id": "12b",
-   "shot": "12B",
-   "at": 118.69,
-   "dur": 1.016,
-   "text": "Budoexpert."
-  },
-  {
-   "id": "12c",
-   "shot": "12C",
-   "at": 120.79,
-   "dur": 2.755,
-   "text": "Nie czekaj. Zapisz się już dziś."
+   "start": 112.4,
+   "dur": 5.2
   }
  ]
 }

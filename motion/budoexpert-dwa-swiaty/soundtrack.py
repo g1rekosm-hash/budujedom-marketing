@@ -1,12 +1,10 @@
-"""Muzyka, efekty i miks z lektorem dla „Dwa światy budowania”.
+"""Muzyka i efekty dla „Dwa światy budowania”.
 
-Czyta timeline.json (z voiceover.py), czasy efektów z bloku /*CUES*/ w film.html i nagrania vo/*.wav.
-Uruchom: python3 soundtrack.py  →  mix.wav (48 kHz stereo)
-         python3 soundtrack.py --no-vo  →  music.wav (sama muzyka + efekty, np. do podmiany lektora)
+Czyta timeline.json (z timeline.py) i czasy efektów z bloku /*CUES*/ w film.html.
+Uruchom: python3 soundtrack.py  →  mix.wav (48 kHz stereo, -16 LUFS)
 """
 import json
 import re
-import sys
 import wave
 from pathlib import Path
 
@@ -23,8 +21,8 @@ DUR = TL['dur']
 N = int(SR * DUR)
 rng = np.random.default_rng(7)
 
-# trzy szyny: muzyka i tło (ściszane pod lektorem), efekty, lektor
-BUS = {k: np.zeros((2, N)) for k in ('music', 'amb', 'sfx', 'vo')}
+# szyny: muzyka, tło (deszcz, zegar), efekty
+BUS = {k: np.zeros((2, N)) for k in ('music', 'amb', 'sfx')}
 
 
 def t_(d):
@@ -256,11 +254,12 @@ dr_t = np.arange(N) / SR
 drone = (np.sin(2 * np.pi * 55 * dr_t) + .6 * np.sin(2 * np.pi * 82.41 * dr_t + 1) + .25 * np.sin(2 * np.pi * 110.3 * dr_t)) * (0.8 + 0.2 * np.sin(2 * np.pi * 0.11 * dr_t))
 de = envelope([(0, 0), (S['00B'] + .8, 0), (S['01A'] + .5, .045), (S['03A'], .05), (S['05B'], .065), (S['06A'] + D['06A'] - .01, .06), (old_end, 0), (DUR, 0)])
 BUS['music'] += drone * de
-# pojedyncze, niskie nuty pianina w pauzach
-for sid, off, n in [('01A', .2, 'A3'), ('01A', 3.4, 'E3'), ('01B', .1, 'C4'), ('01B', 3.2, 'B3'), ('02A', .1, 'A3'), ('02B', 3.0, 'E3'),
-                    ('03A', .2, 'F3'), ('03B', .2, 'C4'), ('03C', .1, 'E3'), ('04A', .1, 'D4'), ('04B', .1, 'A3'), ('05A', .1, 'C4'),
-                    ('05B', .1, 'E3'), ('05B', 2.4, 'A2')]:
-    add('music', piano(hz(n), 3.5, .55, .6), S[sid] + off, .5, rng.uniform(-.3, .3))
+# melancholijny motyw pianina (bez lektora muzyka niesie emocję)
+PHR = [['E4', 'C4', 'A3'], ['D4', 'B3', 'G3'], ['C4', 'A3', 'E3'], ['B3', 'G#3', 'E3']]
+for k, sid in enumerate(['01A', '01B', '02A', '02B', '03A', '03B', '03C', '04A', '04B', '05A', '05B']):
+    for j, n in enumerate(PHR[k % 4]):
+        add('music', piano(hz(n), 3.5, .5 - .08 * j, .6), S[sid] + .25 + j * .62, .55, (-.25, 0, .25)[j])
+    add('music', piano(hz('A2' if k % 2 == 0 else 'E2'), 4, .5, .5), S[sid] + .25, .5)
 # tykanie zegara 03–05, coraz szybsze
 tt = S['03A']
 while tt < S['06A']:
@@ -329,23 +328,11 @@ for sid, lst in CUES.items():
             sfx.plink += 1
         add('sfx', sfx(name, d), at, 1.0, {'calc': .3, 'bell': .5, 'doorShut': .5, 'truck': -.4, 'birds': .3}.get(name, 0))
 
-# ---------- lektor ----------
-NO_VO = '--no-vo' in sys.argv
-if not NO_VO:
-    for line in TL['vo']:
-        with wave.open(str(HERE / 'vo' / f"{line['id']}.wav")) as w:
-            x = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(float) / 32768
-        add('vo', x, line['at'], 0.95)
-
-# ducking: muzyka i tło cichną pod lektorem
-v = np.abs(BUS['vo'][0])
-e = lfilter([1 - np.exp(-1 / (SR * .25))], [1, -np.exp(-1 / (SR * .25))], v)
-duck = 1 - 0.55 * np.clip(e / 0.06, 0, 1)
-mix = (BUS['music'] * 0.9 + BUS['amb']) * duck + BUS['sfx'] * 0.8 + BUS['vo']
+mix = BUS['music'] * 1.1 + BUS['amb'] + BUS['sfx'] * 0.8
 mix[:, -int(SR * .4):] *= np.linspace(1, 0, int(SR * .4))
 peak = np.max(np.abs(mix))
 mix = np.tanh(mix / peak * 1.25) / np.tanh(1.25) * 0.93
-out = HERE / ('music.wav' if NO_VO else 'mix.wav')
+out = HERE / 'mix.wav'
 with wave.open(str(out), 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((mix.T * 32767).astype(np.int16).tobytes())
