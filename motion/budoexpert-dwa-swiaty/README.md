@@ -23,7 +23,7 @@ pip install piper-tts numpy scipy && npm i playwright
 # głos: vits-piper-pl_PL-darkman-medium z https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models
 python3 voiceover.py --model pl_PL-darkman-medium.onnx
 python3 soundtrack.py
-node render.mjs --audio mix.wav --out video-budoexpert-dwa-swiaty.mp4
+node render.mjs --audio mix.wav --out video-budoexpert-dwa-swiaty.mp4 --crf 23
 node render.mjs --preview 12.5,64,100   # szybki podgląd klatek do frames/
 ```
 
