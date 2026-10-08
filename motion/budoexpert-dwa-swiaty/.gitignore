@@ -1,0 +1,7 @@
+node_modules
+frames/
+sheet_*.jpg
+render.log
+*.tmp.wav
+music.wav
+mix.wav
