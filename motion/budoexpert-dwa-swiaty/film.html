@@ -17,35 +17,36 @@
 <div id="hint">spacja: pauza · ←/→: przewijanie · klik: restart</div>
 <script src="timeline.js"></script>
 <script>
-/* Dźwięki zsynchronizowane z obrazem: [czas od początku ujęcia, nazwa, (długość)].
+/* Dźwięki zsynchronizowane z obrazem: [czas od początku ujęcia w czasie projektowym (design), nazwa, (długość)].
    soundtrack.py czyta ten blok, więc to jedyne miejsce, gdzie są te czasy. */
 const CUES = /*CUES*/{
   "00A": [[0.1, "pencil", 3.3], [0.3, "pianoWarm"]],
   "00B": [[0.0, "drops", 3.4]],
   "01B": [[2.4, "sigh"]],
-  "02A": [[0.0, "lampHum", 3.2]],
-  "02B": [[0.6, "hit"], [1.2, "hit"], [1.8, "hit"]],
-  "03A": [[0.7, "calc"], [0.95, "calc"], [1.15, "calc"], [1.3, "calc"], [2.6, "scribble", 1.3]],
+  "02A": [[0.0, "whip"], [0.0, "lampHum", 3.2]],
+  "02B": [[0.0, "zoomIn"], [0.6, "hit"], [1.2, "hit"], [1.8, "hit"]],
+  "03A": [[0.0, "whip"], [0.7, "calc"], [0.95, "calc"], [1.15, "calc"], [1.3, "calc"], [2.6, "scribble", 1.3]],
   "03B": [[0.0, "childBreath", 3.0]],
   "03C": [[0.5, "sent"]],
-  "04B": [[0.15, "phoneTone", 1.1], [1.0, "counter", 2.6]],
-  "05A": [[2.6, "whoosh"]],
-  "05B": [[0.25, "bell"], [3.0, "doorShut"]],
+  "04B": [[0.0, "whip"], [0.15, "phoneTone", 1.1], [1.0, "counter", 2.6]],
+  "05A": [[0.0, "whip"], [2.6, "whoosh"]],
+  "05B": [[0.0, "whip"], [0.25, "bell"], [3.0, "doorShut"]],
   "06B": [[0.8, "ding"]],
   "06C": [[0.0, "swell"]],
   "07A": [[1.1, "pop"]],
-  "07B": [[1.6, "popCheck"], [2.5, "msgDing"]],
-  "08A": [[0.4, "bright"], [0.8, "bright"], [1.2, "bright"], [2.2, "pop"]],
+  "07B": [[0.0, "zoomIn"], [1.6, "popCheck"], [2.5, "msgDing"]],
+  "08A": [[0.0, "whip"], [0.4, "bright"], [0.8, "bright"], [1.2, "bright"], [2.2, "pop"]],
   "08B": [[0.8, "clap"]],
-  "09A": [[0.0, "plane", 2.4], [1.2, "buzz", 1.5]],
-  "09B": [[1.4, "tap"], [1.55, "confirm"]],
-  "09C": [[0.6, "clink"], [1.8, "clink"], [2.6, "clink"]],
-  "10A": [[0.0, "truck", 1.7], [0.3, "birds", 3.5], [1.7, "hiss"]],
-  "10B": [[0.6, "popCheck"]],
-  "11A": [[0.4, "msgDing"], [2.5, "click"], [2.55, "popCheck"]],
+  "09A": [[0.0, "whip"], [0.0, "plane", 2.4], [1.2, "buzz", 1.5]],
+  "09B": [[0.0, "zoomIn"], [1.4, "tap"], [1.55, "confirm"]],
+  "09C": [[0.0, "whip"], [0.6, "clink"], [1.8, "clink"], [2.6, "clink"]],
+  "10A": [[0.0, "whip"], [0.1, "truck", 1.6], [0.3, "birds", 4.5], [1.55, "brake"], [1.9, "hiss"], [2.2, "hydraulic", 2.4], [4.3, "thudSoft"]],
+  "10B": [[0.0, "impact"], [0.6, "popCheck"]],
+  "11A": [[0.0, "whip"], [0.4, "msgDing"], [2.5, "click"], [2.55, "popCheck"]],
   "11B": [[0.4, "beep"], [1.1, "beep"]],
   "12A": [[0.5, "plink"], [0.8, "plink"], [1.1, "plink"], [1.4, "plink"]],
-  "12B": [[0.0, "whoosh"], [0.9, "chordHit"]]
+  "12B": [[0.0, "whoosh"], [0.9, "chordHit"]],
+  "04A": [[0.0, "impact"]]
 }/*END*/;
 const cue = (id, i) => CUES[id][i][0];
 const SH = {};
@@ -63,51 +64,70 @@ const Q = new URLSearchParams(location.search);
 const SHOT = {}; window.TL.shots.forEach(s => SHOT[s.id] = s);
 const SHOTS = window.TL.shots;
 const OLDW = new Set(['01A', '01B', '02A', '02B', '03A', '03B', '03C', '04A', '04B', '05A', '05B', '06A', '06B']);
-/* przejścia: przenikanie z poprzedniego ujęcia na początku danego ujęcia (s) */
-const TRANS = { '01A': .5, '03B': .35 };
+/* przejścia na początku ujęcia: [typ, długość w s, kierunek] — whip (szybki przelot z motion blurem),
+   zoom (najazd w poprzednie ujęcie), dissolve (przenikanie), flash (twarde cięcie z błyskiem) */
+const TRANS = {
+  '01A': ['dissolve', .5], '02A': ['whip', .4, 1], '02B': ['zoom', .35], '03A': ['whip', .4, -1], '03B': ['dissolve', .35],
+  '04A': ['flash', .35], '04B': ['whip', .35, 1], '05A': ['whip', .4, -1], '05B': ['whip', .35, 1], '06A': ['dissolve', .35],
+  '07B': ['zoom', .35], '08A': ['whip', .4, 1], '08B': ['dissolve', .3], '09A': ['whip', .4, -1], '09B': ['zoom', .3],
+  '09C': ['whip', .4, 1], '10A': ['whip', .4, -1], '10B': ['flash', .25], '11A': ['whip', .4, 1], '11B': ['dissolve', .3], '12A': ['dissolve', .35],
+};
+/* ujęcie gra w czasie projektowym: design/dur razy szybciej */
+function drawShot(ctx, s, uReal) { ctx.save(); (SH[s.id] || ((c) => { c.fillStyle = '#222'; c.fillRect(0, 0, W, H); txt(c, s.id, 960, 560, 80, 700, '#666', 'center'); }))(ctx, uReal * s.design / s.dur, s.design); ctx.restore(); }
 function shotAt(t) { let s = SHOTS[0]; for (const x of SHOTS) if (t >= x.start) s = x; return s; }
 const prevOf = s => SHOTS[SHOTS.indexOf(s) - 1];
 
 const GRAIN = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), im = g.createImageData(256, 256), r = rng(9);
   for (let i = 0; i < im.data.length; i += 4) { const v = r() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } g.putImageData(im, 0, 0); return c; })();
 const small = document.createElement('canvas'); small.width = 480; small.height = 270; const sg = small.getContext('2d');
-const isOld = (s, u) => OLDW.has(s.id) || (s.id === '00B' && u > 1.2);
+const isOld = (s, u) => OLDW.has(s.id) || (s.id === '00B' && u > .9);
 /* color grading, bloom, winieta, ziarno */
 function post(ctx, t, s, src) {
   const old = isOld(s, t - s.start);
   sg.drawImage(src, 0, 0, 480, 270);
-  ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = old ? .2 : .3;
+  ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = old ? .26 : .3;
   ctx.filter = `blur(16px) brightness(${old ? .75 : .9}) contrast(2.4)`; ctx.drawImage(small, 0, 0, W, H); ctx.restore();
   ctx.save(); ctx.globalCompositeOperation = 'soft-light';
-  ctx.fillStyle = old ? lin(ctx, 0, 0, 0, H, [[0, 'rgba(120,150,190,.5)'], [1, 'rgba(30,50,80,.6)']]) : lin(ctx, 0, 0, W, H, [[0, 'rgba(255,196,130,.4)'], [1, 'rgba(150,50,140,.25)']]);
+  ctx.fillStyle = old ? lin(ctx, 0, 0, 0, H, [[0, 'rgba(150,170,200,.4)'], [1, 'rgba(60,75,100,.42)']]) : lin(ctx, 0, 0, W, H, [[0, 'rgba(255,196,130,.4)'], [1, 'rgba(150,50,140,.25)']]);
   ctx.fillRect(0, 0, W, H); ctx.restore();
-  ctx.fillStyle = rad(ctx, W / 2, H / 2, 420, 1250, [[0, 'rgba(0,0,0,0)'], [1, old ? 'rgba(6,10,16,.6)' : 'rgba(70,20,60,.3)']]); ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = rad(ctx, W / 2, H / 2, 420, 1250, [[0, 'rgba(0,0,0,0)'], [1, old ? 'rgba(10,14,22,.45)' : 'rgba(70,20,60,.3)']]); ctx.fillRect(0, 0, W, H);
   ctx.save(); ctx.globalAlpha = old ? .075 : .05; ctx.globalCompositeOperation = 'overlay';
   const r = rng(Math.floor(t * FPS) + 1); ctx.translate(-r() * 256, -r() * 256); ctx.fillStyle = ctx.createPattern(GRAIN, 'repeat'); ctx.fillRect(0, 0, W + 256, H + 256);
   ctx.restore();
   if (t < .4) { ctx.fillStyle = `rgba(12,9,6,${1 - t / .4})`; ctx.fillRect(0, 0, W, H); }
 }
 function renderScene(ctx, t) {
-  const s = shotAt(t), u = t - s.start;
-  ctx.save(); (SH[s.id] || ((c) => { c.fillStyle = '#222'; c.fillRect(0, 0, W, H); txt(c, s.id, 960, 560, 80, 700, '#666', 'center'); }))(ctx, u, s.dur); ctx.restore();
-  const td = TRANS[s.id];
-  if (td && u < td) {
-    const p = prevOf(s), b = getBuf(1);
-    b.g.save(); SH[p.id](b.g, p.dur + u, p.dur); b.g.restore();
-    ctx.save(); ctx.globalAlpha = 1 - E.inOutSine(u / td); ctx.drawImage(b.c, 0, 0); ctx.restore(); relBuf();
+  const s = shotAt(t), u = t - s.start, tr = TRANS[s.id];
+  if (!tr || u >= tr[1]) { drawShot(ctx, s, u); return s; }
+  const [type, td, dir = 1] = tr, p = prevOf(s), e = u / td;
+  if (type === 'whip') {
+    const k = E.inOutCubic(e), off = -dir * W * k;
+    ctx.save(); ctx.translate(off + dir * W, 0); drawShot(ctx, s, u); ctx.restore();
+    ctx.save(); ctx.translate(off, 0); drawShot(ctx, p, p.dur + u); ctx.restore();
+  } else if (type === 'zoom') {
+    const k = E.inCubic(e);
+    ctx.save(); popScale(ctx, lerp(1.25, 1, E.outCubic(e)), W / 2, H / 2); drawShot(ctx, s, u); ctx.restore();
+    const b = getBuf(1); drawShot(b.g, p, p.dur + u);
+    ctx.save(); ctx.globalAlpha = 1 - k; popScale(ctx, lerp(1, 2.4, k), W / 2, H / 2); ctx.drawImage(b.c, 0, 0); ctx.restore(); relBuf();
+  } else if (type === 'flash') {
+    drawShot(ctx, s, u); ctx.fillStyle = `rgba(255,255,255,${.85 * (1 - E.outCubic(e))})`; ctx.fillRect(0, 0, W, H);
+  } else {
+    drawShot(ctx, s, u);
+    const b = getBuf(1); drawShot(b.g, p, p.dur + u);
+    ctx.save(); ctx.globalAlpha = 1 - E.inOutSine(e); ctx.drawImage(b.c, 0, 0); ctx.restore(); relBuf();
   }
   return s;
 }
 const out = document.getElementById('c'), octx = out.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
 const scn = mk(), sctx = scn.getContext('2d'), acc = mk(), actx = acc.getContext('2d');
-const SAMPLES = { '00A': 5, '06C': 3, '10A': 3, '12B': 3 };   // więcej próbek motion blur przy szybkim ruchu
+const SAMPLES = { '00A': 4, '06C': 3, '10A': 2, '12B': 3 };   // więcej próbek motion blur przy szybkim ruchu
 function frame(t, samples = 1, shutter = .5) {
-  const s0 = shotAt(t), end = s0.start + s0.dur - 1e-4;
-  samples = Math.max(samples, SAMPLES[s0.id] || 1);
+  const s0 = shotAt(t), end = s0.start + s0.dur - 1e-4, tr = TRANS[s0.id];
+  samples = Math.max(samples, SAMPLES[s0.id] || 1, tr && tr[0] === 'whip' && t - s0.start < tr[1] ? 5 : 1);
   for (let i = 0; i < samples; i++) {
     const ts = Math.min(end, t + (samples > 1 ? (i / samples) * shutter / FPS : 0));
-    sctx.setTransform(1, 0, 0, 1, 0, 0); sctx.clearRect(0, 0, W, H); bufTop = 0; renderScene(sctx, ts);
+    sctx.setTransform(1, 0, 0, 1, 0, 0); sctx.clearRect(0, 0, W, H); bufTop = 0; FIG_T = ts; renderScene(sctx, ts);
     actx.globalAlpha = 1 / (i + 1); actx.drawImage(scn, 0, 0);
   }
   actx.globalAlpha = 1;

@@ -222,113 +222,160 @@ def sfx(name, d):
         x += pad([hz('C3'), hz('G3'), hz('E4'), hz('C5')], 6, a=.05, r=3.5, cut=2200) * 1.3
         th = thud(45, 2); x[:len(th)] += th * .5
         return x * 0.38
+    if name == 'whip':
+        return whoosh(.38, True) * .9
+    if name == 'zoomIn':
+        return whoosh(.32, False) * .6
+    if name == 'impact':
+        return thud(70, .6) * .5 + np.pad(filt(noise(.3), 'highpass', 3000) * np.exp(-t_(.3) * 12) * .2, (0, int(SR * .3)))
+    if name == 'brake':
+        t = t_(.7); return filt(noise(.7), 'bandpass', [2500, 6000]) * np.exp(-t * 3) * .12
+    if name == 'hydraulic':
+        t = t_(d); return (np.sin(2 * np.pi * (180 + 60 * np.sin(t * 1.3)) * t) * .03 + filt(noise(d), 'bandpass', [300, 900]) * .05) * env(len(t), .2, .3)
+    if name == 'thudSoft':
+        return thud(65, .7) * .55
     raise KeyError(name)
 
 
 sfx.plink = 0
 
 
-# ---------- STARY ŚWIAT: deszcz, dron, pojedyncze nuty, tykanie ----------
-def envelope(points):   # [(t, gain)] → krzywa z krótkimi przejściami
+# ---------- MUZYKA: 120 BPM, cięcia filmu lądują na bitach ----------
+DES = {s['id']: s['design'] for s in TL['shots']}
+BEAT = 60 / TL.get('bpm', 120); BAR = 4 * BEAT
+
+
+def envelope(points):   # [(t, gain)] → krzywa
     xs = np.array([p[0] for p in points]); ys = np.array([p[1] for p in points])
     return np.interp(np.arange(N) / SR, xs, ys)
 
 
-old_end = S['06B']   # w 06B wszystko się urywa: cisza
-cut = lambda sid, g0, g1=None: [(S[sid] + .02, g0), (S[sid] + D[sid] - .02, g0 if g1 is None else g1)]
-rainL, rainR = (filt(rng.standard_normal(N), 'bandpass', [700, 7000]) for _ in range(2))
-mufL, mufR = (filt(filt(rng.standard_normal(N), 'lowpass', 900), 'highpass', 120) for _ in range(2))
-bright_pts = [(0, 0), (S['00B'] + .4, 0), (S['00B'] + D['00B'], .55)] + cut('01A', .7) + cut('01B', .5) + cut('02A', 0) + cut('03C', 0) \
-    + cut('04A', .3) + cut('04B', .25) + cut('05A', 0) + cut('05B', 0) + cut('06A', .65) + [(old_end - .01, .65), (old_end, 0), (DUR, 0)]
-muf_pts = [(0, 0), (S['02A'] - .02, 0)] + cut('02A', .55) + cut('02B', .4) + cut('03A', .4) + cut('03B', .3) + cut('03C', .3) \
-    + [(S['04A'], 0), (S['05A'] - .02, 0)] + cut('05A', .3) + cut('05B', .3) + [(S['06A'], 0), (DUR, 0)]
-eb, em = envelope(bright_pts) * 0.06, envelope(muf_pts) * 0.11
-BUS['amb'][0] += rainL * eb + mufL * em
-BUS['amb'][1] += rainR * eb + mufR * em
-# krople na parasolu w 01A–01B
-for _ in range(260):
-    tt = rng.uniform(S['01A'], S['02A']); p = np.sin(2 * np.pi * rng.uniform(500, 900) * t_(.04)) * np.exp(-t_(.04) * 90)
-    add('amb', p, tt, rng.uniform(.02, .06), rng.uniform(-.6, .6))
-# dron
-dr_t = np.arange(N) / SR
-drone = (np.sin(2 * np.pi * 55 * dr_t) + .6 * np.sin(2 * np.pi * 82.41 * dr_t + 1) + .25 * np.sin(2 * np.pi * 110.3 * dr_t)) * (0.8 + 0.2 * np.sin(2 * np.pi * 0.11 * dr_t))
-de = envelope([(0, 0), (S['00B'] + .8, 0), (S['01A'] + .5, .045), (S['03A'], .05), (S['05B'], .065), (S['06A'] + D['06A'] - .01, .06), (old_end, 0), (DUR, 0)])
-BUS['music'] += drone * de
-# melancholijny motyw pianina (bez lektora muzyka niesie emocję)
-PHR = [['E4', 'C4', 'A3'], ['D4', 'B3', 'G3'], ['C4', 'A3', 'E3'], ['B3', 'G#3', 'E3']]
-for k, sid in enumerate(['01A', '01B', '02A', '02B', '03A', '03B', '03C', '04A', '04B', '05A', '05B']):
-    for j, n in enumerate(PHR[k % 4]):
-        add('music', piano(hz(n), 3.5, .5 - .08 * j, .6), S[sid] + .25 + j * .62, .55, (-.25, 0, .25)[j])
-    add('music', piano(hz('A2' if k % 2 == 0 else 'E2'), 4, .5, .5), S[sid] + .25, .5)
-# tykanie zegara 03–05, coraz szybsze
-tt = S['03A']
-while tt < S['06A']:
-    period = 1.0 if tt < S['04A'] else .75 if tt < S['05A'] else .55
-    add('amb', click(3200, .025), tt, .22, .3)
-    tt += period
-# 06A: motyw starego świata ostatni raz
-for k, n in enumerate(['A3', 'C4', 'E4', 'D4', 'C4']):
-    add('music', piano(hz(n), 3, .6, .7), S['06A'] + .2 + k * .62, .55)
-# 4 kanały deszczu w 06A (lekko przesunięte)
-for k, pan in enumerate([-.8, .8, -.4, .4]):
-    seg = filt(rng.standard_normal(int(SR * D['06A'])), 'bandpass', [900 + 300 * k, 6000])
-    add('amb', seg * env(len(seg), .3, .02), S['06A'] + .35 * k, .025, pan)
-
-# ---------- NOWY ŚWIAT: ciepły motyw, rośnie scena po scenie ----------
-BPM = 92; BEAT = 60 / BPM; BAR = 4 * BEAT
-t0 = S['07A']; t_end = S['12B']
-CHORDS = [['C3', 'G3', 'C4', 'E4'], ['B2', 'G3', 'D4', 'G4'], ['A2', 'E3', 'C4', 'E4'], ['F2', 'C4', 'F4', 'A4']]
-ARP = [['C4', 'E4', 'G4', 'E4'], ['B3', 'D4', 'G4', 'D4'], ['A3', 'C4', 'E4', 'C4'], ['F3', 'A3', 'C4', 'A3']]
-BASS = ['C2', 'B1', 'A1', 'F1']
+def kick(g=1.0):
+    t = t_(.38); f = 48 + 110 * np.exp(-t * 30)
+    return (np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 8) + .25 * filt(noise(.38), 'lowpass', 2000) * np.exp(-t * 120)) * g
 
 
-def level(t):   # intensywność 0..1 w zależności od sceny
-    for sid, v in [('12A', 1.0), ('11A', .85), ('10A', .75), ('09A', .6), ('08A', .45), ('07B', .32), ('07A', .22)]:
-        if t >= S[sid]:
-            return v
+def clap(g=1.0):
+    x = np.zeros(int(SR * .25))
+    for k in range(3):
+        c = filt(noise(.15), 'bandpass', [900, 3500]) * np.exp(-t_(.15) * (60 if k < 2 else 22)); i = int(SR * .011 * k); x[i:i + len(c)] += c
+    return x * g
+
+
+def hat(op=False, g=1.0):
+    d = .22 if op else .05; t = t_(d); return filt(noise(d), 'highpass', 7000) * np.exp(-t * (14 if op else 80)) * g
+
+
+def bass(f, d, g=1.0):
+    t = t_(d); x = np.sin(2 * np.pi * f * t) + .35 * np.sin(4 * np.pi * f * t) + .15 * np.sign(np.sin(2 * np.pi * f * t))
+    return filt(x, 'lowpass', 600) * env(len(t), .004, .06) * np.exp(-t * 1.2) * g
+
+
+def snare(g=1.0):
+    t = t_(.2); return (filt(noise(.2), 'bandpass', [1500, 6000]) * np.exp(-t * 22) + np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * .5) * g
+
+
+S_INTRO, S_OLD, S_TURN, S_SIL, S_RISE, S_NEW, S_HIT, S_END = 0, S['01A'], S['06A'], S['06B'], S['06C'], S['07A'], S['12B'], S['12C']
+
+# --- intro: jasne arpeggio pianina (marzenie), od 00B deszcz i molowy cień ---
+for k in range(int((S_OLD - .01) / (BEAT / 2))):
+    tn = k * BEAT / 2; dream = tn < S['00B']
+    seq = ['C5', 'E5', 'G5', 'B5', 'G5', 'E5', 'D5', 'G5'] if dream else ['A4', 'C5', 'E5', 'G5', 'E5', 'C5', 'B4', 'E5']
+    add('music', piano(hz(seq[k % 8]), 1.6, .55, .9), tn, 1.4, (-.3, .3)[k % 2])
+for t0_, ch in [(0, ['C3', 'G3', 'E4']), (S['00B'], ['A2', 'E3', 'C4'])]:
+    add('music', pad([hz(n) for n in ch], (S['00B'] if t0_ == 0 else S_OLD) - t0_ + .4, a=.4, r=.4, cut=1800), t0_, .35)
+
+# --- stary świat: słodko-gorzki groove Am–F–C–G, lekki beat ---
+OLD_CH = [['A2', 'E3', 'A3', 'C4', 'E4'], ['F2', 'C3', 'A3', 'C4', 'F4'], ['C3', 'G3', 'C4', 'E4', 'G4'], ['G2', 'D3', 'B3', 'D4', 'G4']]
+OLD_ARP = [['A3', 'C4', 'E4', 'C4'], ['F3', 'A3', 'C4', 'A3'], ['G3', 'C4', 'E4', 'C4'], ['G3', 'B3', 'D4', 'B3']]
+nb = int(np.ceil((S_SIL - S_OLD) / BAR))
+for b in range(nb):
+    tb = S_OLD + b * BAR; c = b % 4; ch = OLD_CH[c]
+    hot = 1.0 if tb >= S['05A'] else .8 if tb >= S['03A'] else .6
+    turn = tb >= S_TURN
+    for n in ch[1:]: add('music', piano(hz(n), BAR + .8, .26, .65), tb + rng.uniform(0, .015), .5, rng.uniform(-.2, .2))
+    add('music', pad([hz(n) for n in ch[1:]], BAR + .3, a=.25, r=.4, cut=1400), tb, .07)
+    for k in range(8):
+        tn = tb + k * BEAT / 2
+        if tn >= S_SIL - .02: break
+        add('music', pluck(hz(OLD_ARP[c][k % 4]) * (2 if k in (3, 7) else 1), .5, .993, .4 * hot), tn, .45, (-.35, .35)[k % 2])
+        if not turn:
+            if k in (0, 5): add('music', kick(.55 * hot), tn)
+            if k == 4: add('music', clap(.35 * hot), tn, 1, .1)
+            add('music', hat(False, .12 + (.06 if k % 2 else 0)), tn, 1, .35)
+            if tb >= S['03A']: add('amb', click(3400 if k % 2 else 2600, .02), tn, .14, -.3)   # tykanie zegara w rytmie
+        if k in (0, 3, 6): add('music', bass(hz(ch[0]), BEAT * 1.2, .5 * (0.6 if turn else 1)), tn)
+# deszcz: lżejszy niż wcześniej
+cut = lambda sid, g0: [(S[sid] + .02, g0), (S[sid] + D[sid] - .02, g0)]
+rainL, rainR = (filt(rng.standard_normal(N), 'bandpass', [900, 7000]) for _ in range(2))
+pts = [(0, 0), (S['00B'] + .3, 0), (S_OLD, .35)] + cut('01A', .4) + cut('01B', .3) + cut('02A', .12) + cut('02B', .08) + cut('03A', .1) + cut('03B', .1) + cut('03C', .05) \
+    + cut('04A', .22) + cut('04B', .2) + cut('05A', .06) + cut('05B', .1) + cut('06A', .3) + [(S_SIL - .01, .3), (S_SIL, 0), (DUR, 0)]
+er = envelope(pts) * .05; BUS['amb'][0] += rainL * er; BUS['amb'][1] += rainR * er
+
+# --- zwrot: 06B cisza (tylko „ding”), 06C werbel i riser ---
+dur_r = S_NEW - S_RISE; k = 0; tn = S_RISE
+while tn < S_NEW - .01:
+    prog = (tn - S_RISE) / dur_r; step = BEAT / 2 if prog < .4 else BEAT / 4 if prog < .8 else BEAT / 8
+    add('music', snare(.15 + .5 * prog), tn, 1, 0); tn += step
+t = t_(dur_r); add('music', filt(noise(dur_r), 'highpass', 2000) * (t / dur_r) ** 2 * .12, S_RISE)
+add('music', pad([hz('C3'), hz('G3'), hz('C4'), hz('E4')], dur_r, a=dur_r * .9, r=.05, cut=2600) * ((t / dur_r) ** 1.5), S_RISE, .5)
+
+# --- nowy świat: pogodny groove C–G–Am–F ---
+NEW_CH = [['C3', 'G3', 'C4', 'E4', 'G4'], ['G2', 'D3', 'G3', 'B3', 'D4'], ['A2', 'E3', 'A3', 'C4', 'E4'], ['F2', 'C3', 'F3', 'A3', 'C4']]
+NEW_ARP = [['C5', 'G4', 'E5', 'G4'], ['B4', 'G4', 'D5', 'G4'], ['C5', 'A4', 'E5', 'A4'], ['C5', 'A4', 'F5', 'A4']]
+MEL = ['E5', None, 'G5', 'E5', 'D5', None, 'C5', None, 'D5', None, 'B4', 'D5', 'G5', None, None, None,
+       'E5', None, 'C5', 'E5', 'A5', None, 'G5', None, 'F5', None, 'A5', 'G5', 'F5', 'E5', 'C5', None]
+
+
+def lvl(t):
+    for sid, v in [('12A', 5), ('11A', 4), ('10A', 3.5), ('09A', 3), ('08A', 2), ('07B', 1)]:
+        if t >= S[sid]: return v
     return 0
 
 
-bar = 0
-while t0 + bar * BAR < t_end:
-    tb = t0 + bar * BAR; c = bar % 4; lv = level(tb)
-    for n in CHORDS[c]:
-        add('music', piano(hz(n), BAR + 1.5, .32 + .15 * lv, .75), tb + rng.uniform(0, .02), .55, rng.uniform(-.2, .2))
-    for b in range(8 if lv >= .45 else 4):
-        tn = tb + b * (BEAT / 2 if lv >= .45 else BEAT)
-        if tn >= t_end: break
-        n = ARP[c][b % 4]; up = 12 if (lv >= .75 and b % 4 == 2) else 0
-        add('music', pluck(hz(n) * 2 ** (up / 12), .7, .995, .35 + .3 * lv), tn, .5, (-.35, .35)[b % 2])
-    if lv >= .45:
-        add('music', pad([hz(n) for n in CHORDS[c]], BAR + .6, a=.6, r=.8, cut=1300 + 900 * lv), tb, .1 + .14 * lv)
-    if lv >= .6:
-        add('music', pluck(hz(BASS[c]), BAR, .999, .9), tb, .55)
-        add('music', pluck(hz(BASS[c]), BAR / 2, .999, .7), tb + 2.5 * BEAT, .4)
-        for b in range(8):
-            tn = tb + b * BEAT / 2
-            if tn >= t_end: break
-            sh = filt(noise(.06), 'highpass', 6000) * np.exp(-t_(.06) * 60)
-            add('music', sh, tn, .05 + (.03 if b % 2 else 0), .4)
-            if b in (0, 4):
-                add('music', thud(60, .4), tn, .18 * lv)
-    bar += 1
-# przed finałem: krótkie wyciszenie groove'u
-i0, i1 = int((t_end - .05) * SR), int(t_end * SR)
-BUS['music'][:, i0:i1] *= np.linspace(1, 0, i1 - i0)
-# finał: akord kończący na planszy
-for n in ['C3', 'G3', 'C4', 'E4', 'G4']:
-    add('music', piano(hz(n), 4.5, .35, .7), S['12C'] + .75, .45)
+nb = int(np.ceil((S_HIT - S_NEW) / BAR))
+for b in range(nb):
+    tb = S_NEW + b * BAR; c = b % 4; ch = NEW_CH[c]; L = lvl(tb); last = tb + BAR > S['12A'] - .01 and tb < S['12A']
+    if b == 0: add('music', filt(noise(1.5), 'highpass', 5000) * np.exp(-t_(1.5) * 3) * .25, tb)   # crash na wejściu
+    if abs(tb - S['12A']) < BAR / 2: add('music', filt(noise(1.8), 'highpass', 4500) * np.exp(-t_(1.8) * 2.5) * .3, S['12A'])
+    add('music', pad([hz(n) for n in ch[1:]], BAR + .2, a=.05, r=.3, cut=2200 + 400 * L) * (.5 + .5 * np.abs(np.sin(np.pi * t_(BAR + .2) / BEAT))), tb, .09 + .02 * L)
+    for k in range(16):
+        tn = tb + k * BEAT / 4
+        if tn >= S_HIT - .02: break
+        beat, eighth = k % 4 == 0, k % 2 == 0
+        if beat: add('music', kick(.8), tn)
+        if k in (4, 12): add('music', clap(.45), tn, 1, .05)
+        if eighth and not beat: add('music', hat(True, .1 + .02 * L), tn, 1, .3)
+        if L >= 3 and not eighth: add('music', hat(False, .07), tn, 1, -.3)
+        if eighth: add('music', bass(hz(ch[0]) * (2 if (k // 2) % 2 else 1), BEAT * .45, .55), tn)
+        arp_step = 1 if L >= 3.5 else 2
+        if k % arp_step == 0: add('music', pluck(hz(NEW_ARP[c][(k // arp_step) % 4]), .45, .994, .32 + .04 * L), tn, .45, (-.4, .4)[(k // arp_step) % 2])
+        if L >= 3.5 and k in (2, 6, 10, 14):   # house'owe pianino na słabe części
+            for n in ch[2:]: add('music', piano(hz(n) * 2, .5, .3, 1.0), tn, .35, .15)
+        if L >= 2 and eighth:
+            m = MEL[(b % 4) * 8 + k // 2]
+            if m: add('music', bell(hz(m), .9, ((1, 1), (2, .3), (3, .12))) * .55, tn, .5, -.1)
+    if last:   # wbicie przed 12A: werbel
+        for q in range(8): add('music', snare(.2 + .06 * q), tb + BAR / 2 + q * BEAT / 4)
+i0, i1 = int((S_HIT - .04) * SR), int(S_HIT * SR)
+BUS['music'][:, i0:i1] *= np.linspace(1, 0, i1 - i0); BUS['music'][:, i1:] = 0
+# outro na planszy: delikatne arpeggio i akord końcowy
+for k in range(int((DUR - S_END - 1.0) / (BEAT / 2))):
+    tn = S_END + .25 + k * BEAT / 2
+    add('music', pluck(hz(['C5', 'G4', 'E5', 'G4', 'C6', 'G4', 'E5', 'D5'][k % 8]), .6, .995, .45 * (1 - k * BEAT / 2 / (DUR - S_END))), tn, .4, (-.3, .3)[k % 2])
+for n in ['C3', 'G3', 'C4', 'E4', 'G4']: add('music', piano(hz(n), 4.0, .38, .75), S_END + .75, .45)
 
-# ---------- efekty ----------
+# ---------- efekty (czasy CUES są w czasie projektowym ujęcia → przeliczone na ekranowy) ----------
 for sid, lst in CUES.items():
+    k = D[sid] / DES[sid]
     for c in lst:
-        at, name = S[sid] + c[0], c[1]
-        d = c[2] if len(c) > 2 else 1.0
+        at, name = S[sid] + c[0] * k, c[1]
+        d = (c[2] if len(c) > 2 else 1.0) * k
         if name == 'plink':
             sfx.plink += 1
-        add('sfx', sfx(name, d), at, 1.0, {'calc': .3, 'bell': .5, 'doorShut': .5, 'truck': -.4, 'birds': .3}.get(name, 0))
+        add('sfx', sfx(name, d), at, 1.0, {'calc': .3, 'bell': .5, 'doorShut': .5, 'truck': -.4, 'birds': .3, 'whip': 0}.get(name, 0))
 
-mix = BUS['music'] * 1.1 + BUS['amb'] + BUS['sfx'] * 0.8
+mix = BUS['music'] * 0.45 + BUS['amb'] + BUS['sfx'] * 0.75
 mix[:, -int(SR * .4):] *= np.linspace(1, 0, int(SR * .4))
 peak = np.max(np.abs(mix))
 mix = np.tanh(mix / peak * 1.25) / np.tanh(1.25) * 0.93

@@ -1,156 +1,187 @@
 {
  "fps": 25,
- "dur": 117.6,
+ "bpm": 120,
+ "dur": 89.0,
  "shots": [
   {
    "id": "00A",
    "start": 0.0,
-   "dur": 3.6
+   "dur": 3.0,
+   "design": 3.6
   },
   {
    "id": "00B",
-   "start": 3.6,
-   "dur": 3.4
+   "start": 3.0,
+   "dur": 2.5,
+   "design": 3.4
   },
   {
    "id": "01A",
-   "start": 7.0,
-   "dur": 4.6
+   "start": 5.5,
+   "dur": 3.0,
+   "design": 4.6
   },
   {
    "id": "01B",
-   "start": 11.6,
-   "dur": 5.0
+   "start": 8.5,
+   "dur": 3.5,
+   "design": 5.0
   },
   {
    "id": "02A",
-   "start": 16.6,
-   "dur": 3.2
+   "start": 12.0,
+   "dur": 2.0,
+   "design": 3.2
   },
   {
    "id": "02B",
-   "start": 19.8,
-   "dur": 4.0
+   "start": 14.0,
+   "dur": 3.0,
+   "design": 4.0
   },
   {
    "id": "03A",
-   "start": 23.8,
-   "dur": 4.4
+   "start": 17.0,
+   "dur": 3.0,
+   "design": 4.4
   },
   {
    "id": "03B",
-   "start": 28.2,
-   "dur": 3.0
+   "start": 20.0,
+   "dur": 2.0,
+   "design": 3.0
   },
   {
    "id": "03C",
-   "start": 31.2,
-   "dur": 3.6
+   "start": 22.0,
+   "dur": 2.5,
+   "design": 3.6
   },
   {
    "id": "04A",
-   "start": 34.8,
-   "dur": 4.4
+   "start": 24.5,
+   "dur": 3.0,
+   "design": 4.4
   },
   {
    "id": "04B",
-   "start": 39.2,
-   "dur": 4.2
+   "start": 27.5,
+   "dur": 3.0,
+   "design": 4.2
   },
   {
    "id": "05A",
-   "start": 43.4,
-   "dur": 4.8
+   "start": 30.5,
+   "dur": 3.0,
+   "design": 4.8
   },
   {
    "id": "05B",
-   "start": 48.2,
-   "dur": 4.4
+   "start": 33.5,
+   "dur": 3.0,
+   "design": 4.4
   },
   {
    "id": "06A",
-   "start": 52.6,
-   "dur": 4.4
+   "start": 36.5,
+   "dur": 3.0,
+   "design": 4.4
   },
   {
    "id": "06B",
-   "start": 57.0,
-   "dur": 2.0
+   "start": 39.5,
+   "dur": 1.5,
+   "design": 2.0
   },
   {
    "id": "06C",
-   "start": 59.0,
-   "dur": 3.2
+   "start": 41.0,
+   "dur": 2.5,
+   "design": 3.2
   },
   {
    "id": "07A",
-   "start": 62.2,
-   "dur": 4.0
+   "start": 43.5,
+   "dur": 3.0,
+   "design": 4.0
   },
   {
    "id": "07B",
-   "start": 66.2,
-   "dur": 5.4
+   "start": 46.5,
+   "dur": 4.0,
+   "design": 5.4
   },
   {
    "id": "08A",
-   "start": 71.6,
-   "dur": 4.4
+   "start": 50.5,
+   "dur": 3.5,
+   "design": 4.4
   },
   {
    "id": "08B",
-   "start": 76.0,
-   "dur": 3.0
+   "start": 54.0,
+   "dur": 2.5,
+   "design": 3.0
   },
   {
    "id": "09A",
-   "start": 79.0,
-   "dur": 3.8
+   "start": 56.5,
+   "dur": 3.0,
+   "design": 3.8
   },
   {
    "id": "09B",
-   "start": 82.8,
-   "dur": 3.4
+   "start": 59.5,
+   "dur": 2.5,
+   "design": 3.4
   },
   {
    "id": "09C",
-   "start": 86.2,
-   "dur": 3.8
+   "start": 62.0,
+   "dur": 3.0,
+   "design": 3.8
   },
   {
    "id": "10A",
-   "start": 90.0,
-   "dur": 4.4
+   "start": 65.0,
+   "dur": 5.0,
+   "design": 5.0
   },
   {
    "id": "10B",
-   "start": 94.4,
-   "dur": 4.0
+   "start": 70.0,
+   "dur": 3.0,
+   "design": 4.0
   },
   {
    "id": "11A",
-   "start": 98.4,
-   "dur": 4.4
+   "start": 73.0,
+   "dur": 3.5,
+   "design": 4.4
   },
   {
    "id": "11B",
-   "start": 102.8,
-   "dur": 3.4
+   "start": 76.5,
+   "dur": 2.5,
+   "design": 3.4
   },
   {
    "id": "12A",
-   "start": 106.2,
-   "dur": 3.6
+   "start": 79.0,
+   "dur": 3.0,
+   "design": 3.6
   },
   {
    "id": "12B",
-   "start": 109.8,
-   "dur": 2.6
+   "start": 82.0,
+   "dur": 2.0,
+   "design": 2.6
   },
   {
    "id": "12C",
-   "start": 112.4,
-   "dur": 5.2
+   "start": 84.0,
+   "dur": 5.0,
+   "design": 5.2
   }
  ]
 }

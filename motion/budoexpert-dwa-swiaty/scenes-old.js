@@ -2,19 +2,19 @@
    STARY ŚWIAT (00–06): szaro, deszcz, każdy osobno
    ===================================================================== */
 const CH = {
-  inwestorka: { old: { hair: 'long', hairCol: '#6E6863', top: '#7D8985', legs: '#474D57', skin: O.skin, ink: O.ink },
-                new: { hair: 'long', hairCol: '#8A4B2C', top: N.teal, legs: '#3B2440', skin: N.skin, ink: N.ink } },
-  inwestor:   { old: { hair: 'short', hairCol: '#474C56', top: '#5C6471', legs: '#40464F', skin: O.skin, ink: O.ink },
-                new: { hair: 'short', hairCol: '#6B3A22', top: N.purple, legs: '#3B2440', skin: N.skin, ink: N.ink } },
-  wykonawca:  { old: { hair: 'cap', hairCol: '#55595F', hatCol: '#5C6066', top: '#86806F', legs: '#40464F', skin: O.skin, ink: O.ink },
-                new: { hair: 'cap', hairCol: '#5B3420', hatCol: '#3B1442', top: '#E6A63C', legs: '#3B2440', skin: N.skin, ink: N.ink } },
+  inwestorka: { old: { hair: 'long', hairCol: '#6E6863', top: '#7D8985', legs: '#474D57', skin: O.skin, ink: O.ink, outfit: 'sweater', lashes: true, earrings: '#AEB5BD' },
+                new: { hair: 'long', hairCol: '#8A4B2C', top: N.teal, legs: '#3B2440', skin: N.skin, ink: N.ink, outfit: 'sweater', lashes: true, earrings: N.purple } },
+  inwestor:   { old: { hair: 'short', hairCol: '#474C56', top: '#5C6471', legs: '#40464F', skin: O.skin, ink: O.ink, outfit: 'jacket' },
+                new: { hair: 'short', hairCol: '#6B3A22', top: N.purple, legs: '#3B2440', skin: N.skin, ink: N.ink, outfit: 'jacket' } },
+  wykonawca:  { old: { hair: 'cap', hairCol: '#55595F', hatCol: '#5C6066', top: '#86806F', legs: '#40464F', skin: O.skin, ink: O.ink, outfit: 'shirt', pen: '#8E98A3' },
+                new: { hair: 'cap', hairCol: '#5B3420', hatCol: '#3B1442', top: '#E6A63C', legs: '#3B2440', skin: N.skin, ink: N.ink, outfit: 'shirt', pen: N.purple, pencilEar: true } },
   sprzedawca: { old: { hair: 'short', hairCol: '#55595F', top: '#A0A5A0', apron: '#6B766E', legs: '#40464F', skin: O.skin, ink: O.ink },
                 new: { hair: 'short', hairCol: '#7A4426', top: '#F4EEE8', apron: N.purple2, legs: '#3B2440', skin: N.skin, ink: N.ink } },
-  ekipa:      { old: { hair: 'hard', hairCol: '#55595F', hatCol: '#B6AF98', top: '#7A8390', legs: '#40464F', skin: O.skin, ink: O.ink },
-                new: { hair: 'hard', hairCol: '#5B3420', hatCol: '#F4C431', top: '#9C7BB4', legs: '#3B2440', skin: N.skin, ink: N.ink } },
-  dziecko:    { old: { hair: 'short', hairCol: '#5A5F66', top: '#8A939C', legs: '#40464F', skin: O.skin, ink: O.ink },
-                new: { hair: 'short', hairCol: '#5B3420', top: '#F2896B', legs: '#3B2440', skin: N.skin, ink: N.ink } },
-  partnerka:  { new: { hair: 'long', hairCol: '#8A4B2C', top: '#E9A0BC', legs: '#3B2440', skin: N.skin, ink: N.ink } },
+  ekipa:      { old: { hair: 'hard', hairCol: '#55595F', hatCol: '#B6AF98', top: '#7A8390', legs: '#40464F', skin: O.skin, ink: O.ink, outfit: 'vest', vestCol: '#9C8F78', stripe: '#C9CED4' },
+                new: { hair: 'hard', hairCol: '#5B3420', hatCol: '#F4C431', top: '#9C7BB4', legs: '#3B2440', skin: N.skin, ink: N.ink, outfit: 'vest', vestCol: '#F28C28', stripe: '#F4F6F8' } },
+  dziecko:    { old: { hair: 'short', hairCol: '#5A5F66', top: '#8A939C', legs: '#40464F', skin: O.skin, ink: O.ink, outfit: 'tee' },
+                new: { hair: 'short', hairCol: '#5B3420', top: '#F2896B', legs: '#3B2440', skin: N.skin, ink: N.ink, outfit: 'tee' } },
+  partnerka:  { new: { hair: 'long', hairCol: '#8A4B2C', top: '#E9A0BC', legs: '#3B2440', skin: N.skin, ink: N.ink, outfit: 'sweater', lashes: true, earrings: N.teal } },
 };
 const who = (k, world, extra = {}) => Object.assign({}, CH[k][world], extra);
 
@@ -296,7 +296,7 @@ SH['01A'] = (ctx, u, d) => {
   layer(ctx, cam, .7, g => rain(g, u, { n: 120, a: .45, len: 70, lw: 3, speed: 2000, seed: 9, col: '#C3CDD8' }));
   layer(ctx, cam, .45, g => { fencePanel(g, -120, 160, 1150, 760, '#5A626C'); grass(g, 1650, 1100, 26, 260, '#5D6A62', 3, u); });
   lensDrops(ctx, u, 12, 8);
-  caption(ctx, u, d, { text: 'Oszczędności *całego życia.* Kredyt na *30 lat.*', x: 1080, y: 230, size: 60, style: 'old', t0: .5, maxW: 760 });
+  caption(ctx, u, d, { text: 'Oszczędności *całego życia.*', tag: 'INWESTOR', x: 1080, y: 250, size: 66, style: 'old', t0: .5, maxW: 760 });
 };
 SH['01B'] = (ctx, u, d) => {
   const cam = handheld(drift(u, d, { x: 0, y: 0, zoom: 1.0 }, { x: 30, y: -10, zoom: 1.05 }), u, .7, 6);
@@ -317,7 +317,7 @@ SH['01B'] = (ctx, u, d) => {
   });
   layer(ctx, cam, .55, g => rain(g, u, { n: 70, a: .5, len: 110, lw: 5, speed: 2300, seed: 31, col: '#CCD6E0' }));
   lensDrops(ctx, u, 10, 13);
-  caption(ctx, u, d, { text: 'A Ty stoisz przed własnym domem… *i nie wiesz, co się na nim dzieje.*', x: 1360, y: 560, size: 50, style: 'old', t0: .4, maxW: 500 });
+  caption(ctx, u, d, { text: 'Stoisz przed własnym domem… *i nic nie wiesz.*', x: 1360, y: 560, size: 56, style: 'old', t0: .4, maxW: 500 });
 };
 
 /* ---------- wspólne: noc we wnętrzu ---------- */
@@ -413,7 +413,7 @@ SH['02B'] = (ctx, u, d) => {
   b.g.save(); b.g.translate(960, 540); b.g.scale(1, .62); b.g.fillStyle = rad(b.g, 0, 0, 500, 1000, [[0, '#000'], [1, 'rgba(0,0,0,0)']]); b.g.fillRect(-1100, -1100, 2200, 2200); b.g.restore();
   ctx.drawImage(b.c, 0, 0); relBuf();
   layer(ctx, cam, .5, g => { circ(g, 110, 90, 200, '#2B2622'); circ(g, 110, 90, 170, '#1A1512'); }, { blur: 20 });
-  caption(ctx, u, d, { text: 'Trzy różne ceny. *Żadnej pewności.*', x: 960, y: 1000, size: 60, style: 'old', align: 'center', t0: 2.0, maxW: 1600 });
+  caption(ctx, u, d, { text: 'Trzy różne ceny. *Zero pewności.*', x: 960, y: 1000, size: 60, style: 'old', align: 'center', t0: 2.0, maxW: 1600 });
 };
 
 /* ---------- 03: wykonawca — wyceny po nocach ---------- */
@@ -449,7 +449,7 @@ SH['03A'] = (ctx, u, d) => {
     pendant(g, 780, -40, 250, '#3C434E', O.lamp, .22, u, 920);
   });
   layer(ctx, cam, .55, g => { for (let k = 0; k < 4; k++) fillRR(g, -40 + k * 70, 720 + (k % 2) * 20, 64, 420, 6, ['#2B313B', '#353C47', '#262C35', '#303741'][k]); });
-  caption(ctx, u, d, { text: 'Po 12 godzinach na budowie — *wyceny.*', x: 150, y: 200, size: 58, style: 'old', t0: .4, maxW: 900 });
+  caption(ctx, u, d, { text: '12 godzin na budowie. *A potem wyceny.*', tag: 'WYKONAWCA', x: 150, y: 230, size: 58, style: 'old', t0: .4, maxW: 900 });
 };
 SH['03B'] = (ctx, u, d) => {
   const cam = drift(u, d, { x: 0, y: 0, zoom: 1.0 }, { x: -30, y: 10, zoom: 1.12 });
@@ -479,7 +479,7 @@ SH['03B'] = (ctx, u, d) => {
     poly(g, [[1290, -200], [1700, -300], [1700, 1300], [1290, 1250]], '#161B21');
     line(g, 1290, -200, 1290, 1250, 6, rgba(O.lamp, .6)); circ(g, 1350, 620, 14, '#2E353F');
   });
-  caption(ctx, u, d, { text: 'Po nocach liczy *od zera…*', x: 300, y: 980, size: 58, style: 'old', t0: .3 });
+  caption(ctx, u, d, { text: 'Po nocach *liczy od zera…*', x: 300, y: 980, size: 58, style: 'old', t0: .3 });
 };
 SH['03C'] = (ctx, u, d) => {
   const cam = handheld(drift(u, d, { x: 0, y: 0, zoom: 1.0 }, { x: 20, y: 0, zoom: 1.05 }), u, .7, 14);
@@ -510,7 +510,7 @@ SH['03C'] = (ctx, u, d) => {
     g.save(); g.translate(990, 820); g.rotate(-.7); g.fillStyle = lin(g, -30, 0, 30, 0, [[0, '#A39D96'], [1, '#C2BCB5']]); rr(g, -30, -110, 60, 160, 30); g.fill(); g.restore();
     for (let k = 0; k < 3; k++) { g.fillStyle = shade('#B3ADA6', -.05 * k); rr(g, 1320 + k * 8, 560 + k * 70, 90, 56, 28); g.fill(); }
   });
-  caption(ctx, u, d, { text: '…to, co powinno *wynikać wprost z projektu.*', x: 150, y: 460, size: 58, style: 'old', t0: .2, maxW: 650 });
+  caption(ctx, u, d, { text: '…to, co *już jest w projekcie.*', x: 150, y: 460, size: 58, style: 'old', t0: .2, maxW: 650 });
 };
 
 /* ---------- 04: rano na placu, materiału nie ma ---------- */
@@ -563,7 +563,7 @@ SH['04A'] = (ctx, u, d) => {
     for (let i = 0; i < 2; i++) { g.save(); g.translate(0, 1000 + i * 20); g.rotate(-.04 + i * .02); for (let k = -2; k < 26; k++) { g.fillStyle = k % 2 ? '#C9CDD2' : '#A0726B'; g.fillRect(k * 90, -18, 90, 36); } g.restore(); }
   });
   timeBadge(ctx, 1600, 70, '07:00', 'rgba(40,46,56,.75)');
-  caption(ctx, u, d, { text: 'Rano ekipa jest na placu. *Materiał — nie.*', x: 150, y: 200, size: 60, style: 'old', t0: .5, maxW: 1100 });
+  caption(ctx, u, d, { text: 'Ekipa na placu. *Materiał — nie.*', x: 150, y: 200, size: 60, style: 'old', t0: .5, maxW: 1100 });
 };
 function glassCard(ctx, x, y, w, h, a = 1) {
   ctx.save(); ctx.globalAlpha *= a; softShadow(ctx, 50, 24, .35, '10,15,22');
@@ -594,7 +594,7 @@ SH['04B'] = (ctx, u, d) => {
   });
   layer(ctx, cam, .55, g => rain(g, u, { n: 60, a: .45, len: 100, lw: 5, speed: 2200, seed: 33, col: '#CCD6E0' }));
   lensDrops(ctx, u, 8, 23);
-  caption(ctx, u, d, { text: 'Nikt nie powiedział, *kiedy będzie potrzebny.*', x: 1820, y: 980, size: 54, style: 'old', align: 'right', t0: 1.4, maxW: 900 });
+  caption(ctx, u, d, { text: 'Bo nikt nie wiedział, *kiedy będzie potrzebny.*', x: 1820, y: 980, size: 54, style: 'old', align: 'right', t0: 1.4, maxW: 900 });
 };
 
 /* ---------- 05: hurtownia ---------- */
@@ -649,7 +649,7 @@ SH['05A'] = (ctx, u, d) => {
     const lk = E.outBack(P(u, w0 + .6, w0 + 1)); if (lk > 0) { g.save(); popScale(g, lk, 1590, 560); glassCard(g, 1490, 520, 200, 70); txt(g, '+30 min', 1590, 568, 34, 800, O.alarm, 'center'); g.restore(); }
   });
   layer(ctx, cam, .5, g => { fillRR(g, -80, 860, 360, 320, 10, '#7C858F'); fillRR(g, 1700, 900, 320, 300, 10, '#8E97A1'); });
-  caption(ctx, u, d, { text: 'Pół godziny tłumaczenia, *czego trzeba do budowy.*', x: 150, y: 190, size: 54, style: 'old', t0: .5, maxW: 900 });
+  caption(ctx, u, d, { text: 'Pół godziny zgadywania, *czego trzeba na budowę.*', tag: 'HURTOWNIA', x: 150, y: 230, size: 54, style: 'old', t0: .5, maxW: 900 });
 };
 SH['05B'] = (ctx, u, d) => {
   const cam = handheld(drift(u, d, { x: 30, y: 0, zoom: 1.06 }, { x: 0, y: 0, zoom: 1.0 }), u, .4, 29);
@@ -687,7 +687,7 @@ SH['05B'] = (ctx, u, d) => {
 const PANELS = [{ cx: 500, cy: 300, ry: .16, rx: -.06 }, { cx: 1420, cy: 300, ry: -.16, rx: -.06 }, { cx: 500, cy: 790, ry: .16, rx: .06 }, { cx: 1420, cy: 790, ry: -.16, rx: .06 }];
 function panelShot(ctx, key, id, uu, o, a = 1) {
   const [c, g] = surface(key, 960, 540);
-  NOCAP = true; g.save(); g.scale(.5, .5); SH[id](g, uu, SHOT[id].dur); g.restore(); NOCAP = false;
+  NOCAP = true; g.save(); g.scale(.5, .5); SH[id](g, uu, SHOT[id].design); g.restore(); NOCAP = false;
   ctx.save(); ctx.globalAlpha *= a;
   const q = quadOf(960, 540, o);
   ctx.save(); ctx.filter = 'blur(30px)'; ctx.globalAlpha *= .5; poly(ctx, q.map(([x, y]) => [x + 20, y + 40]), '#000'); ctx.restore();
@@ -714,11 +714,11 @@ SH['06A'] = (ctx, u, d) => {
   layer(ctx, { x: 0, y: 0, zoom: cam.zoom, focus: 1, dof: 0 }, 2, g => rain(g, u, { n: 140, a: .25, len: 40, lw: 1.5, speed: 1200, seed: 61 }), { blur: 3 });
   panels(ctx, OLD_PANELS(u), u, cam, [0, .3, .6, .9]);
   layer(ctx, { x: 0, y: 0, zoom: cam.zoom }, .6, g => rain(g, u, { n: 50, a: .35, len: 90, lw: 4, speed: 2000, seed: 62, col: '#C3CDD8' }), { blur: 8 });
-  caption(ctx, u, d, { text: 'Każdy robi, co może. *Tylko każdy osobno.*', x: 960, y: 1048, size: 46, style: 'old', align: 'center', t0: 1.3, maxW: 1700 });
+  caption(ctx, u, d, { text: 'Każdy robi swoje. *Każdy osobno.*', x: 960, y: 1048, size: 46, style: 'old', align: 'center', t0: 1.3, maxW: 1700 });
 };
 let FROZEN = null;
 SH['06B'] = (ctx, u, d) => {
-  const fz = SHOT['06A'].dur;
+  const fz = SHOT['06A'].design;
   darkSpace(ctx, fz);
   layer(ctx, { x: 0, y: 0, zoom: 1 }, 2, g => rain(g, fz, { n: 140, a: .25, len: 40, lw: 1.5, speed: 1200, seed: 61 }), { blur: 3 });
   panels(ctx, OLD_PANELS(fz), fz, { x: 0, y: 0, zoom: 1 }, null);
@@ -732,7 +732,7 @@ SH['06B'] = (ctx, u, d) => {
   }
 };
 SH['06C'] = (ctx, u, d) => {
-  const fz = SHOT['06A'].dur, g_ = E.inCubic(P(u, 0, 1.1));
+  const fz = SHOT['06A'].design, g_ = E.inCubic(P(u, 0, 1.1));
   const Rp = lerp(85, 2700, g_), Rt = lerp(62, 2400, E.inCubic(P(u, .1, 1.25)));
   darkSpace(ctx, fz);
   panels(ctx, OLD_PANELS(fz), fz, { x: 0, y: 0, zoom: 1 + g_ * .3 }, null);

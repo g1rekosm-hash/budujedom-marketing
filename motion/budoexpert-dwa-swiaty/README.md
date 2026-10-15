@@ -2,7 +2,15 @@
 
 Film według storyboardu v3 (październik 2026): najpierw cały stary świat (szaro, deszcz, każdy osobno), zwrot z turkusowym trójkątem, potem nowy świat w tych samych kadrach, ale w kolorach marki i w aplikacji Budoexpert. Historię niosą obraz, kinetyczna typografia i muzyka.
 
-1920×1080 · 25 kl/s · stereo · 1:58 (z 2 s stopu na końcu pod pętlę targową) · font Poppins.
+1920×1080 · 25 kl/s · stereo · 1:29 · 120 BPM, cięcia na bitach · font Poppins.
+
+## Wersja 3 (dynamika)
+- Tempo: 1:58 → 1:29. Każde ujęcie ma długość na ekranie i długość projektową (`timeline.py`); animacja gra szybciej o ich stosunek, cięcia są na bitach.
+- Przejścia: whip pany z motion blurem, najazdy (zoom), błysk przy twardym cięciu, przenikania (`TRANS` w `film.html`).
+- Tekst przepisany na krótkie, lustrzane pary (stary ↔ nowy świat) z etykietami ról INWESTOR / WYKONAWCA / HURTOWNIA.
+- Postacie: mruganie, oddech, ruch głowy; detale ubrań (ściągacz swetra, kurtka z zamkiem, koszula z kieszenią i długopisem, kamizelki odblaskowe, kolczyki, rzęsy, kosmyki, kciuki, mankiety).
+- 10A od nowa: ciężarówka z HDS-em w perspektywie 3D (kinematyka odwrotna żurawia, podpory, zawiesia, wahanie palety, pył), pracownik naprowadza ładunek.
+- Muzyka 120 BPM, pogodniejsza: w starym świecie słodko-gorzki groove (Am–F–C–G) z tykaniem zegara w rytmie, zwrot z ciszą i werblem, w nowym świecie energiczny groove (C–G–Am–F) z narastaniem do finału.
 
 ## Styl (wersja 2)
 - **Głębia:** każde ujęcie to 4–6 warstw z paralaksą i ruchem kamery (dryf + lekki „handheld”), rozmycie głębi ostrości dla pierwszego planu i tła, mgła między planami.
@@ -17,7 +25,7 @@ Film według storyboardu v3 (październik 2026): najpierw cały stary świat (sz
 | `film.html` | montaż, przejścia i postprodukcja; otwórz w przeglądarce (spacja = pauza, ←/→ = ±1 s, `?t=63` = stop na danej sekundzie) |
 | `engine.js` | silnik 2.5D: warstwy z głębią ostrości, światło, atmosfera, postacie, perspektywa urządzeń, typografia |
 | `scenes-old.js`, `scenes-new.js` | ujęcia 00–06 (stary świat i zwrot) oraz 07–12 (nowy świat i finał) |
-| `timeline.py` | długości ujęć → `timeline.json` / `timeline.js` |
+| `timeline.py` | długości ujęć (na ekranie i projektowe) → `timeline.json` / `timeline.js` |
 | `soundtrack.py` | muzyka i efekty zsynchronizowane z obrazem → `mix.wav` (-16 LUFS) |
 | `render.mjs` | render HTML → MP4 klatka po klatce |
 

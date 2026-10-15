@@ -71,7 +71,7 @@ SH['07A'] = (ctx, u, d) => {
     if (pk > 0) { g.save(); popScale(g, pk, 1180, 600); card(g, 1100, 520, 330, 92, 46); check(g, 1146, 566, 26); txt(g, 'Fundamenty', 1186, 562, 26, 700, N.ink); txt(g, 'gotowe', 1186, 590, 20, 500, '#7A6680'); g.restore(); }
   });
   layer(ctx, cam, .5, g => { plant(g, 80, 900, 1.3, u); fillRR(g, 1250, 1010, 700, 120, 20, '#C99A6A'); fillRR(g, 1400, 940, 70, 80, 10, '#fff'); });
-  caption(ctx, u, d, { text: '*Teraz* wiesz wszystko.', x: 1820, y: 200, size: 72, style: 'new', align: 'right', t0: .4, t1: d - .6 });
+  caption(ctx, u, d, { text: '*Teraz* wiesz wszystko.', tag: 'INWESTOR', x: 1820, y: 220, size: 72, style: 'new', align: 'right', t0: .4, t1: d - .6 });
 };
 function appHome(s, x, y, w, h, u, pr) {
   appBar(s, x, y, w, 100, 'Moja budowa');
@@ -108,7 +108,7 @@ SH['07B'] = (ctx, u, d) => {
       circ(g, x + 80, y + 90, 44, N.teal); circ(g, x + 80, y + 78, 15, '#fff'); g.fillStyle = '#fff'; g.beginPath(); g.arc(x + 80, y + 116, 26, Math.PI, TAU); g.fill(); tri(g, x + 80, y + 108, 9, N.purple, .2);
       txt(g, 'Ekspert Budoexpert', x + 150, y + 74, 30, 700, N.purple); txt(g, 'Wszystko zgodnie z planem.', x + 150, y + 122, 29, 500, N.ink); txt(g, 'Zdjęcia z dziś w dzienniku.', x + 150, y + 166, 26, 400, '#7A6680'); g.restore(); }
   });
-  caption(ctx, u, d, { text: 'Każdy etap w aplikacji. *Ekspert pilnuje budowy razem z Tobą.*', x: 1010, y: 935, size: 40, style: 'new', t0: 2.9, maxW: 900 });
+  caption(ctx, u, d, { text: 'Każdy etap w aplikacji. *Ekspert czuwa razem z Tobą.*', x: 1010, y: 1010, size: 40, style: 'new', t0: 2.6, maxW: 900 });
 };
 
 /* ---------- 08: przejrzyste oferty, wreszcie pewność ---------- */
@@ -148,7 +148,7 @@ SH['08A'] = (ctx, u, d) => {
       g.restore();
     });
   });
-  caption(ctx, u, d, { text: 'Sprawdzone firmy. *Przejrzyste oferty.*', x: 960, y: 1040, size: 50, style: 'new', align: 'center', t0: 1.5, maxW: 1600 });
+  caption(ctx, u, d, { text: 'Sprawdzone firmy. *Oferty, które da się porównać.*', x: 960, y: 1040, size: 50, style: 'new', align: 'center', t0: 1.5, maxW: 1600 });
 };
 SH['08B'] = (ctx, u, d) => {
   const cam = handheld(drift(u, d, { x: 20, y: 0, zoom: 1.0 }, { x: -10, y: 0, zoom: 1.05 }), u, .5, 47);
@@ -171,7 +171,7 @@ SH['08B'] = (ctx, u, d) => {
     ell(g, 1150, 800, 70, 22, '#F4E4D0'); circ(g, 1125, 785, 22, '#F2896B'); circ(g, 1165, 782, 22, '#F4C431'); circ(g, 1148, 770, 20, '#9FD36B');
   });
   layer(ctx, cam, .55, g => { fillRR(g, -60, 640, 330, 60, 18, '#C98F5C'); fillRR(g, 30, 690, 40, 500, 10, '#B97F4E'); fillRR(g, 200, 690, 40, 500, 10, '#B97F4E'); });
-  caption(ctx, u, d, { text: 'I wreszcie *pewność.*', x: 150, y: 230, size: 80, style: 'new', t0: .3 });
+  caption(ctx, u, d, { text: 'I *wreszcie pewność.*', x: 150, y: 230, size: 80, style: 'new', t0: .3 });
 };
 
 /* ---------- 09: wykonawca — kosztorys gotowy, wieczór wolny ---------- */
@@ -203,7 +203,7 @@ SH['09A'] = (ctx, u, d) => {
     if (vib > 0) { glow(g, 1230, 752, 200, N.teal, .3 * vib, 'screen'); for (const sx of [-1, 1]) for (let k = 0; k < 2; k++) { g.strokeStyle = rgba(N.teal, .9 - k * .3); g.lineWidth = 6; g.beginPath(); g.arc(1230, 752, 100 + k * 32 + 6 * Math.sin(u * 20), sx > 0 ? -.5 : Math.PI - .5, sx > 0 ? .5 : Math.PI + .5); g.stroke(); } }
   });
   layer(ctx, cam, .5, g => { fillRR(g, -50, 860, 420, 60, 10, '#C98F5C'); fillRR(g, -50, 940, 380, 60, 10, '#B97F4E'); g.strokeStyle = '#7A4F8A'; g.lineWidth = 26; g.beginPath(); g.arc(1780, 980, 110, Math.PI, TAU); g.stroke(); });
-  caption(ctx, u, d, { text: 'Kosztorys gotowy — *wprost z projektu.*', x: 150, y: 140, size: 56, style: 'new', t0: .3, t1: d - .7, maxW: 1000 });
+  caption(ctx, u, d, { text: 'Kosztorys? *Gotowy, prosto z projektu.*', tag: 'WYKONAWCA', x: 150, y: 170, size: 56, style: 'new', t0: .3, t1: d - .7, maxW: 1000 });
 };
 function orderCard(g, x, y, w, u, tp) {
   card(g, x, y, w, 430, 30, '#fff', 1.3); g.strokeStyle = N.teal; g.lineWidth = 5; rr(g, x, y, w, 430, 30); g.stroke();
@@ -262,7 +262,7 @@ SH['09C'] = (ctx, u, d) => {
     pendant(g, 960, -40, 230, N.ink, N.lamp, .2, u, 900);
   });
   layer(ctx, cam, .5, g => { g.fillStyle = 'rgba(255,255,255,.35)'; rr(g, 1660, 760, 110, 220, 20); g.fill(); fillRR(g, 1708, 980, 14, 140, 6, 'rgba(255,255,255,.35)'); fillRR(g, -80, 980, 420, 160, 30, '#B97F4E'); });
-  caption(ctx, u, d, { text: 'Wieczór znowu *należy do niego.*', x: 1060, y: 130, size: 56, style: 'new', align: 'center', t0: .4, maxW: 1000 });
+  caption(ctx, u, d, { text: 'A wieczór *znowu jest jego.*', x: 1060, y: 130, size: 56, style: 'new', align: 'center', t0: .4, maxW: 1000 });
 };
 
 /* ---------- 10: materiał na czas ---------- */
@@ -277,42 +277,145 @@ function siteNewMid(g) {
   houseShell(g, 60, 720, 1.2, { wall: '#F6E4CC', line: '#E4CBAA', edge: '#FFF1DE', hole: '#B49274', door: '#A9876A', scaf: '#7A5A62' }, 1);
   contact(g, 360, 730, 420, 22, .25, '120,60,20');
 }
-function truck(g, x, y) {
-  contact(g, x + 300, y + 4, 340, 18, .4, '60,30,20');
-  g.fillStyle = lin(g, 0, y - 240, 0, y - 40, [[0, '#FFFFFF'], [1, '#EFE6F1']]); rr(g, x, y - 240, 460, 200, 14); g.fill();
-  g.strokeStyle = N.purple; g.lineWidth = 8; rr(g, x, y - 240, 460, 200, 14); g.stroke();
-  logo(g, x + 230, y - 140, 48, N.teal, N.purple);
-  g.fillStyle = lin(g, x + 460, 0, x + 610, 0, [[0, '#7E1C8C'], [1, N.purple2]]); rr(g, x + 460, y - 180, 150, 140, [10, 44, 10, 10]); g.fill();
-  g.fillStyle = lin(g, x + 500, y - 165, x + 590, y - 110, [[0, '#E6F7FA'], [1, '#A9DCE6']]); rr(g, x + 510, y - 165, 76, 54, 8); g.fill();
-  g.fillStyle = N.ink; g.fillRect(x - 10, y - 46, 630, 16);
-  for (const wx of [x + 95, x + 500]) { circ(g, wx, y - 30, 36, '#2A1530'); circ(g, wx, y - 30, 15, '#C9BCCC'); }
-  glow(g, x + 612, y - 70, 50, '#FFF2C0', .6);
+function birds(g, u) { for (let i = 0; i < 4; i++) { const x = 300 + u * 110 + i * 80, y = 180 + i * 24 + Math.sin(u * 3 + i) * 8, f = Math.sin(u * 10 + i) * 10; g.strokeStyle = shade(N.ink, .2); g.lineWidth = 4; g.lineCap = 'round'; g.beginPath(); g.moveTo(x - 20, y - f); g.quadraticCurveTo(x - 9, y - 4, x, y); g.quadraticCurveTo(x + 9, y - 4, x + 20, y - f); g.stroke(); } }
+/* ---------- 10A: dostawa — ciężarówka z HDS-em odkłada paletę (prawdziwa perspektywa 3D) ---------- */
+const PJ = (X, Y, Z) => { const f = 1000 / Z; return [960 + X * f, 560 + (340 - Y) * f]; };
+function box3(g, X0, X1, Y0, Y1, Z0, Z1, near, top, side) {
+  if (top) poly(g, [PJ(X0, Y1, Z0), PJ(X1, Y1, Z0), PJ(X1, Y1, Z1), PJ(X0, Y1, Z1)], top);
+  if (side && X1 < 0) poly(g, [PJ(X1, Y0, Z0), PJ(X1, Y0, Z1), PJ(X1, Y1, Z1), PJ(X1, Y1, Z0)], side);
+  if (side && X0 > 0) poly(g, [PJ(X0, Y0, Z0), PJ(X0, Y0, Z1), PJ(X0, Y1, Z1), PJ(X0, Y1, Z0)], side);
+  const a = PJ(X0, Y1, Z0), b = PJ(X1, Y0, Z0);
+  if (near) { g.fillStyle = typeof near === 'function' ? near(a, b) : near; g.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]); }
+  return [a, b];
+}
+function brickPallet(g, X, Y, Z, sw = 0) {   // X, Z = środek palety, Y = spód
+  const w = 115, dz = 80, Xc = X + sw;
+  box3(g, Xc - w, Xc + w, Y, Y + 24, Z - dz, Z + dz, '#B98C55', '#D9AE74', '#9E7444');
+  const [a, b] = box3(g, Xc - w + 6, Xc + w - 6, Y + 24, Y + 128, Z - dz + 6, Z + dz - 6, (a, b) => lin(g, a[0], 0, b[0], 0, [[0, '#E0855A'], [1, '#B95F3A']]), '#E99A70', '#A65233');
+  g.strokeStyle = 'rgba(90,30,10,.35)'; g.lineWidth = 2;
+  for (let r = 1; r < 4; r++) { const y = lerp(a[1], b[1], r / 4); g.beginPath(); g.moveTo(a[0], y); g.lineTo(b[0], y); g.stroke(); }
+  for (let r = 0; r < 4; r++) for (let c = 1; c < 5; c++) { const x = lerp(a[0], b[0], (c - (r % 2) * .5) / 5), y0 = lerp(a[1], b[1], r / 4), y1 = lerp(a[1], b[1], (r + 1) / 4); if (x > a[0] && x < b[0]) { g.beginPath(); g.moveTo(x, y0); g.lineTo(x, y1); g.stroke(); } }
+  // folia stretch: połysk
+  g.save(); g.globalCompositeOperation = 'screen'; g.fillStyle = lin(g, a[0], a[1], b[0], b[1], [[0, 'rgba(255,255,255,0)'], [.4, 'rgba(255,255,255,.22)'], [.5, 'rgba(255,255,255,0)']]); g.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]); g.restore();
+  return { top: [Xc, Y + 128, Z], corners: [[Xc - w + 10, Y + 128, Z - dz + 10], [Xc + w - 10, Y + 128, Z - dz + 10], [Xc + w - 10, Y + 128, Z + dz - 10], [Xc - w + 10, Y + 128, Z + dz - 10]] };
+}
+function wheel(g, X, Z, r, rot) {
+  const [cx, cy] = PJ(X, r, Z), R = r * 1000 / Z;
+  circ(g, cx, cy, R, '#2A1530'); circ(g, cx, cy, R * .62, '#3E2A44');
+  g.fillStyle = lin(g, cx - R, cy - R, cx + R, cy + R, [[0, '#E3DAE6'], [1, '#9F94A4']]); g.beginPath(); g.arc(cx, cy, R * .5, 0, TAU); g.fill();
+  for (let k = 0; k < 5; k++) { const a = rot + k * TAU / 5; circ(g, cx + Math.cos(a) * R * .32, cy + Math.sin(a) * R * .32, R * .06, '#6E6274'); }
+  circ(g, cx, cy, R * .14, '#5A4E60');
+}
+const TRUCK = { stop: 1.55, outrig: [1.9, 2.3], lift: [2.2, 2.75], slew: [2.75, 3.65], lower: [3.65, 4.3], land: 4.3 };
+function hdsState(u, tx) {
+  const Xb = tx - 470, Xt = 340, Zt = 780, Xc = tx - 215, Zc = 1000;
+  const lift = E.inOutCubic(P(u, ...TRUCK.lift)), slew = E.inOutCubic(P(u, ...TRUCK.slew)), lower = E.inOutCubic(P(u, ...TRUCK.lower));
+  // ścieżka palety: łuk wokół kolumny żurawia (obrót w stronę kamery)
+  const a0 = Math.atan2(1000 - Zc, Xb - Xc), a1 = Math.atan2(Zt - Zc, Xt - Xc) + TAU, d0 = Math.hypot(Xb - Xc, 0), d1 = Math.hypot(Xt - Xc, Zt - Zc);
+  const ang = lerp(a0 < 0 ? a0 + TAU : a0, a1, slew), dist = lerp(d0, d1, slew) + Math.sin(Math.PI * slew) * 40;
+  let X = Xc + Math.cos(ang) * dist, Z = Zc + Math.sin(ang) * dist;
+  let Y = 130 + 210 * lift - (130 + 210) * lower;
+  if (u < TRUCK.lift[0]) { X = Xb; Z = 1000; Y = 130; }
+  // wahadło: paleta zostaje w tyle przy obrocie i buja się po zatrzymaniu
+  const ts = u - TRUCK.slew[0];
+  let sw = 0; if (ts > 0) sw = -38 * Math.sin(Math.min(ts, .9) / .9 * Math.PI) * (u < TRUCK.slew[1] ? 1 : 0) + (u > TRUCK.slew[1] ? 26 * Math.sin((u - TRUCK.slew[1]) * 7) * Math.exp(-(u - TRUCK.slew[1]) * 3) : 0);
+  if (u > TRUCK.land) sw = 0;
+  const land = P(u, TRUCK.land, TRUCK.land + .12) * (1 - P(u, TRUCK.land + .12, TRUCK.land + .35));
+  Y += -land * 6;
+  const rise = E.inOutCubic(P(u, TRUCK.land + .2, 5));
+  return { X, Y: Math.max(0, Y), Z, sw, Xc, Zc, rise, hook: [X + sw * .3, Y + 128 + 80 + rise * 140, Z] };
+}
+function hds(g, st, deploy) {
+  const top = [st.Xc, 330, st.Zc], base = [st.Xc, 140, st.Zc];
+  const T = [st.hook[0], st.hook[1] + 46, st.hook[2]];   // koniec wysięgnika nad hakiem
+  const dx = T[0] - top[0], dz = T[2] - top[2], d = Math.hypot(dx, dz), dy = T[1] - top[1], D = Math.hypot(d, dy);
+  const L1 = 270, L2 = Math.max(230, D - L1 + 20);
+  const b = Math.acos(clamp((L1 * L1 + D * D - L2 * L2) / (2 * L1 * D), -1, 1)), e1 = Math.atan2(dy, d) + b * deploy + (1 - deploy) * 1.2;
+  const ux = dx / (d || 1), uz = dz / (d || 1);
+  const K = [top[0] + ux * Math.cos(e1) * L1, top[1] + Math.sin(e1) * L1, top[2] + uz * Math.cos(e1) * L1];
+  const tip = deploy < 1 ? [lerp(K[0], T[0], deploy), lerp(K[1] - 230, T[1], deploy), lerp(K[2], T[2], deploy)] : T;
+  const seg = (A, B, w, col, hi) => { const a = PJ(...A), c = PJ(...B), f = 1000 / ((A[2] + B[2]) / 2); g.lineCap = 'round'; g.strokeStyle = col; g.lineWidth = w * f; g.beginPath(); g.moveTo(...a); g.lineTo(...c); g.stroke();
+    if (hi) { g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = w * f * .25; g.beginPath(); g.moveTo(a[0], a[1] - w * f * .25); g.lineTo(c[0], c[1] - w * f * .25); g.stroke(); } };
+  // kolumna z siłownikiem
+  seg(base, top, 46, '#D88E26', true);
+  seg(top, K, 34, '#F2A93B', true);
+  const mid = [lerp(base[0], top[0], .4), lerp(base[1], top[1], .4), base[2]], kmid = [lerp(top[0], K[0], .55), lerp(top[1], K[1], .55), lerp(top[2], K[2], .55)];
+  seg(mid, kmid, 12, '#8E959E', false);
+  seg(K, tip, 26, '#F2A93B', true);
+  const tele = [lerp(K[0], tip[0], .55), lerp(K[1], tip[1], .55), lerp(K[2], tip[2], .55)]; seg(tele, tip, 18, '#FFC45C', true);
+  for (const P_ of [top, K]) { const [x, y] = PJ(...P_); circ(g, x, y, 14 * 1000 / P_[2], '#3B1442'); circ(g, x, y, 6 * 1000 / P_[2], '#BDB2C2'); }
+  // lina i hak
+  const hk = deploy < 1 ? [tip[0], tip[1] - 50, tip[2]] : st.hook, [hx, hy] = PJ(...hk), [tx_, ty_] = PJ(...tip);
+  line(g, tx_, ty_, hx, hy, 3, '#2A1530'); g.strokeStyle = '#D6453A'; g.lineWidth = 7; g.beginPath(); g.arc(hx, hy + 10, 11, -.3, Math.PI * 1.2); g.stroke();
+  return [hx, hy + 20];
 }
 SH['10A'] = (ctx, u, d) => {
-  const cam = handheld(drift(u, d, { x: -60, y: 0, zoom: 1.0 }, { x: 60, y: -10, zoom: 1.05 }), u, .5, 67);
-  cam.focus = 1; cam.dof = 15;
-  const stop = cue('10A', 2), tx = lerp(-900, 120, E.outCubic(P(u, 0, stop))), G = 960;
+  const cam = handheld(drift(u, d, { x: -70, y: 0, zoom: 1.0 }, { x: 50, y: -10, zoom: 1.06 }), u, .45, 67);
+  cam.focus = 1; cam.dof = 14;
+  const tx = lerp(-1750, 140, E.outCubic(P(u, 0, TRUCK.stop))), moving = 1 - P(u, TRUCK.stop - .3, TRUCK.stop);
+  const pitch = -.018 * Math.sin(Math.PI * P(u, TRUCK.stop - .1, TRUCK.stop + .5)) * Math.exp(-P(u, TRUCK.stop, TRUCK.stop + .6) * 2);
+  const st = hdsState(u, tx), deploy = E.inOutCubic(P(u, TRUCK.outrig[0], TRUCK.lift[0] + .1)), legs = E.inOutCubic(P(u, ...TRUCK.outrig));
   layer(ctx, cam, 7, g => sunriseBack(g, u));
-  layer(ctx, cam, 3.2, g => { treeLine(g, 680, '#E8B89A', 2); fog(g, 520, 700, '#FFE9D2', 0, .8); });
+  layer(ctx, cam, 3.2, g => { treeLine(g, 680, '#E8B89A', 2); fog(g, 520, 700, '#FFE9D2', 0, .8); birds(g, u); });
   layer(ctx, cam, 1.6, g => siteNewMid(g));
   layer(ctx, cam, 1, g => {
-    // pył spod kół
-    const r = rng(5); for (let i = 0; i < 14; i++) { const ph = (u * 1.3 + r()) % 1; g.globalAlpha = (1 - ph) * .35 * (1 - P(u, stop, stop + 1)); circ(g, tx + 40 - ph * 200 + r() * 40, G - 20 - ph * 60, 20 + ph * 50, '#E9D2B4'); } g.globalAlpha = 1;
-    truck(g, tx, G);
-    const L = E.inOutCubic(P(u, stop, stop + 1.5)), base = [tx + 440, G - 240];
-    const px = lerp(tx + 230, 900, L), py = lerp(G - 250, 900, L) - Math.sin(Math.PI * L) * 140;
-    if (u > stop - .2) { const elbow = [lerp(base[0], px, .5), Math.min(base[1], py) - 190];
-      g.strokeStyle = '#E3A43A'; g.lineWidth = 20; g.lineCap = 'round'; g.beginPath(); g.moveTo(base[0], base[1]); g.lineTo(elbow[0], elbow[1]); g.lineTo(px, py - 200); g.stroke();
-      g.strokeStyle = 'rgba(255,255,255,.4)'; g.lineWidth = 5; g.beginPath(); g.moveTo(base[0] - 4, base[1] - 6); g.lineTo(elbow[0] - 4, elbow[1] - 6); g.stroke();
-      line(g, px, py - 200, px, py - 4 * 36 - 32, 4, N.ink); }
-    contact(g, px, 905, 200 * (L > .9 ? 1 : .6), 18, .3 * L, '90,40,20');
-    pallet(g, px - 165, py, 330, '#C9A36E'); bricksStack(g, px - 155, py - 32, 310, 4, '#D9784E', 1);
+    // ślady opon i miejsce na paletę
+    g.strokeStyle = 'rgba(150,110,70,.25)'; g.lineWidth = 10; for (const z of [905, 1095]) { const a = PJ(-1400, 0, z), b = PJ(400, 0, z); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); }
+    contact(g, ...PJ(340, 0, 780), 170, 26, .25 * (1 - P(u, TRUCK.land, TRUCK.land + .2)) + .2, '120,60,20');
+    // pył spod kół podczas jazdy
+    const r = rng(5); for (let i = 0; i < 18; i++) { const ph = (u * 1.4 + r()) % 1, [x, y] = PJ(tx - 650 - ph * 260 + r() * 60, 20 + ph * 60, 900 + r() * 40); g.globalAlpha = (1 - ph) * .4 * moving; circ(g, x, y, 18 + ph * 60, '#EBD5B6'); } g.globalAlpha = 1;
+    contact(g, ...PJ(tx - 380, 0, 1000), 470, 30, .45, '80,40,20');
+    // podpory (stabilizatory)
+    const [ox, oy] = PJ(st.Xc, 70, 905), [ox2] = PJ(st.Xc, 70, lerp(905, 820, legs)), [, gy] = PJ(st.Xc, 0, lerp(905, 820, legs));
+    g.save(); g.translate(...PJ(tx, 0, 1000)); g.rotate(pitch); g.translate(-PJ(tx, 0, 1000)[0], -PJ(tx, 0, 1000)[1]);
+    // skrzynia z burtami
+    box3(g, tx - 770, tx - 230, 95, 125, 900, 1100, (a, b) => lin(g, 0, a[1], 0, b[1], [[0, '#5B4A62'], [1, '#3B2B42']]), '#6E5C75', '#4A3A50');
+    const pal = u < TRUCK.lift[0] ? null : 1;
+    if (!pal) brickPallet(g, tx - 470, 125, 1000);
+    box3(g, tx - 770, tx - 230, 125, 150, 900, 905, (a, b) => lin(g, 0, a[1], 0, b[1], [[0, '#E9E4EC'], [1, '#B9B0BE']]), null);
+    for (let k = 0; k < 5; k++) { const [x0, y0] = PJ(tx - 770 + k * 135, 150, 900), [, y1] = PJ(0, 125, 900); line(g, x0, y0, x0, y1, 3, '#A49AA9'); }
+    // rama i błotniki
+    box3(g, tx - 790, tx - 10, 55, 95, 905, 1095, '#2A1530', null);
+    for (const wx of [tx - 650, tx - 560]) { const [a, b] = [PJ(wx - 60, 110, 899), PJ(wx + 60, 80, 899)]; fillRR(g, a[0], a[1], b[0] - a[0], b[1] - a[1] + 6, [14, 14, 0, 0], '#3B2B42'); }
+    // kabina
+    box3(g, tx - 225, tx, 70, 300, 900, 1100, (a, b) => lin(g, a[0], 0, b[0], 0, [[0, '#86269A'], [1, N.purple2]]), '#9A3AAE');
+    const [w0, w1] = [PJ(tx - 130, 280, 899), PJ(tx - 20, 200, 899)];
+    g.fillStyle = lin(g, w0[0], w0[1], w1[0], w1[1], [[0, '#EAF8FB'], [.5, '#9DD8E4'], [1, '#6BB8CA']]); rr(g, w0[0], w0[1], w1[0] - w0[0], w1[1] - w0[1], 10); g.fill();
+    g.save(); rr(g, w0[0], w0[1], w1[0] - w0[0], w1[1] - w0[1], 10); g.clip();   // kierowca w szybie
+    circ(g, w0[0] + 52, w0[1] + 50, 26, '#F4C7A1'); g.fillStyle = '#3B1442'; g.beginPath(); g.arc(w0[0] + 52, w0[1] + 46, 27, Math.PI, TAU); g.fill(); fillRR(g, w0[0] + 20, w0[1] + 76, 64, 40, 14, '#E6A63C');
+    g.globalCompositeOperation = 'screen'; g.fillStyle = 'rgba(255,255,255,.35)'; poly(g, [[w0[0] + 10, w1[1]], [w0[0] + 40, w0[1]], [w0[0] + 60, w0[1]], [w0[0] + 30, w1[1]]]); g.fill(); g.restore();
+    const dr = [PJ(tx - 215, 290, 899), PJ(tx - 25, 80, 899)]; g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 3; rr(g, dr[0][0], dr[0][1], dr[1][0] - dr[0][0], dr[1][1] - dr[0][1], 10); g.stroke();
+    fillRR(g, PJ(tx - 200, 170, 899)[0], PJ(0, 170, 899)[1], 34, 9, 4, '#D9C9DE');
+    logo(g, PJ(tx - 155, 120, 899)[0], PJ(0, 120, 899)[1], 24, N.teal, '#fff');
+    fillRR(g, ...PJ(tx - 2, 270, 899), 14, 50, 4, '#2A1530');
+    box3(g, tx - 20, tx + 25, 60, 100, 905, 1095, '#2A1530', '#3B2B42');
+    const hl = PJ(tx + 10, 112, 899); fillRR(g, hl[0] - 14, hl[1] - 10, 22, 20, 5, '#FFF2C0'); glow(g, hl[0], hl[1], 90, '#FFE8A0', .5);
+    for (let k = 0; k < 3; k++) circ(g, PJ(tx - 200 + k * 80, 302, 905)[0], PJ(0, 302, 905)[1], 5, '#FFB13B');
+    // spaliny z komina
+    const [ex, ey] = PJ(tx - 238, 330, 1000); fillRR(g, ex - 7, ey, 14, 90, 4, '#2A1530');
+    for (let k = 0; k < 4; k++) { const ph = (u * .9 + k * .25) % 1; g.globalAlpha = .35 * (1 - ph) * (.4 + moving * .6); circ(g, ex - ph * 120 * (.3 + moving), ey - ph * 110, 12 + ph * 40, '#EEE4F0'); } g.globalAlpha = 1;
+    g.restore();
+    // koła (bez przechyłu)
+    const rot = (tx / 46) % TAU; for (const wx of [tx - 650, tx - 560, tx - 110]) wheel(g, wx, 902, 46, rot);
+    // podpory
+    if (legs > 0) { line(g, ox, oy, ox2, PJ(st.Xc, 70, lerp(905, 820, legs))[1], 18 * 1.15, '#D88E26'); const [lx, ly] = PJ(st.Xc, 70, lerp(905, 820, legs)); line(g, lx, ly, lx, lerp(ly, gy, legs), 14, '#8E959E'); fillRR(g, lx - 26, gy - 6, 52, 12, 4, '#2A1530'); }
+    // żuraw HDS z paletą
+    const [hx, hy] = hds(g, st, deploy);
+    if (pal) {
+      const pl = brickPallet(g, st.X, st.Y, st.Z, st.sw), slack = st.rise > 0 ? 1 : 0;
+      for (const c of pl.corners) { const [cx, cy] = PJ(...c); g.strokeStyle = slack ? `rgba(32,207,163,${1 - st.rise})` : N.teal; g.lineWidth = 4; g.beginPath(); g.moveTo(hx, hy); g.lineTo(cx, cy); g.stroke(); }
+    }
+    // pył przy odłożeniu palety
+    const dk = P(u, TRUCK.land, TRUCK.land + .7); if (dk > 0 && dk < 1) { const [px, py] = PJ(340, 0, 780); for (let i = 0; i < 10; i++) { const a = Math.PI + (i / 9) * Math.PI; g.globalAlpha = .45 * (1 - dk); circ(g, px + Math.cos(a) * 200 * (1 + dk), py + Math.sin(a) * 30 * dk, 20 + dk * 40, '#EBD5B6'); } g.globalAlpha = 1; }
+    // pracownik naprowadza ładunek
+    const wave = Math.sin(u * 6) * (P(u, 2.6, 2.8) - P(u, 4.3, 4.5));
+    figure(g, Object.assign(who('ekipa', 'new'), { x: 1790, y: 1030, s: 1.05, cheeks: true, light: -1, rim: WARM_RIM, rimSide: -1, face: { eyes: 'open', mouth: 'smile', lx: -.15 },
+      armR: { e: [40, 20], h: [30 + 20 * wave, -60 - 20 * wave] }, armL: { e: [20, 70], h: [0, 100] } }));
   });
-  layer(ctx, cam, .5, g => { grass(g, -80, 1120, 30, 300, '#C9A86A', 4, u); grass(g, 1700, 1120, 26, 260, '#B99856', 7, u); });
-  // flara obiektywu
-  ctx.save(); ctx.globalCompositeOperation = 'screen'; for (const [k, r_, c] of [[.3, 60, '#FFD38A'], [.55, 30, '#F3A6C8'], [.8, 90, '#9FE6D2']]) { const fx = lerp(1500 - cam.x / 7, 960, k * 2), fy = lerp(400, 540, k * 2); ctx.globalAlpha = .18; circ(ctx, fx, fy, r_, c); } ctx.restore();
+  layer(ctx, cam, .5, g => { grass(g, -80, 1120, 30, 300, '#C9A86A', 4, u); grass(g, 1640, 1120, 22, 220, '#B99856', 7, u); });
+  ctx.save(); ctx.globalCompositeOperation = 'screen'; for (const [k, r_, c] of [[.3, 60, '#FFD38A'], [.55, 30, '#F3A6C8'], [.8, 90, '#9FE6D2']]) { const fx = lerp(1500 - cam.x / 7, 960, k * 2), fy = lerp(400, 540, k * 2); ctx.globalAlpha = .16; circ(ctx, fx, fy, r_, c); } ctx.restore();
   timeBadge(ctx, 1600, 70, '06:55', rgba(N.purple, .92));
-  caption(ctx, u, d, { text: 'Rano ekipa jest na placu. *Materiał też.*', x: 150, y: 200, size: 60, style: 'new', t0: .5, maxW: 1100 });
+  caption(ctx, u, d, { text: 'Ekipa na placu. *Materiał też.*', x: 150, y: 200, size: 62, style: 'new', t0: .5, maxW: 1100 });
 };
 SH['10B'] = (ctx, u, d) => {
   const cam = handheld(drift(u, d, { x: 40, y: 0, zoom: 1.0 }, { x: -20, y: 0, zoom: 1.04 }), u, .5, 71);
@@ -376,7 +479,7 @@ SH['11A'] = (ctx, u, d) => {
     const cp = E.inOutCubic(P(u, 1.7, cue('11A', 1) - .05)), cx = lerp(1700, X + Wd - 200, cp), cy = lerp(1000, Y + 630, cp);
     if (u > 1.5 && u < d - .1) { const press = u > cue('11A', 1) && u < cue('11A', 1) + .15 ? .85 : 1; g.save(); g.translate(cx, cy); g.scale(press * 1.3, press * 1.3); softShadow(g, 10, 6, .3); poly(g, [[0, 0], [0, 46], [12, 35], [21, 54], [29, 50], [20, 32], [36, 32]], '#2A0F30'); noShadow(g); g.strokeStyle = '#fff'; g.lineWidth = 3; g.stroke(); g.restore(); }
   });
-  caption(ctx, u, d, { text: 'Hurtownia dostaje *gotowe zamówienie.*', x: 150, y: 1010, size: 52, style: 'new', t0: .6, maxW: 1100 });
+  caption(ctx, u, d, { text: 'Zamówienie przychodzi *gotowe.*', tag: 'HURTOWNIA', x: 150, y: 1020, size: 56, style: 'light', t0: .6, maxW: 1100 });
 };
 SH['11B'] = (ctx, u, d) => {
   const cam = handheld(drift(u, d, { x: 0, y: 0, zoom: 1.0 }, { x: -20, y: 0, zoom: 1.05 }), u, .4, 79);
@@ -400,7 +503,7 @@ SH['11B'] = (ctx, u, d) => {
     glow(g, 1000, 660, 200, N.teal, .25, 'screen');
   });
   layer(ctx, cam, .5, g => { fillRR(g, -80, 880, 330, 300, 12, '#4CC8A8'); fillRR(g, 1720, 900, 300, 300, 12, '#E9DDF0'); });
-  caption(ctx, u, d, { text: 'Bo wszystko policzono *wcześniej.*', x: 150, y: 190, size: 56, style: 'new', t0: .4, maxW: 1000 });
+  caption(ctx, u, d, { text: 'Bo wszystko *policzono wcześniej.*', x: 150, y: 190, size: 56, style: 'new', t0: .4, maxW: 1000 });
 };
 
 /* ---------- 12: wszyscy w jednym miejscu ---------- */
@@ -429,7 +532,7 @@ SH['12A'] = (ctx, u, d) => {
   ctx.restore();
   const hk = E.outBack(P(u, .9, 1.5));
   if (hk > 0) { glow(ctx, hub[0], hub[1], 220 * hk, N.teal, .5); circ(ctx, hub[0], hub[1], 70 * hk, N.purple); ring(ctx, hub[0], hub[1], 70 * hk, 9, N.teal); tri(ctx, hub[0], hub[1] + 5, 32 * hk, N.teal, .18); }
-  caption(ctx, u, d, { text: 'Wszyscy. *W jednym miejscu.*', x: 960, y: 1050, size: 46, style: 'new', align: 'center', t0: 1.3, maxW: 1600, scrim: .8 });
+  caption(ctx, u, d, { text: 'Inwestor. Wykonawca. Hurtownia. *W jednym miejscu.*', x: 960, y: 1050, size: 46, style: 'new', align: 'center', t0: 1.3, maxW: 1600, scrim: .8 });
 };
 function purpleSpace(g, u) {
   g.fillStyle = rad(g, 960, 480, 100, 1300, [[0, '#8A1E99'], [1, '#3E0747']]); g.fillRect(-300, -300, W + 600, H + 600);
@@ -448,7 +551,7 @@ SH['12B'] = (ctx, u, d) => {
   if (sh < 1) {   // kafelki z 12A odlatują i maleją do węzłów
     const cam = { x: 0, y: 0, zoom: 1.04 };
     ctx.save(); ctx.globalAlpha = 1 - sh;
-    NEW_PANELS(SHOT['12A'].dur + u).forEach(([id, uu], i) => { const p = PANELS[i], n = nodes[[9, 2, 6, 4][i]];
+    NEW_PANELS(SHOT['12A'].design + u).forEach(([id, uu], i) => { const p = PANELS[i], n = nodes[[9, 2, 6, 4][i]];
       const o = { cx: lerp(p.cx, n.x, sh), cy: lerp(p.cy, n.y, sh), ry: p.ry, rx: p.rx, s: lerp(.85, .05, sh), fov: 1600 }; panelShot(ctx, 'pan' + i, id, uu, o); });
     ctx.restore();
   }
@@ -470,7 +573,7 @@ SH['12B'] = (ctx, u, d) => {
   if (flash > 0) { ctx.fillStyle = `rgba(255,255,255,${flash * .5})`; ctx.fillRect(0, 0, W, H); }
 };
 SH['12C'] = (ctx, u, d) => {
-  purpleSpace(ctx, u + SHOT['12B'].dur);
+  purpleSpace(ctx, u + SHOT['12B'].design);
   dust(ctx, u, 0, 0, W, H, 60, 91, '#ffffff', .4, 2.2);
   const up = E.inOutCubic(P(u, 0, .7));
   glow(ctx, 960, lerp(540, 380, up), 800, N.teal, .25);
